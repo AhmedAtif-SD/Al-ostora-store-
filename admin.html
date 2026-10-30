@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - الأسطورة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0b0b; color: #fff; }
+        .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); }
+        .gold-border { border-color: #d4af37; }
+        .gold-text { color: #d4af37; }
+    </style>
+</head>
+<body class="min-h-screen p-6 flex flex-col items-center">
+    <div class="w-full max-w-lg bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl">
+        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+            <h1 class="text-xl font-bold gold-text">لوحة تحكم المالك - إضافة منتج</h1>
+            <a href="index.html" class="text-xs text-gray-400 hover:gold-text">الذهاب للمتجر →</a>
+        </div>
+
+        <form id="product-form" onsubmit="addProduct(event)" class="space-y-4">
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">اسم المنتج</label>
+                <input type="text" id="title" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border" placeholder="مثال: طقم رياضي">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">السعر (ج.س)</label>
+                <input type="number" id="price" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border" placeholder="60000">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">رابط صورة المنتج (URL)</label>
+                <input type="url" id="image_url" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border" placeholder="https://example.com/image.jpg">
+            </div>
+            <div>
+                <label class="block text-xs text-gray-400 mb-1">وصف المنتج</label>
+                <textarea id="description" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border" placeholder="خامه قطن جوده عاليه..."></textarea>
+            </div>
+            <button type="submit" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
+                إضافة المنتج للمتجر
+            </button>
+        </form>
+    </div>
+
+    <script>
+        // إعداد اتصال Supabase (تمت إضافة بياناتك هنا)
+        const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function addProduct(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const image_url = document.getElementById('image_url').value;
+            const description = document.getElementById('description').value;
+
+            const { error } = await supabaseClient.from('products').insert([{ title, price, image_url, description }]);
+
+            if(error) {
+                alert("حدث خطأ أثناء الإضافة: " + error.message);
+            } else {
+                alert("تم إضافة المنتج بنجاح!");
+                document.getElementById('product-form').reset();
+            }
+        }
+    </script>
+</body>
+</html>
