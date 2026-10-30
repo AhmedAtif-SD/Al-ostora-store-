@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الأسطورة - AL OSTORA</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <!-- Supabase JS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #0b0b0b; color: #fff; }
+        .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); }
+        .gold-border { border-color: #d4af37; }
+        .gold-text { color: #d4af37; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center pb-12">
+
+    <!-- شاشة البداية / الواجهة الرئيسية -->
+    <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden">
+        <!-- تأثير الإضاءة الخلفية -->
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="mt-12 z-10 w-full flex flex-col items-center">
+            <!-- الشعار الجديد AL OSTORA -->
+            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-2 bg-[#141414] shadow-2xl flex flex-col items-center justify-center mb-6">
+                <span class="text-5xl font-black gold-text tracking-wider">AS</span>
+                <span class="text-xs font-bold tracking-widest mt-2 text-amber-100/80">AL OSTORA</span>
+            </div>
+            <h1 class="text-2xl font-bold tracking-wider gold-text mb-2">متجر الأسطورة</h1>
+            <p class="text-xs text-gray-400">أرقى الموديلات والأزياء العصرية</p>
+        </div>
+
+        <div class="w-full space-y-4 mb-8 z-10">
+            <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-90 transition">
+                تسوق الآن
+            </button>
+            <a href="https://wa.me/" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition">
+                الإرساليات والتواصل
+            </a>
+            <div class="pt-4">
+                <a href="admin.html" class="text-xs text-gray-500 hover:gold-text underline">لوحة تحكم المالك</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- قسم المتجر والمنتجات (يظهر عند الضغط على تسوق الآن) -->
+    <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden">
+        <!-- شريط علوي -->
+        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+            <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
+                ← الرئيسية
+            </button>
+            <div class="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border gold-border text-xs">
+                <span>📍 💙</span>
+                <span id="current-city" class="gold-text font-bold">عطبرة</span>
+            </div>
+            <button onclick="changeCity()" class="text-xs text-gray-400 border border-gray-700 px-3 py-1.5 rounded-full">
+                تغيير المدينة
+            </button>
+        </div>
+
+        <!-- قائمة المنتجات -->
+        <div id="products-container" class="space-y-6">
+            <!-- سيتم تحميل المنتجات ديناميكياً من قاعدة البيانات -->
+            <p class="text-center text-gray-500 py-10">جاري تحميل المنتجات...</p>
+        </div>
+    </div>
+
+    <!-- نافذة تفاصيل المنتج واختيار المقاس/اللون -->
+    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+        <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+            </div>
+            
+            <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4 border border-gray-800">
+            
+            <div class="flex justify-between items-center mb-2">
+                <span id="modal-price" class="text-xl font-extrabold gold-text"></span>
+                <span class="text-xs bg-amber-900/30 gold-text px-3 py-1 rounded-full border gold-border">خامه قطن جوده عاليه 🔥💙</span>
+            </div>
+            
+            <p id="modal-desc" class="text-xs text-gray-400 mb-6"></p>
+
+            <!-- خيارات الكمية والمقاس واللون -->
+            <div class="space-y-4 mb-6">
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">عدد القطع</label>
+                    <div class="flex items-center justify-between bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
+                        <button onclick="updateQty(-1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">-</button>
+                        <span id="qty-value" class="font-bold text-lg">1</span>
+                        <button onclick="updateQty(1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">+</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">المقاس</label>
+                        <select id="size-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
+                            <option value="S">S</option>
+                            <option value="M">M</option>
+                            <option value="L" selected>L</option>
+                            <option value="XL">XL</option>
+                            <option value="XXL">XXL</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-400 mb-1">اللون</label>
+                        <select id="color-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
+                            <option value="كبدي" selected>كبدي</option>
+                            <option value="أسود">أسود</option>
+                            <option value="أخضر">أخضر</option>
+                            <option value="أزرق">أزرق</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="submitOrder()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
+                أضف للطلب — <span id="modal-total-price"></span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // إعداد اتصال Supabase
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let selectedProduct = null;
+        let quantity = 1;
+
+        function showStore() {
+            document.getElementById('hero-section').classList.add('hidden');
+            document.getElementById('store-section').classList.remove('hidden');
+            loadProducts();
+        }
+
+        function showHero() {
+            document.getElementById('store-section').classList.add('hidden');
+            document.getElementById('hero-section').classList.remove('hidden');
+        }
+
+        function changeCity() {
+            const city = prompt("أدخل اسم المدينة:", "عطبرة");
+            if(city) {
+                document.getElementById('current-city').innerText = city;
+            }
+        }
+
+        async function loadProducts() {
+            const container = document.getElementById('products-container');
+            const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+            
+            if (error || !data || data.length === 0) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-10">لا توجد منتجات مضافة حالياً. قم بإضافتها من لوحة التحكم.</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            data.forEach(product => {
+                const card = document.createElement('div');
+                card.className = 'bg-[#141414] border border-gray-800 rounded-2xl overflow-hidden shadow-xl mb-6';
+                card.innerHTML = `
+                    <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1">
+                        <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
+                        <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
+                    </div>
+                    <div class="p-4 text-center">
+                        <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
+                        <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
+                        <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
+                        <button onclick='openProductModal(${JSON.stringify(product)})' class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition">
+                            عرض التفاصيل
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function openProductModal(product) {
+            selectedProduct = product;
+            quantity = 1;
+            document.getElementById('qty-value').innerText = quantity;
+            document.getElementById('modal-title').innerText = product.title;
+            document.getElementById('modal-image').src = product.image_url;
+            document.getElementById('modal-price').innerText = product.price.toLocaleString() + ' ج.س';
+            document.getElementById('modal-desc').innerText = product.description || 'خامه قطن جوده عاليه 🔥💙';
+            updateTotalPrice();
+            document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('product-modal').classList.add('hidden');
+        }
+
+        function updateQty(change) {
+            quantity += change;
+            if(quantity < 1) quantity = 1;
+            document.getElementById('qty-value').innerText = quantity;
+            updateTotalPrice();
+        }
+
+        function updateTotalPrice() {
+            if(selectedProduct) {
+                const total = selectedProduct.price * quantity;
+                document.getElementById('modal-total-price').innerText = total.toLocaleString() + ' ج.س';
+            }
+        }
+
+        async function submitOrder() {
+            const size = document.getElementById('size-select').value;
+            const color = document.getElementById('color-select').value;
+            const city = document.getElementById('current-city').innerText;
+            const phone = prompt("أدخل رقم هاتفك لتأكيد الطلب:");
+            
+            if(!phone) return;
+
+            const orderData = {
+                product_title: selectedProduct.title,
+                quantity: quantity,
+                size: size,
+                color: color,
+                total_price: selectedProduct.price * quantity,
+                city: city,
+                customer_phone: phone
+            };
+
+            const { error } = await supabaseClient.from('orders').insert([orderData]);
+
+            if(error) {
+                alert("حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.");
+            } else {
+                alert("تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.");
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>
