@@ -23,7 +23,10 @@
         <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm mb-4 text-center gold-border focus:outline-none">
         <button onclick="checkPassword()" class="w-full py-3 rounded-xl gold-gradient text-black font-extrabold text-sm shadow-lg mb-3">تسجيل الدخول</button>
         <a href="index.html" class="text-xs text-gray-500 hover:gold-text underline">← العودة للمتجر الرئيسي</a>
-    </div><div id="admin-content" class="w-full max-w-md hidden">
+    </div>
+
+    <!-- المحتوى الرئيسي للوحة التحكم -->
+    <div id="admin-content" class="w-full max-w-md hidden">
         <div class="flex justify-between items-center mb-4 bg-[#141414] p-3 rounded-2xl border gold-border">
             <h1 class="text-base font-bold gold-text">لوحة التحكم</h1>
             <div class="flex items-center gap-2">
@@ -101,6 +104,9 @@
                             <option value="أم درمان">أم درمان فقط</option>
                             <option value="الخرطوم">الخرطوم فقط</option>
                         </select>
+                    </div>   <div>
+                        <label class="block text-gray-400 mb-1">ألوان العرض المتاحة (افصل بينها بفاصلة)</label>
+                        <input type="text" id="product-colors" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="أسود، كبدي، أزرق، أبيض">
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">صورة العرض (من المعرض)</label>
@@ -298,7 +304,6 @@
             }
         }
 
-        // جلب وعرض المنتجات في لوحة التحكم للحذف
         async function loadAdminProducts() {
             const container = document.getElementById('admin-products-list');
             const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
@@ -326,7 +331,6 @@
             });
         }
 
-        // دالة حذف العرض
         async function deleteProduct(id) {
             if(confirm('هل أنت متأكد من حذف هذا العرض نهائياً من المتجر؟')) {
                 const { error } = await supabaseClient.from('products').delete().eq('id', id);
@@ -341,7 +345,7 @@
 
         async function updateOrderStatus(id, newStatus) {
             const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
-      if(error) alert('حدث خطأ أثناء التحديث');
+            if(error) alert('حدث خطأ أثناء التحديث');
             else loadOrders();
         }
 
@@ -369,11 +373,13 @@
             }
         }
 
+        // إضافة العرض مع الألوان وصورة المعرض
         async function addProduct(e) {
             e.preventDefault();
             const title = document.getElementById('title').value;
             const price = parseFloat(document.getElementById('price').value);
             const city = document.getElementById('product-city').value;
+            const colors = document.getElementById('product-colors').value.trim() || 'أسود، كبدي، أزرق';
             const description = document.getElementById('description').value;
             const fileInput = document.getElementById('product-image-file');
 
@@ -388,7 +394,7 @@
             reader.onload = async function(uploadEvent) {
                 const image_url = uploadEvent.target.result;
 
-                const { error } = await supabaseClient.from('products').insert([{ title, price, city, image_url, description }]);
+                const { error } = await supabaseClient.from('products').insert([{ title, price, city, colors, image_url, description }]);
 
                 if(error) {
                     alert("حدث خطأ أثناء الإضافة: " + error.message);
