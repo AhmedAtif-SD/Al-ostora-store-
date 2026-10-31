@@ -24,9 +24,9 @@
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="mt-12 z-10 w-full flex flex-col items-center">
-            <!-- الشعار المخصص (الصورة الفخمة) -->
-            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-1 bg-[#141414] shadow-2xl flex items-center justify-center mb-6 overflow-hidden">
-                <img src="logo.jpg" alt="AL OSTORA Logo" class="w-full h-full object-cover rounded-xl">
+            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-2 bg-[#141414] shadow-2xl flex flex-col items-center justify-center mb-6">
+                <span class="text-5xl font-black gold-text tracking-wider">AS</span>
+                <span class="text-xs font-bold tracking-widest mt-2 text-amber-100/80">AL OSTORA</span>
             </div>
             <h1 class="text-2xl font-bold tracking-wider gold-text mb-2">متجر الأسطورة</h1>
             <p class="text-xs text-gray-400">أرقى الموديلات والأزياء العصرية</p>
@@ -73,40 +73,7 @@
             </div>
             <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
-    </div>    <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden">
-        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-            <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
-                ← الرئيسية
-            </button>
-            <div class="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border gold-border text-xs">
-                <span>📍 💙</span>
-                <span id="current-city" class="gold-text font-bold">عطبرة</span>
-            </div>
-            <button onclick="openCityModal()" class="text-xs text-gray-400 border border-gray-700 px-3 py-1.5 rounded-full hover:gold-border hover:gold-text transition">
-                تغيير المدينة
-            </button>
-        </div>
-
-        <div id="products-container" class="space-y-6">
-            <p class="text-center text-gray-500 py-10">جاري تحميل العروض...</p>
-        </div>
-    </div>
-
-    <!-- نافذة اختيار المدينة -->
-    <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
-            <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div id="cities-list" class="space-y-2 mb-4">
-                <button onclick="setCity('عطبرة')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 عطبرة</button>
-                <button onclick="setCity('أم درمان')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 أم درمان</button>
-                <button onclick="setCity('الخرطوم')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 الخرطوم</button>
-            </div>
-            <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
-        </div>
-    </div>
-
-    <!-- نافذة تفاصيل المنتج واختيار المقاس/اللون -->
-    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+    </div><div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
