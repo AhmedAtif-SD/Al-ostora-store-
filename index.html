@@ -86,7 +86,10 @@
             </div>
             <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
-    </div>    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+    </div>
+
+    <!-- نافذة تفاصيل المنتج واختيار الألوان لكل قطعة -->
+    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
@@ -112,20 +115,22 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">المقاس</label>
-                        <select id="size-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
-                            <option value="S">S</option>
-                            <option value="M">M</option>
-                            <option value="L" selected>L</option>
-                            <option value="XL">XL</option>
-                            <option value="XXL">XXL</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-gray-400 mb-1">اللون</label>
-                        <select id="color-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border"></select>
+                <div>
+                    <label class="block text-xs text-gray-400 mb-1">المقاس</label>
+                    <select id="size-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L" selected>L</option>
+                        <option value="XL">XL</option>
+                        <option value="XXL">XXL</option>
+                    </select>
+                </div>
+
+                <!-- قسم تحديد لون مستقل لكل قطعة بناءً على العدد -->
+                <div>
+                    <label class="block text-xs gold-text mb-2 font-bold">تحديد لون لكل قطعة:</label>
+                    <div id="colors-container" class="space-y-2 bg-[#171717] p-3 rounded-xl border border-gray-800">
+                        <!-- يتم تعبئتها ديناميكياً -->
                     </div>
                 </div>
             </div>
@@ -258,7 +263,7 @@
                         <div class="p-4 text-center">
                             <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
                             <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
-                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
+                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار الألوان والمقاس</p>
                             <button onclick="openProductModal(${index})" class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition">
                                 عرض التفاصيل
                             </button>
@@ -280,20 +285,28 @@
             document.getElementById('modal-price').innerText = selectedProduct.price.toLocaleString() + ' ج.س';
             document.getElementById('modal-desc').innerText = selectedProduct.description || 'خامه قطن جوده عاليه 🔥💙';
 
-            const colorSelect = document.getElementById('color-select');
-            colorSelect.innerHTML = '';
-            const colorsList = selectedProduct.colors ? selectedProduct.colors.split(/[,،]/) : ['أسود', 'كبدي', 'أزرق'];
-            colorsList.forEach((color, i) => {
-                const opt = document.createElement('option');
-                const cleanColor = color.trim();
-                opt.value = cleanColor;
-                opt.innerText = cleanColor;
-                if(i === 0) opt.selected = true;
-                colorSelect.appendChild(opt);
-            });
-
+            renderColorSelectors();
             updateTotalPrice();
             document.getElementById('product-modal').classList.remove('hidden');
+        }
+
+        // دالة إنشاء خيارات الألوان ديناميكياً لكل قطعة بناءً على الكمية
+        function renderColorSelectors() {
+            const container = document.getElementById('colors-container');
+            container.innerHTML = '';
+            const colorsList = selectedProduct.colors ? selectedProduct.colors.split(/[,،]/) : ['أسود', 'كبدي', 'أزرق'];
+            
+            for (let i = 1; i <= quantity; i++) {
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between gap-2 bg-[#121212] p-2 rounded-xl border border-gray-800';
+                div.innerHTML = `
+                    <span class="text-[11px] text-gray-300 font-bold whitespace-nowrap">القطعة #${i}</span>
+                    <select class="item-color-select w-2/3 bg-[#1a1a1a] border border-gray-700 rounded-lg p-2 text-xs gold-border focus:outline-none">
+                        ${colorsList.map((c, idx) => `<option value="${c.trim()}" ${idx === 0 ? 'selected' : ''}>${c.trim()}</option>`).join('')}
+                    </select>
+                `;
+                container.appendChild(div);
+            }
         }
 
         function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
@@ -302,6 +315,7 @@
             quantity += change;
             if(quantity < 1) quantity = 1;
             document.getElementById('qty-value').innerText = quantity;
+            renderColorSelectors();
             updateTotalPrice();
         }
 
@@ -336,10 +350,7 @@
         }
 
         function closeCheckoutModal() {
-            document.getElementById('checkout-modal').classList.add('hidden');
-        }
-
-        async function submitFinalOrder() {
+            document.getElementById('checkout-modal').classList.add('hidden');async function submitFinalOrder() {
             const name = document.getElementById('cust-name').value.trim();
             const whatsapp = document.getElementById('cust-whatsapp').value.trim();
             const altPhone = document.getElementById('cust-alt-phone').value.trim();
@@ -356,15 +367,20 @@
             }
 
             const size = document.getElementById('size-select').value;
-            const color = document.getElementById('color-select').value;
+            
+            // جمع الألوان المحددة لكل قطعة
+            const colorSelects = document.querySelectorAll('.item-color-select');
+            const colorsArray = Array.from(colorSelects).map((s, idx) => `قطعة ${idx+1}: ${s.value}`);
+            const colorsStr = colorsArray.join(' | ');
+
             const productTotal = selectedProduct.price * quantity;
             const grandTotal = productTotal + deliveryPrice;
 
             const orderData = {
-                product_title: selectedProduct.title + ` x${quantity}`,
+                product_title: selectedProduct.title + ` (كمية: ${quantity})`,
                 quantity: quantity,
                 size: size,
-                color: color,
+                color: colorsStr,
                 total_price: grandTotal,
                 city: city,
                 customer_name: name,
@@ -385,8 +401,10 @@
             } catch(err) {}
 
             const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
-                            `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
-                            `🎨 المقاس: ${size} | اللون: ${color}\n` +
+                            `📦 المنتج: ${selectedProduct.title}\n` +
+                            `🔢 العدد: ${quantity}\n` +
+                            `📏 المقاس: ${size}\n` +
+                            `🎨 الألوان:\n${colorsArray.map(c => `- ${c}`).join('\n')}\n\n` +
                             `👤 الاسم: ${name}\n` +
                             `📞 واتساب: ${whatsapp}\n` +
                             `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
