@@ -81,13 +81,35 @@
             <div id="delivery-zones-list" class="space-y-2">
                 <p class="text-center text-gray-500 py-4">جاري التحميل...</p>
             </div>
+        </div><div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
+            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل</h3>
+            <p class="text-gray-400 mb-3">أضف أو احذف خيارات التوصيل التي تظهر للعملاء:</p>
+            
+            <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
+                <div>
+                    <label class="block text-gray-400 mb-1">اسم خيار التوصيل</label>
+                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">السعر (ج.س)</label>
+                    <input type="number" id="zone-price" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="6000">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">إضافة خيار التوصيل</button>
+            </form>
+
+            <div id="delivery-zones-list" class="space-y-2">
+                <p class="text-center text-gray-500 py-4">جاري التحميل...</p>
+            </div>
         </div>
 
-        <!-- قسم إضافة وإدارة العروض والمنتجات -->
+        <!-- قسم إضافة وتعديل وإدارة العروض والمنتجات -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-5 text-xs">
             <div>
-                <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض أو منتج جديد</h3>
-                <form id="product-form" onsubmit="addProduct(event)" class="space-y-3">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 id="form-title" class="font-bold gold-text text-sm">إضافة عرض أو منتج جديد</h3>
+                    <button type="button" id="cancel-edit-btn" onclick="resetProductForm()" class="hidden text-gray-400 hover:text-white underline text-[10px]">إلغاء التعديل</button>
+                </div>
+                <form id="product-form" onsubmit="saveProduct(event)" class="space-y-3">
                     <div>
                         <label class="block text-gray-400 mb-1">اسم العرض / المنتج</label>
                         <input type="text" id="title" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: طقم رياضي فاخر">
@@ -104,26 +126,28 @@
                             <option value="أم درمان">أم درمان فقط</option>
                             <option value="الخرطوم">الخرطوم فقط</option>
                         </select>
-                    </div>   <div>
+                    </div>
+                    <div>
                         <label class="block text-gray-400 mb-1">ألوان العرض المتاحة (افصل بينها بفاصلة)</label>
                         <input type="text" id="product-colors" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="أسود، كبدي، أزرق، أبيض">
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">صورة العرض (من المعرض)</label>
-                        <input type="file" id="product-image-file" accept="image/*" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90">
+                        <input type="file" id="product-image-file" accept="image/*" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90">
+                        <p class="text-[10px] text-gray-500 mt-1">اختياري عند التعديل (إذا لم تختار صورة، ستُبقى الصورة القديمة).</p>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">وصف العرض</label>
                         <textarea id="description" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="خامه قطن جوده عاليه..."></textarea>
                     </div>
-                    <button type="submit" class="w-full py-3 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">
+                    <button type="submit" id="product-submit-btn" class="w-full py-3 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">
                         إضافة العرض للمتجر
                     </button>
                 </form>
             </div>
 
             <div class="border-t border-gray-800 pt-4">
-                <h3 class="font-bold gold-text text-sm mb-3">حذف وإدارة العروض الحالية</h3>
+                <h3 class="font-bold gold-text text-sm mb-3">تعديل وحذف العروض الحالية</h3>
                 <div id="admin-products-list" class="space-y-3">
                     <p class="text-center text-gray-500 py-4">جاري تحميل العروض...</p>
                 </div>
@@ -139,6 +163,7 @@
 
         let allOrders = [];
         let currentFilter = 'الكل';
+        let editingProductId = null; // متغير لتتبع المنتج قيد التعديل
 
         function checkPassword() {
             const pass = document.getElementById('admin-pass').value;
@@ -227,9 +252,10 @@
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${order.status === 'جديدة' ? 'bg-amber-900/40 gold-text border gold-border' : 'bg-green-950/40 text-green-400 border border-green-800'}">${order.status}</span>
                     </div>
 
-                    <div class="bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800">
+                    <div class="bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800 space-y-1">
                         <p class="font-bold text-sm mb-1">${order.product_title}</p>
-                        <p class="text-gray-400">المقاس: ${order.size} | اللون: ${order.color}</p>
+                        <p class="text-gray-400">المقاس: ${order.size}</p>
+                        <p class="gold-text text-[11px] whitespace-pre-line">اللون: ${order.color}</p>
                     </div>
 
                     <div class="space-y-1.5 text-gray-300">
@@ -325,10 +351,93 @@
                             <p class="gold-text text-[10px]">${product.price.toLocaleString()} ج.س (${product.city})</p>
                         </div>
                     </div>
-                    <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2.5 py-1.5 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
+                    <div class="flex items-center gap-1">
+                        <button onclick="prepareEditProduct('${product.id}')" class="text-amber-400 hover:text-amber-300 font-bold text-xs px-2.5 py-1.5 bg-amber-950/30 border border-amber-900 rounded-lg">تعديل</button>
+                        <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2.5 py-1.5 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
+                    </div>
                 `;
                 container.appendChild(item);
             });
+        }
+
+        // تجهيز بيانات العرض للتعديل
+        async function prepareEditProduct(id) {
+            const { data, error } = await supabaseClient.from('products').select('*').eq('id', id).single();
+            if(error || !data) {
+                alert('خطأ في جلب بيانات العرض');
+                return;
+            }
+
+            document.getElementById('title').value = data.title;
+            document.getElementById('price').value = data.price;
+            document.getElementById('product-city').value = data.city || 'الكل';
+            document.getElementById('product-colors').value = data.colors || '';
+            document.getElementById('description').value = data.description || '';
+            
+            editingProductId = id;
+            document.getElementById('form-title').innerText = 'تعديل العرض أو المنتج';
+            document.getElementById('product-submit-btn').innerText = 'حفظ تعديلات العرض ✏️';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+
+            document.getElementById('product-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function resetProductForm() {
+            document.getElementById('product-form').reset();
+            editingProductId = null;
+            document.getElementById('form-title').innerText = 'إضافة عرض أو منتج جديد';
+            document.getElementById('product-submit-btn').innerText = 'إضافة العرض للمتجر';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        // دالة حفظ أو تحديث المنتج
+        async function saveProduct(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const city = document.getElementById('product-city').value;
+            const colors = document.getElementById('product-colors').value.trim() || 'أسود، كبدي، أزرق';
+            const description = document.getElementById('description').value;
+            const fileInput = document.getElementById('product-image-file');
+
+            const executeSave = async (image_url) => {
+                let error;
+                if(editingProductId) {
+                    // تحديث منتج موجود
+                    const updateData = { title, price, city, colors, description };
+                    if(image_url) updateData.image_url = image_url; // تحديث الصورة فقط إذا اختار صورة جديدة
+
+                    const res = await supabaseClient.from('products').update(updateData).eq('id', editingProductId);
+                    error = res.error;
+                } else {
+                    // إضافة منتج جديد
+                    if (!image_url) {
+                        alert('الرجاء اختيار صورة العرض من المعرض');
+                        return;
+                    }
+                    const res = await supabaseClient.from('products').insert([{ title, price, city, colors, image_url, description }]);
+                    error = res.error;
+                }
+
+                if(error) {
+                    alert("حدث خطأ: " + error.message);
+                } else {
+                    alert(editingProductId ? "تم تحديث العرض بنجاح!" : "تم إضافة العرض بنجاح!");
+                    resetProductForm();
+                    loadAdminProducts();
+                }
+            };
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(uploadEvent) {
+                    executeSave(uploadEvent.target.result);
+                };
+                reader.readAsDataURL(file);
+            } else {
+                executeSave(null);
+            }
         }
 
         async function deleteProduct(id) {
@@ -371,41 +480,6 @@
                 if(error) alert('خطأ');
                 else loadOrders();
             }
-        }
-
-        // إضافة العرض مع الألوان وصورة المعرض
-        async function addProduct(e) {
-            e.preventDefault();
-            const title = document.getElementById('title').value;
-            const price = parseFloat(document.getElementById('price').value);
-            const city = document.getElementById('product-city').value;
-            const colors = document.getElementById('product-colors').value.trim() || 'أسود، كبدي، أزرق';
-            const description = document.getElementById('description').value;
-            const fileInput = document.getElementById('product-image-file');
-
-            if (fileInput.files.length === 0) {
-                alert('الرجاء اختيار صورة العرض من المعرض');
-                return;
-            }
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-
-            reader.onload = async function(uploadEvent) {
-                const image_url = uploadEvent.target.result;
-
-                const { error } = await supabaseClient.from('products').insert([{ title, price, city, colors, image_url, description }]);
-
-                if(error) {
-                    alert("حدث خطأ أثناء الإضافة: " + error.message);
-                } else {
-                    alert("تم إضافة العرض بنجاح!");
-                    document.getElementById('product-form').reset();
-                    loadAdminProducts();
-                }
-            };
-
-            reader.readAsDataURL(file);
         }
     </script>
 </body>
