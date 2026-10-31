@@ -132,7 +132,7 @@
         </div>
     </div>
 
-    <!-- نافذة إتمام الطلب الشاملة (الاسم، الواتساب، المنطقة...) -->
+    <!-- نافذة إتمام الطلب الشاملة -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب</h3>
@@ -159,10 +159,9 @@
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">تكلفة وطريقة التوصيل</label>
+                    <!-- سيتم تعبئتها ديناميكياً من قاعدة البيانات -->
                     <select id="delivery-option" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none">
-                        <option value="6000">داخل المدينة - 6,000 ج.س</option>
-                        <option value="10000">شحن ولائية - 10,000 ج.س</option>
-                        <option value="0">استلام مباشر - 0 ج.س</option>
+                        <option value="0">جاري تحميل خيارات التوصيل...</option>
                     </select>
                 </div>
             </div>
@@ -285,9 +284,27 @@
             }
         }
 
-        function openCheckoutModal() {
+        async function openCheckoutModal() {
             closeModal();
+            // جلب خيارات التوصيل ديناميكياً من قاعدة البيانات
+            await loadDeliveryOptionsInCheckout();
             document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        async function loadDeliveryOptionsInCheckout() {
+            const select = document.getElementById('delivery-option');
+            const { data, error } = await supabaseClient.from('delivery_zones').select('*');
+            if(error || !data || data.length === 0) {
+                select.innerHTML = '<option value="0">بدون توصيل (0 ج.س)</option>';
+                return;
+            }
+            select.innerHTML = '';
+            data.forEach(zone => {
+                const opt = document.createElement('option');
+                opt.value = zone.price;
+                opt.innerText = `${zone.zone_name} - ${zone.price.toLocaleString()} ج.س`;
+                select.appendChild(opt);
+            });
         }
 
         function closeCheckoutModal() {
@@ -300,7 +317,9 @@
             const altPhone = document.getElementById('cust-alt-phone').value.trim();
             const altReceiver = document.getElementById('cust-alt-receiver').value.trim();
             const area = document.getElementById('cust-area').value.trim();
-            const deliveryPrice = parseFloat(document.getElementById('delivery-option').value);
+            const deliverySelect = document.getElementById('delivery-option');
+            const deliveryPrice = parseFloat(deliverySelect.value);
+            const deliveryName = deliverySelect.options[deliverySelect.selectedIndex].text;
             const city = document.getElementById('current-city').innerText;
 
             if(!name || !whatsapp || !area) {
@@ -329,27 +348,13 @@
                 status: 'جديدة'
             };
 
-            // إرسال الطلب لقاعدة البيانات
             const { error } = await supabaseClient.from('orders').insert([orderData]);
 
             if(error) {
                 alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
             } else {
-                // إرسال رسالة واتساب لصاحب المحل تلقائياً
                 const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
                                 `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
                                 `🎨 المقاس: ${size} | اللون: ${color}\n` +
                                 `👤 الاسم: ${name}\n` +
-                                `📞 واتساب: ${whatsapp}\n` +
-                                `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
-                                `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
-                                `📍 المدينة والمنطقة: ${city} - ${area}\n` +
-                                `🚚 التوصيل: ${deliveryPrice.toLocaleString()} ج.س\n` +
-                                `💰 الإجمالي: ${grandTotal.toLocaleString()} ج.س`;
-
-                const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`;
-                
-                alert("تم إرسال طلبك بنجاح وحفظه في النظام! سيتم تحويلك الآن لمراسلة المتجر عبر الواتساب.");
-                closeCheckoutModal();
-                window.location.href = whatsappUrl;
-        
+                      
