@@ -62,15 +62,15 @@
             </div>
         </div>
 
-        <!-- قسم التوصيل (إدارة وتغيير الأسعار والمناطق) -->
+        <!-- قسم التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل</h3>
-            <p class="text-gray-400 mb-3">أضف أو احذف خيارات التوصيل التي تظهر للعملاء عند إتمام الطلب:</p>
+            <p class="text-gray-400 mb-3">أضف أو احذف خيارات التوصيل التي تظهر للعملاء:</p>
             
             <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
                     <label class="block text-gray-400 mb-1">اسم المنطقة / خيار التوصيل</label>
-                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص - عطبرة">
+                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص">
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">السعر (ج.س)</label>
@@ -84,7 +84,7 @@
             </div>
         </div>
 
-        <!-- قسم العروض وإضافة المنتجات (مع اختيار المدينة المخصصة) -->
+        <!-- قسم العروض -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض / منتج جديد لكل مدينة</h3>
             <form id="product-form" onsubmit="addProduct(event)" class="space-y-3">
@@ -315,4 +315,8 @@
                 const { error } = await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
                 if(error) alert('خطأ');
                 else loadOrders();
-     
+            }
+        }
+
+        async function deleteAllOrders() {
+            if(confirm('تحذير: سيتم ح
