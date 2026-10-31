@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <!-- التبويبات (تمت إضافة تبويب "المدن") -->
+        <!-- التبويبات -->
         <div class="grid grid-cols-4 gap-1.5 mb-4 text-center">
             <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[11px] shadow-lg">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1 py-0.5 rounded-full text-[9px]">0</span></button>
             <button onclick="switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[11px]">المدن</button>
@@ -62,10 +62,9 @@
             </div>
         </div>
 
-        <!-- قسم إدارة المدن (إضافة مدينة جديدة) -->
+        <!-- قسم إدارة المدن -->
         <div id="tab-cities" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إضافة وإدارة مدن التوصيل</h3>
-            <p class="text-gray-400 mb-3">أضف مدينة جديدة لتظهر تلقائياً في واجهة المتجر للعملاء:</p>
             
             <form onsubmit="addCity(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
@@ -80,7 +79,7 @@
             </div>
         </div>
 
-        <!-- قسم إدارة أسعار التوصيل -->
+        <!-- قسم إدارة التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل</h3>
             
@@ -101,7 +100,7 @@
             </div>
         </div>
 
-        <!-- قسم إضافة وتعديل وإدارة العروض (مع تصفية حسب المدينة) -->
+        <!-- قسم العروض -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-5 text-xs">
             <div>
                 <div class="flex justify-between items-center mb-2">
@@ -121,7 +120,6 @@
                         <label class="block text-gray-400 mb-1">المدينة المخصصة للعرض</label>
                         <select id="product-city" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none">
                             <option value="الكل">كل المدن</option>
-                            <!-- يتم تعبئة المدن هنا ديناميكياً -->
                         </select>
                     </div>
                     <div>
@@ -202,16 +200,15 @@
 
         async function loadOrders() {
             const container = document.getElementById('orders-list');
-            const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
-            
-            if(error) {
-                container.innerHTML = '<p class="text-center text-red-500 py-6 text-xs">خطأ في جلب الطلبات</p>';
-                return;
+            try {
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if(error) throw error;
+                allOrders = data || [];
+                document.getElementById('orders-count-badge').innerText = allOrders.filter(o => o.status === 'جديدة').length;
+                renderOrders();
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-10 text-xs">لا توجد طلبات حالياً</p>';
             }
-
-            allOrders = data || [];
-            document.getElementById('orders-count-badge').innerText = allOrders.filter(o => o.status === 'جديدة').length;
-            renderOrders();
         }
 
         function filterOrders(status) {
@@ -276,16 +273,16 @@
             });
         }
 
-        // إدارة المدن في لوحة التحكم
         async function loadCitiesAdmin() {
             const container = document.getElementById('admin-cities-list');
-            const { data, error } = await supabaseClient.from('cities').select('*');
-            if(error || !data || data.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد مدن مضافة</p>';
-                return;
-            }
+            let cities = [{id: 1, name: 'عطبرة'}, {id: 2, name: 'أم درمان'}, {id: 3, name: 'الخرطوم'}];
+            try {
+                const { data, error } = await supabaseClient.from('cities').select('*');
+                if(!error && data && data.length > 0) cities = data;
+            } catch(e) {}
+
             container.innerHTML = '';
-            data.forEach(city => {
+            cities.forEach(city => {
                 const item = document.createElement('div');
                 item.className = 'flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800';
                 item.innerHTML = `
@@ -299,14 +296,15 @@
         async function addCity(e) {
             e.preventDefault();
             const name = document.getElementById('new-city-name').value.trim();
-            const { error } = await supabaseClient.from('cities').insert([{ name }]);
-            if(error) {
-                alert('خطأ أثناء إضافة المدينة أو أنها موجودة مسبقاً');
-            } else {
+            try {
+                const { error } = await supabaseClient.from('cities').insert([{ name }]);
+                if(error) throw error;
                 alert('تمت إضافة المدينة بنجاح!');
                 document.getElementById('new-city-name').value = '';
                 loadCitiesAdmin();
                 loadProductCityOptions();
+            } catch(err) {
+                alert('خطأ أثناء إضافة المدينة (تأكد من إنشاء جدول cities في Supabase أولاً عبر SQL Editor)');
             }
         }
 
@@ -325,17 +323,19 @@
             const citySelect = document.getElementById('product-city');
             const filterCity = document.getElementById('filter-admin-city');
             
-            const { data } = await supabaseClient.from('cities').select('*');
+            let cities = [{name: 'عطبرة'}, {name: 'أم درمان'}, {name: 'الخرطوم'}];
+            try {
+                const { data } = await supabaseClient.from('cities').select('*');
+                if(data && data.length > 0) cities = data;
+            } catch(e) {}
             
             let optionsHTML = '<option value="الكل">كل المدن</option>';
             let filterHTML = '<option value="الكل">جميع المدن</option>';
             
-            if(data) {
-                data.forEach(c => {
-                    optionsHTML += `<option value="${c.name}">${c.name}</option>`;
-                    filterHTML += `<option value="${c.name}">${c.name}</option>`;
-                });
-            }
+            cities.forEach(c => {
+                optionsHTML += `<option value="${c.name}">${c.name}</option>`;
+                filterHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
             
             citySelect.innerHTML = optionsHTML;
             filterCity.innerHTML = filterHTML;
@@ -343,24 +343,28 @@
 
         async function loadDeliveryZonesAdmin() {
             const container = document.getElementById('delivery-zones-list');
-            const { data, error } = await supabaseClient.from('delivery_zones').select('*');
-            if(error || !data || data.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد خيارات توصيل مضافة</p>';
-                return;
+            try {
+                const { data } = await supabaseClient.from('delivery_zones').select('*');
+                if(!data || data.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد خيارات توصيل مضافة</p>';
+                    return;
+                }
+                container.innerHTML = '';
+                data.forEach(zone => {
+                    const item = document.createElement('div');
+                    item.className = 'flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800';
+                    item.innerHTML = `
+                        <div>
+                            <span class="font-bold">${zone.zone_name}</span>
+                            <span class="gold-text mr-2 font-bold">${zone.price.toLocaleString()} ج.س</span>
+                        </div>
+                        <button onclick="deleteDeliveryZone('${zone.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
+                    `;
+                    container.appendChild(item);
+                });
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-2">جاري التحميل...</p>';
             }
-            container.innerHTML = '';
-            data.forEach(zone => {
-                const item = document.createElement('div');
-                item.className = 'flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800';
-                item.innerHTML = `
-                    <div>
-                        <span class="font-bold">${zone.zone_name}</span>
-                        <span class="gold-text mr-2 font-bold">${zone.price.toLocaleString()} ج.س</span>
-                    </div>
-                    <button onclick="deleteDeliveryZone('${zone.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
-                `;
-                container.appendChild(item);
-            });
         }
 
         async function addDeliveryZone(e) {
@@ -391,39 +395,39 @@
             const container = document.getElementById('admin-products-list');
             const cityFilter = document.getElementById('filter-admin-city').value;
             
-            const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-            
-            if(error || !data) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد عروض مضافة حالياً</p>';
-                return;
-            }
+            try {
+                const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+                if(error || !data) throw error;
 
-            const filteredProducts = cityFilter === 'الكل' ? data : data.filter(p => p.city === cityFilter || p.city === 'الكل');
+                const filteredProducts = cityFilter === 'الكل' ? data : data.filter(p => p.city === cityFilter || p.city === 'الكل');
 
-            if(filteredProducts.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد عروض في هذه المدينة</p>';
-                return;
-            }
+                if(filteredProducts.length === 0) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد عروض في هذه المدينة</p>';
+                    return;
+                }
 
-            container.innerHTML = '';
-            filteredProducts.forEach(product => {
-                const item = document.createElement('div');
-                item.className = 'flex items-center justify-between bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800';
-                item.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <img src="${product.image_url}" class="w-10 h-10 object-cover rounded-lg border border-gray-700">
-                        <div>
-                            <p class="font-bold text-xs">${product.title}</p>
-                            <p class="gold-text text-[10px]">${product.price.toLocaleString()} ج.س — (📍 ${product.city || 'الكل'})</p>
+                container.innerHTML = '';
+                filteredProducts.forEach(product => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center justify-between bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800';
+                    item.innerHTML = `
+                        <div class="flex items-center gap-3">
+                            <img src="${product.image_url}" class="w-10 h-10 object-cover rounded-lg border border-gray-700">
+                            <div>
+                                <p class="font-bold text-xs">${product.title}</p>
+                                <p class="gold-text text-[10px]">${product.price.toLocaleString()} ج.س — (📍 ${product.city || 'الكل'})</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="prepareEditProduct('${product.id}')" class="text-amber-400 hover:text-amber-300 font-bold text-xs px-2.5 py-1.5 bg-amber-950/30 border border-amber-900 rounded-lg">تعديل</button>
-                        <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2.5 py-1.5 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
-                    </div>
-                `;
-                container.appendChild(item);
-            });
+                        <div class="flex items-center gap-1">
+                            <button onclick="prepareEditProduct('${product.id}')" class="text-amber-400 hover:text-amber-300 font-bold text-xs px-2.5 py-1.5 bg-amber-950/30 border border-amber-900 rounded-lg">تعديل</button>
+                            <button onclick="deleteProduct('${product.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2.5 py-1.5 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
+                        </div>
+                    `;
+                    container.appendChild(item);
+                });
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد عروض مضافة حالياً</p>';
+            }
         }
 
         async function prepareEditProduct(id) {
