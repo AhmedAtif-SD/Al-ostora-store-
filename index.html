@@ -24,7 +24,6 @@
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="mt-12 z-10 w-full flex flex-col items-center">
-            <!-- الشعار الجديد AL OSTORA -->
             <div class="w-44 h-44 rounded-2xl border-2 gold-border p-2 bg-[#141414] shadow-2xl flex flex-col items-center justify-center mb-6">
                 <span class="text-5xl font-black gold-text tracking-wider">AS</span>
                 <span class="text-xs font-bold tracking-widest mt-2 text-amber-100/80">AL OSTORA</span>
@@ -37,7 +36,7 @@
             <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-90 transition">
                 تسوق الآن
             </button>
-            <a href="https://wa.me/249127776664" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center">
+            <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center">
                 الإرساليات والتواصل
             </a>
         </div>
@@ -67,12 +66,12 @@
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div id="cities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto"></div>
-            <div class="border-t border-gray-800 pt-3">
-                <input type="text" id="custom-city-input" placeholder="أو اكتب مدينة أخرى..." class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs mb-3 focus:outline-none gold-border">
-                <button onclick="selectCustomCity()" class="w-full py-2.5 rounded-xl gold-gradient text-black font-bold text-xs">تأكيد المدينة</button>
+            <div id="cities-list" class="space-y-2 mb-4">
+                <button onclick="setCity('عطبرة')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 عطبرة</button>
+                <button onclick="setCity('أم درمان')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 أم درمان</button>
+                <button onclick="setCity('الخرطوم')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 الخرطوم</button>
             </div>
-            <button onclick="closeCityModal()" class="w-full mt-3 py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
+            <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
     </div>
 
@@ -132,7 +131,7 @@
         </div>
     </div>
 
-    <!-- نافذة إتمام الطلب الشاملة -->
+    <!-- نافذة إتمام الطلب -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب</h3>
@@ -158,7 +157,7 @@
                     <input type="text" id="cust-area" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="البنك العقاري">
                 </div>
                 <div>
-                    <label class="block text-gray-400 mb-1">تكلفة وطريقة التوصيل</label>
+                    <label class="block text-gray-400 mb-1">طريقة التوصيل</label>
                     <select id="delivery-option" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none">
                         <option value="0">جاري التحميل...</option>
                     </select>
@@ -178,9 +177,7 @@
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const OWNER_WHATSAPP = '249127776664';
-
-        const cities = ['عطبرة', 'الخرطوم', 'أمدرمان', 'بحري', 'مدني', 'بورتسودان', 'كسلا', 'الأبيض', 'كوستي'];
+        const OWNER_WHATSAPP = '249918098924';
 
         let loadedProducts = [];
         let selectedProduct = null;
@@ -198,33 +195,17 @@
         }
 
         function openCityModal() {
-            const listContainer = document.getElementById('cities-list');
-            listContainer.innerHTML = '';
-            cities.forEach(city => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-2.5 rounded-xl text-xs transition font-semibold';
-                btn.innerText = '📍 ' + city;
-                btn.onclick = () => {
-                    document.getElementById('current-city').innerText = city;
-                    closeCityModal();
-                    loadProducts();
-                };
-                listContainer.appendChild(btn);
-            });
             document.getElementById('city-modal').classList.remove('hidden');
         }
 
-        function closeCityModal() { document.getElementById('city-modal').classList.add('hidden'); }
+        function closeCityModal() {
+            document.getElementById('city-modal').classList.add('hidden');
+        }
 
-        function selectCustomCity() {
-            const custom = document.getElementById('custom-city-input').value.trim();
-            if(custom) {
-                document.getElementById('current-city').innerText = custom;
-                closeCityModal();
-                loadProducts();
-            } else {
-                alert('الرجاء إدخال اسم المدينة');
-            }
+        function setCity(cityName) {
+            document.getElementById('current-city').innerText = cityName;
+            closeCityModal();
+            loadProducts();
         }
 
         async function loadProducts() {
@@ -306,14 +287,14 @@
             const select = document.getElementById('delivery-option');
             const { data, error } = await supabaseClient.from('delivery_zones').select('*');
             if(error || !data || data.length === 0) {
-                select.innerHTML = '<option value="6000">داخل المدينة - 6,000 ج.س</option>';
+                select.innerHTML = '<option value="6000">توصيل داخلي - 6,000 ج.س</option>';
                 return;
             }
             select.innerHTML = '';
             data.forEach(zone => {
                 const opt = document.createElement('option');
                 opt.value = zone.price;
-                opt.innerText = `${zone.zone_name} - ${zone.price.toLocaleString()} ج.س`;
+                opt.innerText = `${zone.zone_name} (${zone.price.toLocaleString()} ج.س)`;
                 select.appendChild(opt);
             });
         }
@@ -359,4 +340,18 @@
                 status: 'جديدة'
             };
 
-            const { error } = await supabaseClient.from('
+            const { error } = await supabaseClient.from('orders').insert([orderData]);
+
+            if(error) {
+                alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
+            } else {
+                const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
+                                `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
+                                `🎨 المقاس: ${size} | اللون: ${color}\n` +
+                                `👤 الاسم: ${name}\n` +
+                                `📞 واتساب: ${whatsapp}\n` +
+                                `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
+                                `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
+                                `📍 المدينة والمنطقة: ${city} - ${area}\n` +
+                                `🚚 التوصيل: ${deliveryName}\n` +
+                                `💰 الإجمالي: ${grandTotal.toLoca}
