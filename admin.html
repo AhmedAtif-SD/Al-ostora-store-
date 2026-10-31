@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <!-- قسم إضافة العروض والمنتجات -->
+        <!-- قسم إضافة العروض والمنتجات (مع اختيار الصورة من المعرض) -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض أو منتج جديد</h3>
             <form id="product-form" onsubmit="addProduct(event)" class="space-y-3">
@@ -98,14 +98,14 @@
                 <div>
                     <label class="block text-gray-400 mb-1">المدينة المخصصة للعرض</label>
                     <select id="product-city" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none">
-                        <option value="الكل">كل المدن (يظهر في عطبرة، أم درمان، والخرطوم)</option>
+                        <option value="الكل">كل المدن (عطبرة، أم درمان، الخرطوم)</option>
                         <option value="عطبرة">عطبرة فقط</option>
                         <option value="أم درمان">أم درمان فقط</option>
                         <option value="الخرطوم">الخرطوم فقط</option>
                     </select>
-                </div> <div>
-                    <label class="block text-gray-400 mb-1">رابط صورة العرض (URL)</label>
-                    <input type="url" id="image_url" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="https://example.com/image.jpg">
+                </div><div>
+                    <label class="block text-gray-400 mb-1">صورة العرض (اختر من المعرض)</label>
+                    <input type="file" id="product-image-file" accept="image/*" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90">
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">وصف العرض</label>
@@ -319,22 +319,37 @@
             }
         }
 
+        // دالة إضافة العرض مع تحويل الصورة المأخوذة من المعرض تلقائياً
         async function addProduct(e) {
             e.preventDefault();
             const title = document.getElementById('title').value;
             const price = parseFloat(document.getElementById('price').value);
             const city = document.getElementById('product-city').value;
-            const image_url = document.getElementById('image_url').value;
             const description = document.getElementById('description').value;
+            const fileInput = document.getElementById('product-image-file');
 
-            const { error } = await supabaseClient.from('products').insert([{ title, price, city, image_url, description }]);
-
-            if(error) {
-                alert("حدث خطأ أثناء الإضافة: " + error.message);
-            } else {
-                alert("تم إضافة العرض بنجاح!");
-                document.getElementById('product-form').reset();
+            if (fileInput.files.length === 0) {
+                alert('الرجاء اختيار صورة العرض من المعرض');
+                return;
             }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function(uploadEvent) {
+                const image_url = uploadEvent.target.result;
+
+                const { error } = await supabaseClient.from('products').insert([{ title, price, city, image_url, description }]);
+
+                if(error) {
+                    alert("حدث خطأ أثناء الإضافة: " + error.message);
+                } else {
+                    alert("تم إضافة العرض بنجاح!");
+                    document.getElementById('product-form').reset();
+                }
+            };
+
+            reader.readAsDataURL(file);
         }
     </script>
 </body>
