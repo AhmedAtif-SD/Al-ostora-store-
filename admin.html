@@ -14,10 +14,21 @@
         .gold-text { color: #d4af37; }
     </style>
 </head>
-<body class="min-h-screen p-6 flex flex-col items-center">
-    <div class="w-full max-w-lg bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl">
+<body class="min-h-screen p-6 flex flex-col items-center justify-center">
+
+    <!-- شاشة إدخال كلمة المرور -->
+    <div id="auth-screen" class="w-full max-w-sm bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl text-center">
+        <h1 class="text-xl font-bold gold-text mb-2">لوحة تحكم المالك</h1>
+        <p class="text-xs text-gray-400 mb-6">الرجاء إدخال كلمة المرور للمتابعة</p>
+        <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm mb-4 text-center gold-border focus:outline-none">
+        <button onclick="checkPassword()" class="w-full py-3 rounded-xl gold-gradient text-black font-extrabold text-sm shadow-lg hover:opacity-95 transition mb-3">تسجيل الدخول</button>
+        <a href="index.html" class="text-xs text-gray-500 hover:gold-text underline">← العودة للمتجر الرئيسي</a>
+    </div>
+
+    <!-- محتوى لوحة التحكم (مخفي لحين إدخال كلمة السر الصحيحة) -->
+    <div id="admin-content" class="w-full max-w-lg bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl hidden">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-            <h1 class="text-xl font-bold gold-text">لوحة تحكم المالك - إضافة منتج</h1>
+            <h1 class="text-xl font-bold gold-text">إضافة منتج جديد</h1>
             <a href="index.html" class="text-xs text-gray-400 hover:gold-text">الذهاب للمتجر →</a>
         </div>
 
@@ -45,10 +56,22 @@
     </div>
 
     <script>
-        // إعداد اتصال Supabase (تمت إضافة بياناتك هنا)
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // يمكنك تغيير كلمة المرور هنا
+        const ADMIN_PASSWORD = '1234';
+
+        function checkPassword() {
+            const pass = document.getElementById('admin-pass').value;
+            if(pass === ADMIN_PASSWORD) {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+            } else {
+                alert('كلمة المرور غير صحيحة!');
+            }
+        }
 
         async function addProduct(e) {
             e.preventDefault();
