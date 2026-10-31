@@ -62,33 +62,29 @@
             </div>
         </div>
 
-        <!-- قسم إدارة أسعار ومناطق التوصيل (قابل للتعديل بالكامل) -->
+        <!-- قسم التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار ومناطق التوصيل</h3>
-            <p class="text-gray-400 mb-3">أضف أو احذف مناطق وأسعار التوصيل التي تظهر للعملاء في المتجر:</p>
-            
-            <!-- نموذج إضافة منطقة توصيل جديدة -->
-            <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
-                <div>
-                    <label class="block text-gray-400 mb-1">اسم المنطقة / خيار التوصيل</label>
-                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص أو ولاية أخرى">
+            <h3 class="font-bold gold-text text-sm mb-2">إدارة وتغيير أسعار التوصيل</h3>
+            <p class="text-gray-400">أسعار التوصيل الحالية المعتمدة في المتجر:</p>
+            <div class="space-y-2">
+                <div class="flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
+                    <span>داخل المدينة (توصيل عادي)</span>
+                    <span class="gold-text font-bold">6,000 ج.س</span>
                 </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">السعر (ج.س)</label>
-                    <input type="number" id="zone-price" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="5000">
+                <div class="flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
+                    <span>الشحن الولائي (باقي المدن)</span>
+                    <span class="gold-text font-bold">10,000 ج.س</span>
                 </div>
-                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">إضافة خيار التوصيل</button>
-            </form>
-
-            <!-- قائمة مناطق التوصيل الحالية -->
-            <div id="delivery-zones-list" class="space-y-2">
-                <p class="text-center text-gray-500 py-4">جاري تحميل مناطق التوصيل...</p>
+                <div class="flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
+                    <span>استلام مباشر</span>
+                    <span class="gold-text font-bold">0 ج.س</span>
+                </div>
             </div>
         </div>
 
         <!-- قسم العروض وإضافة المنتجات -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-2">إضافة منتج جديد للمتجر</h3>
+            <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض / منتج جديد لمختلف المدن</h3>
             <form id="product-form" onsubmit="addProduct(event)" class="space-y-3">
                 <div>
                     <label class="block text-gray-400 mb-1">اسم المنتج</label>
@@ -128,7 +124,6 @@
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('admin-content').classList.remove('hidden');
                 loadOrders();
-                loadDeliveryZonesAdmin();
             } else {
                 alert('كلمة المرور غير صحيحة!');
             }
@@ -155,7 +150,6 @@
             } else if(tabName === 'delivery') {
                 document.getElementById('tab-delivery').classList.remove('hidden');
                 document.getElementById('tab-delivery-btn').className = 'py-3 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg text-center';
-                loadDeliveryZonesAdmin();
             } else if(tabName === 'offers') {
                 document.getElementById('tab-offers').classList.remove('hidden');
                 document.getElementById('tab-offers-btn').className = 'py-3 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg text-center';
@@ -238,52 +232,6 @@
             });
         }
 
-        async function loadDeliveryZonesAdmin() {
-            const container = document.getElementById('delivery-zones-list');
-            const { data, error } = await supabaseClient.from('delivery_zones').select('*');
-            if(error || !data || data.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد مناطق توصيل مضافة</p>';
-                return;
-            }
-            container.innerHTML = '';
-            data.forEach(zone => {
-                const item = document.createElement('div');
-                item.className = 'flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800';
-                item.innerHTML = `
-                    <div>
-                        <span class="font-bold">${zone.zone_name}</span>
-                        <span class="gold-text mr-2 font-bold">${zone.price.toLocaleString()} ج.س</span>
-                    </div>
-                    <button onclick="deleteDeliveryZone('${zone.id}')" class="text-red-400 hover:text-red-300 font-bold text-xs px-2 py-1 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
-                `;
-                container.appendChild(item);
-            });
-        }
-
-        async function addDeliveryZone(e) {
-            e.preventDefault();
-            const zone_name = document.getElementById('zone-name').value.trim();
-            const price = parseFloat(document.getElementById('zone-price').value);
-
-            const { error } = await supabaseClient.from('delivery_zones').insert([{ zone_name, price }]);
-            if(error) {
-                alert('خطأ أثناء إضافة منطقة التوصيل');
-            } else {
-                alert('تمت الإضافة بنجاح!');
-                document.getElementById('zone-name').value = '';
-                document.getElementById('zone-price').value = '';
-                loadDeliveryZonesAdmin();
-            }
-        }
-
-        async function deleteDeliveryZone(id) {
-            if(confirm('هل أنت متأكد من حذف خيار التوصيل هذا؟')) {
-                const { error } = await supabaseClient.from('delivery_zones').delete().eq('id', id);
-                if(error) alert('خطأ في الحذف');
-                else loadDeliveryZonesAdmin();
-            }
-        }
-
         async function updateOrderStatus(id, newStatus) {
             const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
             if(error) alert('حدث خطأ أثناء التحديث');
@@ -321,4 +269,15 @@
             const image_url = document.getElementById('image_url').value;
             const description = document.getElementById('description').value;
 
-            const { error } = await supabaseClient.from('products').insert([{ title, price, im
+            const { error } = await supabaseClient.from('products').insert([{ title, price, image_url, description }]);
+
+            if(error) {
+                alert("حدث خطأ أثناء الإضافة: " + error.message);
+            } else {
+                alert("تم إضافة المنتج بنجاح للمتجر!");
+                document.getElementById('product-form').reset();
+            }
+        }
+    </script>
+</body>
+</html>
