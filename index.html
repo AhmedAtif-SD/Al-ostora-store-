@@ -37,7 +37,7 @@
             <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-90 transition">
                 تسوق الآن
             </button>
-            <a href="https://wa.me/" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition">
+            <a href="https://wa.me/249127776664" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center">
                 الإرساليات والتواصل
             </a>
         </div>
@@ -58,7 +58,6 @@
             </button>
         </div>
 
-        <!-- قائمة المنتجات -->
         <div id="products-container" class="space-y-6">
             <p class="text-center text-gray-500 py-10">جاري تحميل المنتجات...</p>
         </div>
@@ -68,9 +67,7 @@
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div id="cities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                <!-- سيتم تعبئتها ديناميكياً -->
-            </div>
+            <div id="cities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto"></div>
             <div class="border-t border-gray-800 pt-3">
                 <input type="text" id="custom-city-input" placeholder="أو اكتب مدينة أخرى..." class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs mb-3 focus:outline-none gold-border">
                 <button onclick="selectCustomCity()" class="w-full py-2.5 rounded-xl gold-gradient text-black font-bold text-xs">تأكيد المدينة</button>
@@ -129,9 +126,53 @@
                 </div>
             </div>
 
-            <button onclick="submitOrder()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
+            <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
                 أضف للطلب — <span id="modal-total-price"></span>
             </button>
+        </div>
+    </div>
+
+    <!-- نافذة إتمام الطلب الشاملة (الاسم، الواتساب، المنطقة...) -->
+    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب</h3>
+            <div class="space-y-3 mb-6 text-xs">
+                <div>
+                    <label class="block text-gray-400 mb-1">الاسم الكامل *</label>
+                    <input type="text" id="cust-name" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="محمد عبد الرحمن">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">رقم الواتساب *</label>
+                    <input type="text" id="cust-whatsapp" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="0119562656">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">رقم هاتف احتياطي</label>
+                    <input type="text" id="cust-alt-phone" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="0993365989">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">المستلم البديل (اختياري)</label>
+                    <input type="text" id="cust-alt-receiver" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="محمد">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">المنطقة / الحي *</label>
+                    <input type="text" id="cust-area" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="البنك العقاري">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">تكلفة وطريقة التوصيل</label>
+                    <select id="delivery-option" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none">
+                        <option value="6000">داخل المدينة - 6,000 ج.س</option>
+                        <option value="10000">شحن ولائية - 10,000 ج.س</option>
+                        <option value="0">استلام مباشر - 0 ج.س</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex gap-2">
+                <button onclick="submitFinalOrder()" class="w-full py-3.5 rounded-xl gold-gradient text-black font-extrabold text-sm shadow-lg hover:opacity-95 transition">
+                    تأكيد وإرسال الطلب 🚀
+                </button>
+                <button onclick="closeCheckoutModal()" class="px-4 py-3.5 rounded-xl border border-gray-700 text-xs text-gray-400 hover:text-white">إلغاء</button>
+            </div>
         </div>
     </div>
 
@@ -139,8 +180,9 @@
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const OWNER_WHATSAPP = '249127776664';
 
-        const cities = ['عطبرة', 'الخرطوم', 'أمدرمان', 'بحري', 'مدني', 'بورتسودان', 'كسلا', 'الأبيض', 'كوستي', 'النيالا', 'الدمازين'];
+        const cities = ['عطبرة', 'الخرطوم', 'أمدرمان', 'بحري', 'مدني', 'بورتسودان', 'كسلا', 'الأبيض', 'كوستي'];
 
         let selectedProduct = null;
         let quantity = 1;
@@ -172,9 +214,7 @@
             document.getElementById('city-modal').classList.remove('hidden');
         }
 
-        function closeCityModal() {
-            document.getElementById('city-modal').classList.add('hidden');
-        }
+        function closeCityModal() { document.getElementById('city-modal').classList.add('hidden'); }
 
         function selectCustomCity() {
             const custom = document.getElementById('custom-city-input').value.trim();
@@ -229,9 +269,7 @@
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
-        function closeModal() {
-            document.getElementById('product-modal').classList.add('hidden');
-        }
+        function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
 
         function updateQty(change) {
             quantity += change;
@@ -247,33 +285,71 @@
             }
         }
 
-        async function submitOrder() {
+        function openCheckoutModal() {
+            closeModal();
+            document.getElementById('checkout-modal').classList.remove('hidden');
+        }
+
+        function closeCheckoutModal() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        async function submitFinalOrder() {
+            const name = document.getElementById('cust-name').value.trim();
+            const whatsapp = document.getElementById('cust-whatsapp').value.trim();
+            const altPhone = document.getElementById('cust-alt-phone').value.trim();
+            const altReceiver = document.getElementById('cust-alt-receiver').value.trim();
+            const area = document.getElementById('cust-area').value.trim();
+            const deliveryPrice = parseFloat(document.getElementById('delivery-option').value);
+            const city = document.getElementById('current-city').innerText;
+
+            if(!name || !whatsapp || !area) {
+                alert('الرجاء إكمال الحقول الإلزامية (الاسم، الواتساب، والمنطقة)');
+                return;
+            }
+
             const size = document.getElementById('size-select').value;
             const color = document.getElementById('color-select').value;
-            const city = document.getElementById('current-city').innerText;
-            const phone = prompt("أدخل رقم هاتفك لتأكيد الطلب:");
-            
-            if(!phone) return;
+            const productTotal = selectedProduct.price * quantity;
+            const grandTotal = productTotal + deliveryPrice;
 
             const orderData = {
-                product_title: selectedProduct.title,
+                product_title: selectedProduct.title + ` x${quantity}`,
                 quantity: quantity,
                 size: size,
                 color: color,
-                total_price: selectedProduct.price * quantity,
+                total_price: grandTotal,
                 city: city,
-                customer_phone: phone
+                customer_name: name,
+                customer_whatsapp: whatsapp,
+                alternative_phone: altPhone || 'لا يوجد',
+                alternative_receiver: altReceiver || 'لا يوجد',
+                area: area,
+                delivery_price: deliveryPrice,
+                status: 'جديدة'
             };
 
+            // إرسال الطلب لقاعدة البيانات
             const { error } = await supabaseClient.from('orders').insert([orderData]);
 
             if(error) {
-                alert("حدث خطأ أثناء إرسال الطلب، حاول مرة أخرى.");
+                alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
             } else {
-                alert("تم إرسال طلبك بنجاح! سيتم التواصل معك قريباً.");
-                closeModal();
-            }
-        }
-    </script>
-</body>
-</html>
+                // إرسال رسالة واتساب لصاحب المحل تلقائياً
+                const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
+                                `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
+                                `🎨 المقاس: ${size} | اللون: ${color}\n` +
+                                `👤 الاسم: ${name}\n` +
+                                `📞 واتساب: ${whatsapp}\n` +
+                                `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
+                                `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
+                                `📍 المدينة والمنطقة: ${city} - ${area}\n` +
+                                `🚚 التوصيل: ${deliveryPrice.toLocaleString()} ج.س\n` +
+                                `💰 الإجمالي: ${grandTotal.toLocaleString()} ج.س`;
+
+                const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`;
+                
+                alert("تم إرسال طلبك بنجاح وحفظه في النظام! سيتم تحويلك الآن لمراسلة المتجر عبر الواتساب.");
+                closeCheckoutModal();
+                window.location.href = whatsappUrl;
+        
