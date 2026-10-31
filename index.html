@@ -21,7 +21,6 @@
 
     <!-- شاشة البداية / الواجهة الرئيسية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden">
-        <!-- تأثير الإضاءة الخلفية -->
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="mt-12 z-10 w-full flex flex-col items-center">
@@ -41,15 +40,11 @@
             <a href="https://wa.me/" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition">
                 الإرساليات والتواصل
             </a>
-            <div class="pt-4">
-                <a href="admin.html" class="text-xs text-gray-500 hover:gold-text underline">لوحة تحكم المالك</a>
-            </div>
         </div>
     </div>
 
-    <!-- قسم المتجر والمنتجات (يظهر عند الضغط على تسوق الآن) -->
+    <!-- قسم المتجر والمنتجات -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden">
-        <!-- شريط علوي -->
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
             <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
                 ← الرئيسية
@@ -58,15 +53,29 @@
                 <span>📍 💙</span>
                 <span id="current-city" class="gold-text font-bold">عطبرة</span>
             </div>
-            <button onclick="changeCity()" class="text-xs text-gray-400 border border-gray-700 px-3 py-1.5 rounded-full">
+            <button onclick="openCityModal()" class="text-xs text-gray-400 border border-gray-700 px-3 py-1.5 rounded-full hover:gold-border hover:gold-text transition">
                 تغيير المدينة
             </button>
         </div>
 
         <!-- قائمة المنتجات -->
         <div id="products-container" class="space-y-6">
-            <!-- سيتم تحميل المنتجات ديناميكياً من قاعدة البيانات -->
             <p class="text-center text-gray-500 py-10">جاري تحميل المنتجات...</p>
+        </div>
+    </div>
+
+    <!-- نافذة اختيار المدينة -->
+    <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
+            <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
+            <div id="cities-list" class="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                <!-- سيتم تعبئتها ديناميكياً -->
+            </div>
+            <div class="border-t border-gray-800 pt-3">
+                <input type="text" id="custom-city-input" placeholder="أو اكتب مدينة أخرى..." class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs mb-3 focus:outline-none gold-border">
+                <button onclick="selectCustomCity()" class="w-full py-2.5 rounded-xl gold-gradient text-black font-bold text-xs">تأكيد المدينة</button>
+            </div>
+            <button onclick="closeCityModal()" class="w-full mt-3 py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
     </div>
 
@@ -87,7 +96,6 @@
             
             <p id="modal-desc" class="text-xs text-gray-400 mb-6"></p>
 
-            <!-- خيارات الكمية والمقاس واللون -->
             <div class="space-y-4 mb-6">
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">عدد القطع</label>
@@ -128,10 +136,11 @@
     </div>
 
     <script>
-        // إعداد اتصال Supabase (تمت إضافة بياناتك هنا)
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const cities = ['عطبرة', 'الخرطوم', 'أمدرمان', 'بحري', 'مدني', 'بورتسودان', 'كسلا', 'الأبيض', 'كوستي', 'النيالا', 'الدمازين'];
 
         let selectedProduct = null;
         let quantity = 1;
@@ -147,10 +156,33 @@
             document.getElementById('hero-section').classList.remove('hidden');
         }
 
-        function changeCity() {
-            const city = prompt("أدخل اسم المدينة:", "عطبرة");
-            if(city) {
-                document.getElementById('current-city').innerText = city;
+        function openCityModal() {
+            const listContainer = document.getElementById('cities-list');
+            listContainer.innerHTML = '';
+            cities.forEach(city => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-2.5 rounded-xl text-xs transition font-semibold';
+                btn.innerText = '📍 ' + city;
+                btn.onclick = () => {
+                    document.getElementById('current-city').innerText = city;
+                    closeCityModal();
+                };
+                listContainer.appendChild(btn);
+            });
+            document.getElementById('city-modal').classList.remove('hidden');
+        }
+
+        function closeCityModal() {
+            document.getElementById('city-modal').classList.add('hidden');
+        }
+
+        function selectCustomCity() {
+            const custom = document.getElementById('custom-city-input').value.trim();
+            if(custom) {
+                document.getElementById('current-city').innerText = custom;
+                closeCityModal();
+            } else {
+                alert('الرجاء إدخال اسم المدينة');
             }
         }
 
