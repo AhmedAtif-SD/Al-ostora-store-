@@ -70,18 +70,19 @@
         </div>
     </div>
 
-    <!-- نافذة اختيار المدينة -->
+    <!-- نافذة اختيار المدينة الديناميكية -->
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div class="space-y-2 mb-4">
-                <button onclick="setCity('عطبرة')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 عطبرة</button>
-                <button onclick="setCity('أم درمان')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 أم درمان</button>
-                <button onclick="setCity('الخرطوم')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 الخرطوم</button>
+            <div id="cities-list-container" class="space-y-2 mb-4 max-h-60 overflow-y-auto">
+                <p class="text-center text-xs text-gray-500">جاري التحميل...</p>
             </div>
             <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
-    </div> <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+    </div>
+
+    <!-- نافذة تفاصيل المنتج وتحديد المقاس واللون لكل قطعة -->
+    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
@@ -99,7 +100,7 @@
 
             <div class="space-y-4 mb-6">
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">عدد القطع</label>
+                    <label class="block text-xs text-gray-400 mb-1">عدد القطع الإجمالي</label>
                     <div class="flex items-center justify-between bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
                         <button onclick="updateQty(-1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">-</button>
                         <span id="qty-value" class="font-bold text-lg">1</span>
@@ -107,20 +108,10 @@
                     </div>
                 </div>
 
+                <!-- قسم تحديد المقاس واللون لكل قطعة على حدة -->
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1">المقاس</label>
-                    <select id="size-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
-                        <option value="S">S</option>
-                        <option value="M">M</option>
-                        <option value="L" selected>L</option>
-                        <option value="XL">XL</option>
-                        <option value="XXL">XXL</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-xs gold-text mb-2 font-bold">تحديد لون لكل قطعة:</label>
-                    <div id="colors-container" class="space-y-2 bg-[#171717] p-3 rounded-xl border border-gray-800"></div>
+                    <label class="block text-xs gold-text mb-2 font-bold">تحديد المقاس واللون لكل قطعة:</label>
+                    <div id="item-options-container" class="space-y-3 bg-[#171717] p-3 rounded-xl border border-gray-800"></div>
                 </div>
             </div>
 
@@ -191,20 +182,41 @@
         function showStore() {
             document.getElementById('hero-section').classList.add('hidden');
             document.getElementById('store-section').classList.remove('hidden');
-            loadProducts();
-        }
-
-        function showHero() {
+            loadProducts();function showHero() {
             document.getElementById('store-section').classList.add('hidden');
             document.getElementById('hero-section').classList.remove('hidden');
         }
 
-        function openCityModal() {
+        async function openCityModal() {
             document.getElementById('city-modal').classList.remove('hidden');
+            await loadCitiesListModal();
         }
 
         function closeCityModal() {
             document.getElementById('city-modal').classList.add('hidden');
+        }
+
+        async function loadCitiesListModal() {
+            const container = document.getElementById('cities-list-container');
+            container.innerHTML = '<p class="text-center text-xs text-gray-500">جاري التحميل...</p>';
+            if(!supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from('cities').select('*');
+                if(data && data.length > 0) {
+                    container.innerHTML = '';
+                    data.forEach(city => {
+                        const btn = document.createElement('button');
+                        btn.onclick = () => setCity(city.name);
+                        btn.className = 'w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold';
+                        btn.innerText = `📍 ${city.name}`;
+                        container.appendChild(btn);
+                    });
+                } else {
+                    container.innerHTML = '<p class="text-center text-xs text-gray-500">لا توجد مدن مضافة</p>';
+                }
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-xs text-red-500">خطأ في جلب المدن</p>';
+            }
         }
 
         function setCity(cityName) {
@@ -250,7 +262,7 @@
                         <div class="p-4 text-center">
                             <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
                             <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
-                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار الألوان والمقاس</p>
+                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار المقاسات والألوان</p>
                             <button onclick="openProductModal(${index})" class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition">
                                 عرض التفاصيل
                             </button>
@@ -272,24 +284,37 @@
             document.getElementById('modal-price').innerText = selectedProduct.price.toLocaleString() + ' ج.س';
             document.getElementById('modal-desc').innerText = selectedProduct.description || 'خامه قطن جوده عاليه 🔥💙';
 
-            renderColorSelectors();
+            renderItemOptions();
             updateTotalPrice();
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
-        function renderColorSelectors() {
-            const container = document.getElementById('colors-container');
+        // إنشاء خيارات المقاس واللون لكل قطعة على حدة بناءً على الكمية
+        function renderItemOptions() {
+            const container = document.getElementById('item-options-container');
             container.innerHTML = '';
             const colorsList = selectedProduct.colors ? selectedProduct.colors.split(/[,،]/) : ['أسود', 'كبدي', 'أزرق'];
-            
+            const sizesList = ['S', 'M', 'L', 'XL', 'XXL'];
+
             for (let i = 1; i <= quantity; i++) {
                 const div = document.createElement('div');
-                div.className = 'flex items-center justify-between gap-2 bg-[#121212] p-2 rounded-xl border border-gray-800';
+                div.className = 'bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2';
                 div.innerHTML = `
-                    <span class="text-[11px] text-gray-300 font-bold whitespace-nowrap">القطعة #${i}</span>
-                    <select class="item-color-select w-2/3 bg-[#1a1a1a] border border-gray-700 rounded-lg p-2 text-xs gold-border focus:outline-none">
-                        ${colorsList.map((c, idx) => `<option value="${c.trim()}" ${idx === 0 ? 'selected' : ''}>${c.trim()}</option>`).join('')}
-                    </select>
+                    <div class="text-[11px] gold-text font-bold">القطعة #${i}</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">المقاس</label>
+                            <select class="item-size-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-1.5 text-xs gold-border focus:outline-none">
+                                ${sizesList.map(s => `<option value="${s}" ${s === 'L' ? 'selected' : ''}>${s}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] text-gray-400 mb-0.5">اللون</label>
+                            <select class="item-color-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-1.5 text-xs gold-border focus:outline-none">
+                                ${colorsList.map((c, idx) => `<option value="${c.trim()}" ${idx === 0 ? 'selected' : ''}>${c.trim()}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
                 `;
                 container.appendChild(div);
             }
@@ -301,7 +326,7 @@
             quantity += change;
             if(quantity < 1) quantity = 1;
             document.getElementById('qty-value').innerText = quantity;
-            renderColorSelectors();
+            renderItemOptions();
             updateTotalPrice();
         }
 
@@ -355,10 +380,15 @@
                 return;
             }
 
-            const size = document.getElementById('size-select').value;
+            // جمع تفاصيل كل قطعة (مقاس ولون)
+            const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
-            const colorsArray = Array.from(colorSelects).map((s, idx) => `قطعة ${idx+1}: ${s.value}`);
-            const colorsStr = colorsArray.join(' | ');
+            
+            const itemDetails = [];
+            for(let i = 0; i < quantity; i++) {
+                itemDetails.push(`قطعة ${i+1}: مقاس (${sizeSelects[i].value}) - لون (${colorSelects[i].value})`);
+            }
+            const detailsStr = itemDetails.join('\n');
 
             const productTotal = selectedProduct.price * quantity;
             const grandTotal = productTotal + deliveryPrice;
@@ -366,8 +396,8 @@
             const orderData = {
                 product_title: selectedProduct.title + ` (كمية: ${quantity})`,
                 quantity: quantity,
-                size: size,
-                color: colorsStr,
+                size: 'متعدد',
+                color: detailsStr,
                 total_price: grandTotal,
                 city: city,
                 customer_name: name,
@@ -387,9 +417,8 @@
 
             const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
                             `📦 المنتج: ${selectedProduct.title}\n` +
-                            `🔢 العدد: ${quantity}\n` +
-                            `📏 المقاس: ${size}\n` +
-                            `🎨 الألوان:\n${colorsArray.map(c => `- ${c}`).join('\n')}\n\n` +
+                            `🔢 الكمية: ${quantity}\n` +
+                            `📋 التفاصيل:\n${itemDetails.map(d => `- ${d}`).join('\n')}\n\n` +
                             `👤 الاسم: ${name}\n` +
                             `📞 واتساب: ${whatsapp}\n` +
                             `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
