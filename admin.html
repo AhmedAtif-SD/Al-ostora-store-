@@ -27,7 +27,6 @@
 
     <!-- المحتوى الرئيسي للوحة التحكم -->
     <div id="admin-content" class="w-full max-w-md hidden">
-        <!-- الشريط العُلوي -->
         <div class="flex justify-between items-center mb-4 bg-[#141414] p-3 rounded-2xl border gold-border">
             <h1 class="text-base font-bold gold-text">لوحة التحكم</h1>
             <div class="flex items-center gap-2">
@@ -36,7 +35,7 @@
             </div>
         </div>
 
-        <!-- التبويبات الرئيسية -->
+        <!-- التبويبات -->
         <div class="grid grid-cols-3 gap-2 mb-4">
             <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-3 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg text-center">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1.5 py-0.5 rounded-full text-[10px]">0</span></button>
             <button onclick="switchTab('delivery')" id="tab-delivery-btn" class="py-3 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-xs text-center">التوصيل</button>
@@ -62,14 +61,14 @@
             </div>
         </div>
 
-        <!-- قسم التوصيل -->
+        <!-- قسم إدارة أسعار التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل</h3>
             <p class="text-gray-400 mb-3">أضف أو احذف خيارات التوصيل التي تظهر للعملاء:</p>
             
             <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
-                    <label class="block text-gray-400 mb-1">اسم المنطقة / خيار التوصيل</label>
+                    <label class="block text-gray-400 mb-1">اسم خيار التوصيل</label>
                     <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص">
                 </div>
                 <div>
@@ -84,9 +83,9 @@
             </div>
         </div>
 
-        <!-- قسم العروض -->
+        <!-- قسم إضافة العروض والمنتجات -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض / منتج جديد لكل مدينة</h3>
+            <h3 class="font-bold gold-text text-sm mb-2">إضافة عرض أو منتج جديد</h3>
             <form id="product-form" onsubmit="addProduct(event)" class="space-y-3">
                 <div>
                     <label class="block text-gray-400 mb-1">اسم العرض / المنتج</label>
@@ -99,18 +98,12 @@
                 <div>
                     <label class="block text-gray-400 mb-1">المدينة المخصصة للعرض</label>
                     <select id="product-city" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none">
-                        <option value="الكل">كل المدن (عام)</option>
+                        <option value="الكل">كل المدن (يظهر في عطبرة، أم درمان، والخرطوم)</option>
                         <option value="عطبرة">عطبرة فقط</option>
+                        <option value="أم درمان">أم درمان فقط</option>
                         <option value="الخرطوم">الخرطوم فقط</option>
-                        <option value="أمدرمان">أمدرمان فقط</option>
-                        <option value="بحري">بحري فقط</option>
-                        <option value="مدني">مدني فقط</option>
-                        <option value="بورتسودان">بورتسودان فقط</option>
-                        <option value="كسلا">كسلا فقط</option>
-                        <option value="الأبيض">الأبيض فقط</option>
                     </select>
-                </div>
-                <div>
+                </div> <div>
                     <label class="block text-gray-400 mb-1">رابط صورة العرض (URL)</label>
                     <input type="url" id="image_url" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="https://example.com/image.jpg">
                 </div>
@@ -129,7 +122,7 @@
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const ADMIN_PASSWORD = 'Al Ostora store 123';
+        const ADMIN_PASSWORD = 'OS 123';
 
         let allOrders = [];
         let currentFilter = 'الكل';
@@ -319,4 +312,30 @@
         }
 
         async function deleteAllOrders() {
-            if(confirm('تحذير: سيتم ح
+            if(confirm('تحذير: سيتم حذف جميع الطلبات بالكامل! هل أنت متأكد؟')) {
+                const { error } = await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                if(error) alert('خطأ');
+                else loadOrders();
+            }
+        }
+
+        async function addProduct(e) {
+            e.preventDefault();
+            const title = document.getElementById('title').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const city = document.getElementById('product-city').value;
+            const image_url = document.getElementById('image_url').value;
+            const description = document.getElementById('description').value;
+
+            const { error } = await supabaseClient.from('products').insert([{ title, price, city, image_url, description }]);
+
+            if(error) {
+                alert("حدث خطأ أثناء الإضافة: " + error.message);
+            } else {
+                alert("تم إضافة العرض بنجاح!");
+                document.getElementById('product-form').reset();
+            }
+        }
+    </script>
+</body>
+</html>
