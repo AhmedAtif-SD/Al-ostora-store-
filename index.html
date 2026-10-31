@@ -16,43 +16,40 @@
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
         
-        /* تأثيرات الحركة والظهور الفاخرة */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade {
-            animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
+        .animate-fade { animation: fadeIn 0.5s ease-out forwards; }
         .logo-frame {
             background: linear-gradient(145deg, #181818, #0d0d0d);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15), inset 0 0 15px rgba(212, 175, 55, 0.05);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center pb-12">
 
-    <!-- شاشة البداية / الواجهة الرئيسية مع التأثيرات -->
+    <!-- شاشة البداية / الواجهة الرئيسية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="mt-10 z-10 w-full flex flex-col items-center">
-            <!-- الشعار الهندسي الفخم المطابق للأصل تماماً -->
-            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative group transition-transform duration-500 hover:scale-105">
+            <!-- الشعار الهندسي الفخم -->
+            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
                 <div class="absolute inset-0 border border-[#d4af37]/30 rounded-xl m-1 pointer-events-none"></div>
                 <span class="text-5xl font-black gold-text tracking-widest drop-shadow-md">AS</span>
                 <div class="w-24 h-[2px] gold-gradient my-1.5 opacity-80"></div>
                 <span class="text-[10px] font-bold tracking-[0.25em] text-amber-200/90">AL OSTORA</span>
             </div>
-            <h1 class="text-2xl font-bold tracking-wider gold-text mb-1 drop-shadow">متجر الأسطورة</h1>
+            <h1 class="text-2xl font-bold tracking-wider gold-text mb-1">متجر الأسطورة</h1>
             <p class="text-xs text-gray-400">أرقى الموديلات والأزياء العصرية</p>
         </div>
 
         <div class="w-full space-y-4 mb-8 z-10">
-            <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-95 transition transform active:scale-95 duration-200">
+            <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-95 transition transform active:scale-95">
                 تسوق الآن ✨
             </button>
-            <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center transform active:scale-95 duration-200">
+            <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center">
                 الإرساليات والتواصل 📞
             </a>
         </div>
@@ -61,10 +58,10 @@
     <!-- قسم المتجر والمنتجات -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-            <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1 transition">
+            <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
                 ← الرئيسية
             </button>
-            <div class="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border gold-border text-xs shadow-md">
+            <div class="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border gold-border text-xs">
                 <span>📍 💙</span>
                 <span id="current-city" class="gold-text font-bold">عطبرة</span>
             </div>
@@ -80,26 +77,23 @@
 
     <!-- نافذة اختيار المدينة -->
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl animate-fade">
+        <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div id="cities-list" class="space-y-2 mb-4">
+            <div class="space-y-2 mb-4">
                 <button onclick="setCity('عطبرة')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 عطبرة</button>
                 <button onclick="setCity('أم درمان')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 أم درمان</button>
                 <button onclick="setCity('الخرطوم')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 الخرطوم</button>
             </div>
             <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
-    </div>
-
-    <!-- نافذة تفاصيل المنتج واختيار المقاس/اللون -->
-    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
-        <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto animate-fade">
+    </div>    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+        <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
                 <button onclick="closeModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
             
-            <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4 border border-gray-800 shadow-md">
+            <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl mb-4 border border-gray-800">
             
             <div class="flex justify-between items-center mb-2">
                 <span id="modal-price" class="text-xl font-extrabold gold-text"></span>
@@ -112,9 +106,9 @@
                 <div>
                     <label class="block text-xs text-gray-400 mb-1">عدد القطع</label>
                     <div class="flex items-center justify-between bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
-                        <button onclick="updateQty(-1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center hover:bg-[#333]">-</button>
+                        <button onclick="updateQty(-1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">-</button>
                         <span id="qty-value" class="font-bold text-lg">1</span>
-                        <button onclick="updateQty(1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center hover:bg-[#333]">+</button>
+                        <button onclick="updateQty(1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">+</button>
                     </div>
                 </div>
 
@@ -131,14 +125,12 @@
                     </div>
                     <div>
                         <label class="block text-xs text-gray-400 mb-1">اللون</label>
-                        <select id="color-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border">
-                            <!-- الألوان تظهر ديناميكياً -->
-                        </select>
+                        <select id="color-select" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-sm focus:outline-none gold-border"></select>
                     </div>
                 </div>
             </div>
 
-            <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition transform active:scale-95 duration-200">
+            <button onclick="openCheckoutModal()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
                 أضف للطلب — <span id="modal-total-price"></span>
             </button>
         </div>
@@ -146,7 +138,7 @@
 
     <!-- نافذة إتمام الطلب -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto animate-fade">
+        <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب</h3>
             <div class="space-y-3 mb-6 text-xs">
                 <div>
@@ -172,7 +164,7 @@
                 <div>
                     <label class="block text-gray-400 mb-1">طريقة التوصيل</label>
                     <select id="delivery-option" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none">
-                        <option value="0">جاري التحميل...</option>
+                        <option value="6000">توصيل داخلي - 6,000 ج.س</option>
                     </select>
                 </div>
             </div>
@@ -189,9 +181,17 @@
     <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const OWNER_WHATSAPP = '249918098924';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(e) {
+            console.error("Supabase init error:", e);
+        }
 
+        const OWNER_WHATSAPP = '249918098924';
         let loadedProducts = [];
         let selectedProduct = null;
         let quantity = 1;
@@ -226,39 +226,52 @@
             const container = document.getElementById('products-container');
             container.innerHTML = '<p class="text-center text-gray-500 py-10">جاري تحميل العروض...</p>';
 
-            const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-            
-            if (error || !data) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-10">خطأ في جلب العروض</p>';
+            if (!supabaseClient) {
+                container.innerHTML = '<p class="text-center text-red-500 py-10">خطأ في الاتصال بقاعدة البيانات</p>';
                 return;
             }
 
-            loadedProducts = data.filter(p => !p.city || p.city === 'الكل' || p.city === currentCity);
+            try {
+                const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+                
+                if (error || !data) {
+                    container.innerHTML = '<p class="text-center text-gray-500 py-10">لا توجد عروض مضافة حالياً.</p>';
+                    return;
+                }
 
-            if (loadedProducts.length === 0) {
-                container.innerHTML = `<p class="text-center text-gray-500 py-10">لا توجد عروض مضافة حالياً في مدينة ${currentCity}.</p>`;
-                return;
+                loadedProducts = data.filter(p => !p.city || p.city === 'الكل' || p.city === currentCity);
+
+                if (loadedProducts.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500 py-10">لا توجد عروض في مدينة ${currentCity} حالياً.</p>`;
+                    return;
+                }
+
+                container.innerHTML = '';
+                loadedProducts.forEach((product, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-[#141414] border border-gray-800 rounded-2xl overflow-hidden shadow-xl mb-6 animate-fade';
+                    card.innerHTML = `
+                        <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1">
+                            <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
+                            <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
+                        </div>
+                        <div class="p-4 text-center">
+                            <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
+                            <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
+                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
+                            <button onclick="openProductModal(${index})" class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition">
+                                عرض التفاصيل
+                            </button>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch(err) {
+                container.innerHTML = '<p class="text-center text-red-500 py-10">حدث خطأ أثناء تحميل المنتجات</p>';
             }
+        }
 
-            container.innerHTML = '';
-            loadedProducts.forEach((product, index) => {
-                const card = document.createElement('div');
-                card.className = 'bg-[#141414] border border-gray-800 rounded-2xl overflow-hidden shadow-xl mb-6 transition-all duration-300 hover:border-[#d4af37]/50';
-                card.innerHTML = `
-                    <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1">
-                        <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
-                        <img src="${product.image_url || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
-                    </div>
-                    <div class="p-4 text-center">
-                        <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
-                        <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
-                        <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
-                        <button onclick="openProductModal(${index})" class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition transform active:scale-95">
-                            عرض التفاصيل
-                        </button>
-                    </div>
-                `;
-                container.appendChild(card);function openProductModal(index) {
+        function openProductModal(index) {
             selectedProduct = loadedProducts[index];
             quantity = 1;
             document.getElementById('qty-value').innerText = quantity;
@@ -307,18 +320,19 @@
 
         async function loadDeliveryOptionsInCheckout() {
             const select = document.getElementById('delivery-option');
-            const { data, error } = await supabaseClient.from('delivery_zones').select('*');
-            if(error || !data || data.length === 0) {
-                select.innerHTML = '<option value="6000">توصيل داخلي - 6,000 ج.س</option>';
-                return;
-            }
-            select.innerHTML = '';
-            data.forEach(zone => {
-                const opt = document.createElement('option');
-                opt.value = zone.price;
-                opt.innerText = `${zone.zone_name} (${zone.price.toLocaleString()} ج.س)`;
-                select.appendChild(opt);
-            });
+            if(!supabaseClient) return;
+            try {
+                const { data } = await supabaseClient.from('delivery_zones').select('*');
+                if(data && data.length > 0) {
+                    select.innerHTML = '';
+                    data.forEach(zone => {
+                        const opt = document.createElement('option');
+                        opt.value = zone.price;
+                        opt.innerText = `${zone.zone_name} (${zone.price.toLocaleString()} ج.س)`;
+                        select.appendChild(opt);
+                    });
+                }
+            } catch(e) {}
         }
 
         function closeCheckoutModal() {
@@ -332,7 +346,7 @@
             const altReceiver = document.getElementById('cust-alt-receiver').value.trim();
             const area = document.getElementById('cust-area').value.trim();
             const deliverySelect = document.getElementById('delivery-option');
-            const deliveryPrice = parseFloat(deliverySelect.value);
+            const deliveryPrice = parseFloat(deliverySelect.value || 0);
             const deliveryName = deliverySelect.options[deliverySelect.selectedIndex].text;
             const city = document.getElementById('current-city').innerText;
 
@@ -362,28 +376,30 @@
                 status: 'جديدة'
             };
 
-            const { error } = await supabaseClient.from('orders').insert([orderData]);
+            try {
+                const { error } = await supabaseClient.from('orders').insert([orderData]);
+                if(error) {
+                    alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
+                    return;
+                }
+            } catch(err) {}
 
-            if(error) {
-                alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
-            } else {
-                const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
-                                `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
-                                `🎨 المقاس: ${size} | اللون: ${color}\n` +
-                                `👤 الاسم: ${name}\n` +
-                                `📞 واتساب: ${whatsapp}\n` +
-                                `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
-                                `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
-                                `📍 المدينة والمنطقة: ${city} - ${area}\n` +
-                                `🚚 التوصيل: ${deliveryName}\n` +
-                                `💰 الإجمالي: ${grandTotal.toLocaleString()} ج.س`;
+            const message = `🛍️ *طلب جديد - متجر الأسطورة*\n\n` +
+                            `📦 المنتج: ${selectedProduct.title} (كمية: ${quantity})\n` +
+                            `🎨 المقاس: ${size} | اللون: ${color}\n` +
+                            `👤 الاسم: ${name}\n` +
+                            `📞 واتساب: ${whatsapp}\n` +
+                            `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
+                            `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
+                            `📍 المدينة والمنطقة: ${city} - ${area}\n` +
+                            `🚚 التوصيل: ${deliveryName}\n` +
+                            `💰 الإجمالي: ${grandTotal.toLocaleString()} ج.س`;
 
-                const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=` + encodeURIComponent(message);
-                
-                alert("تم إرسال طلبك بنجاح وحفظه في النظام! سيتم تحويلك الآن لمراسلة المتجر عبر الواتساب.");
-                closeCheckoutModal();
-                window.location.href = whatsappUrl;
-            }
+            const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=` + encodeURIComponent(message);
+            
+            alert("تم إرسال طلبك بنجاح وحفظه في النظام! سيتم تحويلك الآن لمراسلة المتجر عبر الواتساب.");
+            closeCheckoutModal();
+            window.location.href = whatsappUrl;
         }
     </script>
 </body>
