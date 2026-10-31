@@ -40,10 +40,7 @@
                 الإرساليات والتواصل
             </a>
         </div>
-    </div>
-
-    <!-- قسم المتجر والمنتجات -->
-    <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden">
+    </div><div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
             <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
                 ← الرئيسية
@@ -354,4 +351,15 @@
                                 `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
                                 `📍 المدينة والمنطقة: ${city} - ${area}\n` +
                                 `🚚 التوصيل: ${deliveryName}\n` +
-                                `💰 الإجمالي: ${grandTotal.toLoca}
+                                `💰 الإجمالي: ${grandTotal.toLocaleString()} ج.س`;
+
+                const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent(message)}`;
+                
+                alert("تم إرسال طلبك بنجاح وحفظه في النظام! سيتم تحويلك الآن لمراسلة المتجر عبر الواتساب.");
+                closeCheckoutModal();
+                window.location.href = whatsappUrl;
+            }
+        }
+    </script>
+</body>
+</html>
