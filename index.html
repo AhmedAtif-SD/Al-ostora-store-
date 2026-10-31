@@ -4,18 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>الأسطورة - AL OSTORA</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts (Cairo) -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <!-- Supabase JS SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         body { font-family: 'Cairo', sans-serif; background-color: #0b0b0b; color: #fff; }
         .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); }
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
-        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -34,7 +30,6 @@
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
         <div class="mt-10 z-10 w-full flex flex-col items-center">
-            <!-- الشعار الهندسي الفخم -->
             <div class="w-44 h-44 rounded-2xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
                 <div class="absolute inset-0 border border-[#d4af37]/30 rounded-xl m-1 pointer-events-none"></div>
                 <span class="text-5xl font-black gold-text tracking-widest drop-shadow-md">AS</span>
@@ -86,10 +81,7 @@
             </div>
             <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
         </div>
-    </div>
-
-    <!-- نافذة تفاصيل المنتج واختيار الألوان لكل قطعة -->
-    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+    </div> <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
@@ -126,12 +118,9 @@
                     </select>
                 </div>
 
-                <!-- قسم تحديد لون مستقل لكل قطعة بناءً على العدد -->
                 <div>
                     <label class="block text-xs gold-text mb-2 font-bold">تحديد لون لكل قطعة:</label>
-                    <div id="colors-container" class="space-y-2 bg-[#171717] p-3 rounded-xl border border-gray-800">
-                        <!-- يتم تعبئتها ديناميكياً -->
-                    </div>
+                    <div id="colors-container" class="space-y-2 bg-[#171717] p-3 rounded-xl border border-gray-800"></div>
                 </div>
             </div>
 
@@ -192,9 +181,7 @@
             if (window.supabase) {
                 supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
-        } catch(e) {
-            console.error("Supabase init error:", e);
-        }
+        } catch(e) {}
 
         const OWNER_WHATSAPP = '249918098924';
         let loadedProducts = [];
@@ -290,7 +277,6 @@
             document.getElementById('product-modal').classList.remove('hidden');
         }
 
-        // دالة إنشاء خيارات الألوان ديناميكياً لكل قطعة بناءً على الكمية
         function renderColorSelectors() {
             const container = document.getElementById('colors-container');
             container.innerHTML = '';
@@ -350,7 +336,10 @@
         }
 
         function closeCheckoutModal() {
-            document.getElementById('checkout-modal').classList.add('hidden');async function submitFinalOrder() {
+            document.getElementById('checkout-modal').classList.add('hidden');
+        }
+
+        async function submitFinalOrder() {
             const name = document.getElementById('cust-name').value.trim();
             const whatsapp = document.getElementById('cust-whatsapp').value.trim();
             const altPhone = document.getElementById('cust-alt-phone').value.trim();
@@ -367,8 +356,6 @@
             }
 
             const size = document.getElementById('size-select').value;
-            
-            // جمع الألوان المحددة لكل قطعة
             const colorSelects = document.querySelectorAll('.item-color-select');
             const colorsArray = Array.from(colorSelects).map((s, idx) => `قطعة ${idx+1}: ${s.value}`);
             const colorsStr = colorsArray.join(' | ');
@@ -393,10 +380,8 @@
             };
 
             try {
-                const { error } = await supabaseClient.from('orders').insert([orderData]);
-                if(error) {
-                    alert("حدث خطأ أثناء إرسال الطلب: " + error.message);
-                    return;
+                if(supabaseClient) {
+                    await supabaseClient.from('orders').insert([orderData]);
                 }
             } catch(err) {}
 
