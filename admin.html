@@ -176,7 +176,10 @@
                 loadAdminProducts();
             } else {
                 alert('كلمة المرور غير صحيحة!');
-   function logout() {
+            }
+        }
+
+        function logout() {
             document.getElementById('admin-content').classList.add('hidden');
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('admin-pass').value = '';
@@ -305,7 +308,7 @@
                 loadCitiesAdmin();
                 loadProductCityOptions();
             } catch(err) {
-                alert('خطأ أثناء إضافة المدينة. (تأكد من إنشاء جدول cities في Supabase عبر SQL Editor)');
+                 alert('خطأ أثناء إضافة المدينة. (تأكد من إنشاء جدول cities في Supabase عبر SQL Editor)');
             }
         }
 
@@ -446,7 +449,7 @@
             document.getElementById('description').value = data.description || '';
             
             editingProductId = id;
-document.getElementById('form-title').innerText = 'تعديل العرض أو المنتج';
+            document.getElementById('form-title').innerText = 'تعديل العرض أو المنتج';
             document.getElementById('product-submit-btn').innerText = 'حفظ تعديلات العرض ✏️';
             document.getElementById('cancel-edit-btn').classList.remove('hidden');
 
