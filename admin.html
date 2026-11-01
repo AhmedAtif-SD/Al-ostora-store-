@@ -16,13 +16,11 @@
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center pb-12 relative">
 
-    <!-- نافذة الإشعارات المصممة داخل الموقع (Toast) -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen" class="w-full max-w-sm bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl text-center mt-20">
         <h1 class="text-xl font-bold gold-text mb-2">لوحة تحكم المالك</h1>
         <p class="text-xs text-gray-400 mb-6">الرجاء إدخال كلمة المرور للمتابعة</p>
@@ -31,7 +29,6 @@
         <a href="index.html" class="text-xs text-gray-500 hover:gold-text underline">← العودة للمتجر الرئيسي</a>
     </div>
 
-    <!-- المحتوى الرئيسي لوحة التحكم -->
     <div id="admin-content" class="w-full max-w-md hidden">
         <div class="flex justify-between items-center mb-4 bg-[#141414] p-3 rounded-2xl border gold-border">
             <h1 class="text-base font-bold gold-text">لوحة التحكم</h1>
@@ -41,7 +38,6 @@
             </div>
         </div>
 
-        <!-- التبويبات -->
         <div class="grid grid-cols-5 gap-1 mb-4 text-center">
             <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[10px] shadow-lg">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1 py-0.5 rounded-full text-[9px]">0</span></button>
             <button onclick="switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">المدن</button>
@@ -50,7 +46,6 @@
             <button onclick="switchTab('settings')" id="tab-settings-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">الوصول</button>
         </div>
 
-        <!-- قسم الطلبات -->
         <div id="tab-orders" class="space-y-4">
             <div class="flex gap-1 overflow-x-auto pb-2">
                 <button onclick="filterOrders('الكل')" class="filter-btn bg-[#222] px-3 py-1.5 rounded-xl text-xs border gold-border font-bold">الكل</button>
@@ -68,7 +63,6 @@
                 <p class="text-center text-gray-500 py-10 text-xs">جاري تحميل الطلبات...</p>
             </div>
         </div>
-        <!-- قسم إدارة المدن -->
         <div id="tab-cities" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إضافة وإدارة مدن التوصيل والفرع</h3>
             
@@ -85,7 +79,6 @@
             </div>
         </div>
 
-        <!-- قسم التوصيل المستقل لكل مدينة -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل حسب المدينة</h3>
             
@@ -112,7 +105,6 @@
             </div>
         </div>
 
-        <!-- قسم العروض والمنتجات -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-5 text-xs">
             <div>
                 <div class="flex justify-between items-center mb-2">
@@ -170,7 +162,6 @@
             </div>
         </div>
 
-        <!-- قسم إدارة الوصول -->
         <div id="tab-settings" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة الوصول وتغيير كلمة المرور</h3>
             <form onsubmit="changeAdminPassword(event)" class="space-y-3 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
@@ -182,7 +173,7 @@
             </form>
         </div>
     </div>
-    <script>
+<script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -452,16 +443,19 @@
                 });
             } catch(e) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-2">جاري التحميل...</p>';
-            }
-        }
-
-        async function addDeliveryZone(e) {
+async function addDeliveryZone(e) {
             e.preventDefault();
-            const city = document.getElementById('delivery-city').value;
+            const city = document.getElementById('delivery-city').value.trim();
             const zone_name = document.getElementById('zone-name').value.trim();
             const price = parseFloat(document.getElementById('zone-price').value);
 
-            const { error } = await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
+            let { error } = await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
+            if(error) {
+                // محاولة بديلة في حال لم يكن عمود city موجوداً بعد في قاعدة البيانات
+                const res2 = await supabaseClient.from('delivery_zones').insert([{ zone_name, price }]);
+                error = res2.error;
+            }
+
             if(error) {
                 showToast('خطأ أثناء إضافة خيار التوصيل');
             } else {
@@ -503,16 +497,20 @@
             });
         }
 
+        // فلترة دقيقة وآمنة لعروض لوحة التحكم حسب المدينة
         async function loadAdminProducts() {
             const container = document.getElementById('admin-products-list');
             const cityFilterElem = document.getElementById('filter-admin-city');
-            const cityFilter = cityFilterElem ? cityFilterElem.value : 'الكل';
+            const cityFilter = cityFilterElem ? cityFilterElem.value.trim() : 'الكل';
             
             try {
                 const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
                 if(error || !data) throw error;
 
-                const filteredProducts = cityFilter === 'الكل' ? data : data.filter(p => p.city === cityFilter || p.city === 'الكل');
+                const filteredProducts = cityFilter === 'الكل' ? data : data.filter(p => {
+                    const pCity = p.city ? p.city.trim() : 'الكل';
+                    return pCity === 'الكل' || pCity === cityFilter;
+                });
 
                 if(filteredProducts.length === 0) {
                     container.innerHTML = '<p class="text-center text-gray-500 py-2">لا توجد عروض في هذه المدينة</p>';
@@ -563,7 +561,7 @@
             document.getElementById('product-city').value = data.city || 'الكل';
             document.getElementById('product-colors').value = data.colors || '';
             document.getElementById('product-sizes').value = data.sizes || '';
-    document.getElementById('description').value = data.description || '';
+            document.getElementById('description').value = data.description || '';
             
             tempBase64Images = [];
             if(data.images) {
