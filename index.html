@@ -25,13 +25,11 @@
 </head>
 <body class="min-h-screen flex flex-col items-center pb-12 relative">
 
-    <!-- نافذة الإشعارات المصممة داخل الموقع (Toast) -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- شاشة البداية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -55,7 +53,6 @@
             </a>
         </div>
     </div>
-    <!-- قسم المتجر والمنتجات -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
             <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
@@ -75,7 +72,6 @@
         </div>
     </div>
 
-    <!-- نافذة اختيار المدينة -->
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
@@ -88,7 +84,6 @@
         </div>
     </div>
 
-    <!-- نافذة تفاصيل المنتج -->
     <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
@@ -129,8 +124,7 @@
             </button>
         </div>
     </div>
-    <!-- نافذة إتمام الطلب -->
-    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+<div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب</h3>
             <div class="space-y-3 mb-6 text-xs">
@@ -243,8 +237,9 @@
             loadProducts();
         }
 
+        // فلترة دقيقة وآمنة للعروض حسب المدينة المحددة
         async function loadProducts() {
-            const currentCity = document.getElementById('current-city').innerText;
+            const currentCity = document.getElementById('current-city').innerText.trim();
             const container = document.getElementById('products-container');
             container.innerHTML = '<p class="text-center text-gray-500 py-10">جاري تحميل العروض...</p>';
 
@@ -261,14 +256,15 @@
                     return;
                 }
 
-                loadedProducts = data.filter(p => !p.city || p.city === 'الكل' || p.city === currentCity);
+                loadedProducts = data.filter(p => {
+                    const pCity = p.city ? p.city.trim() : 'الكل';
+                    return pCity === 'الكل' || pCity === currentCity;
+                });
 
                 if (loadedProducts.length === 0) {
                     container.innerHTML = `<p class="text-center text-gray-500 py-10">لا توجد عروض في مدينة ${currentCity} حالياً.</p>`;
                     return;
-                }
-
-                container.innerHTML = '';
+container.innerHTML = '';
                 loadedProducts.forEach((product, index) => {
                     const card = document.createElement('div');
                     card.className = 'bg-[#141414] border border-gray-800 rounded-2xl overflow-hidden shadow-xl mb-6 animate-fade';
@@ -401,12 +397,15 @@
 
         async function loadDeliveryOptionsInCheckout() {
             const select = document.getElementById('delivery-option');
-            const currentCity = document.getElementById('current-city').innerText;
+            const currentCity = document.getElementById('current-city').innerText.trim();
             if(!supabaseClient) return;
             try {
                 const { data } = await supabaseClient.from('delivery_zones').select('*');
                 if(data && data.length > 0) {
-                    const cityZones = data.filter(z => !z.city || z.city === currentCity || z.city === 'الكل');
+                    const cityZones = data.filter(z => {
+                        const zCity = z.city ? z.city.trim() : 'عطبرة';
+                        return zCity === 'الكل' || zCity === currentCity;
+                    });
                     if(cityZones.length > 0) {
                         select.innerHTML = '';
                         cityZones.forEach(zone => {
