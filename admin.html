@@ -135,7 +135,7 @@
                         <input type="text" id="product-sizes" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="S, M, L, XL, XXL">
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">صور العرض (يمكنك اختيار أكثر من صورة)</label>
+                        <label class="block text-gray-400 mb-1">صور العرض (اختر الصور وسيتم ضغطها تلقائياً للسرعة)</label>
                         <input type="file" id="product-image-files" accept="image/*" multiple class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90" onchange="previewImages(event)">
                         <div id="image-preview-container" class="flex gap-2 mt-2 flex-wrap"></div>
                     </div>
@@ -386,7 +386,7 @@
             }
         }
 
-       async function loadProductCityOptions() {
+        async function loadProductCityOptions() {
             const citySelect = document.getElementById('product-city');
             const filterCity = document.getElementById('filter-admin-city');
             let cities = [{name: 'عطبرة'}, {name: 'أم درمان'}, {name: 'الخرطوم'}];
@@ -443,11 +443,7 @@
                 });
             } catch(e) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-2">جاري التحميل...</p>';
-            }
-        }
-
-        // إضافة التوصيل مع حماية شاملة ضد أي نقص في أعمدة الجداول
-        async function addDeliveryZone(e) {
+async function addDeliveryZone(e) {
             e.preventDefault();
             const city = document.getElementById('delivery-city').value.trim();
             const zone_name = document.getElementById('zone-name').value.trim();
@@ -455,7 +451,6 @@
 
             let { error } = await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
             if(error) {
-                // محاولة بديلة في حال لم يكن عمود city موجوداً بعد في قاعدة البيانات
                 const res2 = await supabaseClient.from('delivery_zones').insert([{ zone_name, price }]);
                 error = res2.error;
             }
@@ -478,6 +473,44 @@
             }
         }
 
+        // دالة ذكية لضغط وتصغير الصور تلقائياً لتسريع الموقع فوراً
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > MAX_WIDTH) {
+                            height *= MAX_WIDTH / width;
+                            width = MAX_WIDTH;
+                        }
+                    } else {
+                        if (height > MAX_HEIGHT) {
+                            width *= MAX_HEIGHT / height;
+                            height = MAX_HEIGHT;
+                        }
+                    }
+
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // ضغط الجودة لـ 65% لزيادة السرعة وخفة الموقع
+                    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+                    callback(compressedDataUrl);
+                }
+            }
+        }
+
         function previewImages(event) {
             const files = event.target.files;
             const container = document.getElementById('image-preview-container');
@@ -487,21 +520,16 @@
             if (files.length === 0) return;
 
             Array.from(files).forEach(file => {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const base64 = e.target.result;
-                    tempBase64Images.push(base64);
-
+                compressImage(file, function(compressedBase64) {
+                    tempBase64Images.push(compressedBase64);
                     const img = document.createElement('img');
-                    img.src = base64;
+                    img.src = compressedBase64;
                     img.className = 'w-16 h-16 object-cover rounded-lg border border-[#d4af37] shadow-md';
                     container.appendChild(img);
-                };
-                reader.readAsDataURL(file);
+                });
             });
         }
 
-        // فلترة دقيقة وآمنة لعروض لوحة التحكم حسب المدينة
         async function loadAdminProducts() {
             const container = document.getElementById('admin-products-list');
             const cityFilterElem = document.getElementById('filter-admin-city');
