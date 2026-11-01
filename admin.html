@@ -386,7 +386,7 @@
             }
         }
 
-        async function loadProductCityOptions() {
+       async function loadProductCityOptions() {
             const citySelect = document.getElementById('product-city');
             const filterCity = document.getElementById('filter-admin-city');
             let cities = [{name: 'عطبرة'}, {name: 'أم درمان'}, {name: 'الخرطوم'}];
@@ -443,7 +443,11 @@
                 });
             } catch(e) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-2">جاري التحميل...</p>';
-async function addDeliveryZone(e) {
+            }
+        }
+
+        // إضافة التوصيل مع حماية شاملة ضد أي نقص في أعمدة الجداول
+        async function addDeliveryZone(e) {
             e.preventDefault();
             const city = document.getElementById('delivery-city').value.trim();
             const zone_name = document.getElementById('zone-name').value.trim();
