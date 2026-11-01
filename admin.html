@@ -14,7 +14,13 @@
         .gold-text { color: #d4af37; }
     </style>
 </head>
-<body class="min-h-screen p-4 flex flex-col items-center pb-12">
+<body class="min-h-screen p-4 flex flex-col items-center pb-12 relative">
+
+    <!-- نافذة الإشعارات المصممة داخل الموقع (Toast) -->
+    <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+        <span class="text-xl">✨</span>
+        <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
+    </div>
 
     <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen" class="w-full max-w-sm bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl text-center mt-20">
@@ -62,7 +68,6 @@
                 <p class="text-center text-gray-500 py-10 text-xs">جاري تحميل الطلبات...</p>
             </div>
         </div>
-
         <!-- قسم إدارة المدن -->
         <div id="tab-cities" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إضافة وإدارة مدن التوصيل والفرع</h3>
@@ -80,14 +85,20 @@
             </div>
         </div>
 
-        <!-- قسم التوصيل -->
+        <!-- قسم التوصيل المستقل لكل مدينة -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل لكل مدينة</h3>
+            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل حسب المدينة</h3>
             
             <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
+                    <label class="block text-gray-400 mb-1">اختر المدينة التابع لها التوصيل</label>
+                    <select id="delivery-city" class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none">
+                        <option value="عطبرة">عطبرة</option>
+                    </select>
+                </div>
+                <div>
                     <label class="block text-gray-400 mb-1">اسم خيار التوصيل / المنطقة</label>
-                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل داخلي عطبرة">
+                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل داخلي الأحياء">
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">السعر (ج.س)</label>
@@ -101,7 +112,7 @@
             </div>
         </div>
 
-        <!-- قسم العروض والمنتجات (مع رفع صور متعددة ومعاينة واضحة) -->
+        <!-- قسم العروض والمنتجات -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-5 text-xs">
             <div>
                 <div class="flex justify-between items-center mb-2">
@@ -134,7 +145,6 @@
                     <div>
                         <label class="block text-gray-400 mb-1">صور العرض (يمكنك اختيار أكثر من صورة)</label>
                         <input type="file" id="product-image-files" accept="image/*" multiple class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90" onchange="previewImages(event)">
-                        <!-- معاينة الصور المختارة -->
                         <div id="image-preview-container" class="flex gap-2 mt-2 flex-wrap"></div>
                     </div>
                     <div>
@@ -160,10 +170,9 @@
             </div>
         </div>
 
-        <!-- قسم إدارة الوصول (تغيير كلمة المرور) -->     <div id="tab-settings" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
+        <!-- قسم إدارة الوصول -->
+        <div id="tab-settings" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة الوصول وتغيير كلمة المرور</h3>
-            <p class="text-gray-400 mb-3">قم بتغيير كلمة مرور لوحة التحكم الخاصة بالمالك:</p>
-            
             <form onsubmit="changeAdminPassword(event)" class="space-y-3 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
                 <div>
                     <label class="block text-gray-400 mb-1">كلمة المرور الجديدة</label>
@@ -173,7 +182,6 @@
             </form>
         </div>
     </div>
-
     <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
@@ -182,9 +190,8 @@
         let allOrders = [];
         let currentFilter = 'الكل';
         let editingProductId = null;
-        let tempBase64Images = []; // لتخزين الصور المؤقتة عند الإضافة أو التعديل
+        let tempBase64Images = [];
 
-        // التحقق من الجلسة المحفوظة لتجنب إدخال كلمة المرور في كل مرة
         window.addEventListener('DOMContentLoaded', () => {
             if (localStorage.getItem('admin_logged_in') === 'true') {
                 document.getElementById('auth-screen').classList.add('hidden');
@@ -192,6 +199,17 @@
                 initAdminDashboard();
             }
         });
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(-80px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
 
         function checkPassword() {
             const pass = document.getElementById('admin-pass').value;
@@ -202,7 +220,7 @@
                 document.getElementById('admin-content').classList.remove('hidden');
                 initAdminDashboard();
             } else {
-                alert('كلمة المرور غير صحيحة!');
+                showToast('كلمة المرور غير صحيحة!');
             }
         }
 
@@ -218,7 +236,7 @@
             const newPass = document.getElementById('new-admin-pass').value.trim();
             if(newPass) {
                 localStorage.setItem('admin_password', newPass);
-                alert('تم تغيير كلمة المرور بنجاح!');
+                showToast('تم تغيير كلمة المرور بنجاح!');
                 document.getElementById('new-admin-pass').value = '';
             }
         }
@@ -241,7 +259,10 @@
             document.getElementById(`tab-${tabName}-btn`).className = 'py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[10px] shadow-lg';
 
             if(tabName === 'cities') loadCitiesAdmin();
-            if(tabName === 'delivery') loadDeliveryZonesAdmin();
+            if(tabName === 'delivery') {
+                loadDeliveryZonesAdmin();
+                loadDeliveryCitySelect();
+            }
             if(tabName === 'offers') {
                 loadProductCityOptions();
                 loadAdminProducts();
@@ -292,9 +313,12 @@
                         <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${order.status === 'جديدة' ? 'bg-amber-900/40 gold-text border gold-border' : 'bg-green-950/40 text-green-400 border border-green-800'}">${order.status}</span>
                     </div>
 
-                    <div class="bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800 space-y-1">
-                        <p class="font-bold text-sm mb-1">${order.product_title}</p>
-                        <p class="gold-text text-[11px] whitespace-pre-line">${order.color}</p>
+                    <div class="flex items-center gap-3 bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800">
+                        <img src="${order.image_url || 'https://via.placeholder.com/100'}" class="w-14 h-14 object-cover rounded-lg border border-gray-700">
+                        <div class="space-y-1">
+                            <p class="font-bold text-sm">${order.product_title}</p>
+                            <p class="gold-text text-[11px] whitespace-pre-line">${order.color}</p>
+                        </div>
                     </div>
 
                     <div class="space-y-1.5 text-gray-300">
@@ -349,22 +373,24 @@
             try {
                 const { error } = await supabaseClient.from('cities').insert([{ name }]);
                 if(error) throw error;
-                alert('تمت إضافة المدينة بنجاح!');
+                showToast('تمت إضافة المدينة بنجاح!');
                 document.getElementById('new-city-name').value = '';
                 loadCitiesAdmin();
                 loadProductCityOptions();
+                loadDeliveryCitySelect();
             } catch(err) {
-                alert('خطأ أثناء إضافة المدينة.');
+                showToast('خطأ أثناء إضافة المدينة.');
             }
         }
 
         async function deleteCity(id) {
             if(confirm('هل أنت متأكد من حذف هذه المدينة؟')) {
                 const { error } = await supabaseClient.from('cities').delete().eq('id', id);
-                if(error) alert('خطأ في الحذف');
+                if(error) showToast('خطأ في الحذف');
                 else {
                     loadCitiesAdmin();
                     loadProductCityOptions();
+                    loadDeliveryCitySelect();
                 }
             }
         }
@@ -372,7 +398,6 @@
         async function loadProductCityOptions() {
             const citySelect = document.getElementById('product-city');
             const filterCity = document.getElementById('filter-admin-city');
-            
             let cities = [{name: 'عطبرة'}, {name: 'أم درمان'}, {name: 'الخرطوم'}];
             try {
                 const { data } = await supabaseClient.from('cities').select('*');
@@ -381,14 +406,26 @@
             
             let optionsHTML = '<option value="الكل">كل المدن</option>';
             let filterHTML = '<option value="الكل">جميع المدن</option>';
-            
             cities.forEach(c => {
                 optionsHTML += `<option value="${c.name}">${c.name}</option>`;
                 filterHTML += `<option value="${c.name}">${c.name}</option>`;
             });
-            
             if(citySelect) citySelect.innerHTML = optionsHTML;
             if(filterCity) filterCity.innerHTML = filterHTML;
+        }
+
+        async function loadDeliveryCitySelect() {
+            const select = document.getElementById('delivery-city');
+            let cities = [{name: 'عطبرة'}, {name: 'أم درمان'}, {name: 'الخرطوم'}];
+            try {
+                const { data } = await supabaseClient.from('cities').select('*');
+                if(data && data.length > 0) cities = data;
+            } catch(e) {}
+            let html = '';
+            cities.forEach(c => {
+                html += `<option value="${c.name}">${c.name}</option>`;
+            });
+            if(select) select.innerHTML = html;
         }
 
         async function loadDeliveryZonesAdmin() {
@@ -405,6 +442,7 @@
                     item.className = 'flex justify-between items-center bg-[#1a1a1a] p-3 rounded-xl border border-gray-800';
                     item.innerHTML = `
                         <div>
+                            <span class="text-[10px] gold-text block">📍 ${zone.city || 'عطبرة'}</span>
                             <span class="font-bold">${zone.zone_name}</span>
                             <span class="gold-text mr-2 font-bold">${zone.price.toLocaleString()} ج.س</span>
                         </div>
@@ -419,14 +457,15 @@
 
         async function addDeliveryZone(e) {
             e.preventDefault();
+            const city = document.getElementById('delivery-city').value;
             const zone_name = document.getElementById('zone-name').value.trim();
             const price = parseFloat(document.getElementById('zone-price').value);
 
-            const { error } = await supabaseClient.from('delivery_zones').insert([{ zone_name, price }]);
+            const { error } = await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
             if(error) {
-                alert('خطأ أثناء إضافة خيار التوصيل');
+                showToast('خطأ أثناء إضافة خيار التوصيل');
             } else {
-                alert('تمت الإضافة بنجاح!');
+                showToast('تمت إضافة التوصيل بنجاح!');
                 document.getElementById('zone-name').value = '';
                 document.getElementById('zone-price').value = '';
                 loadDeliveryZonesAdmin();
@@ -436,12 +475,11 @@
         async function deleteDeliveryZone(id) {
             if(confirm('هل أنت متأكد من حذف خيار التوصيل هذا؟')) {
                 const { error } = await supabaseClient.from('delivery_zones').delete().eq('id', id);
-                if(error) alert('خطأ في الحذف');
+                if(error) showToast('خطأ في الحذف');
                 else loadDeliveryZonesAdmin();
             }
         }
 
-        // معاينة الصور المختارة فوراً
         function previewImages(event) {
             const files = event.target.files;
             const container = document.getElementById('image-preview-container');
@@ -516,7 +554,7 @@
         async function prepareEditProduct(id) {
             const { data, error } = await supabaseClient.from('products').select('*').eq('id', id).single();
             if(error || !data) {
-                alert('خطأ في جلب بيانات العرض');
+                showToast('خطأ في جلب بيانات العرض');
                 return;
             }
 
@@ -525,7 +563,7 @@
             document.getElementById('product-city').value = data.city || 'الكل';
             document.getElementById('product-colors').value = data.colors || '';
             document.getElementById('product-sizes').value = data.sizes || '';
-            document.getElementById('description').value = data.description || '';
+    document.getElementById('description').value = data.description || '';
             
             tempBase64Images = [];
             if(data.images) {
@@ -535,7 +573,6 @@
                 tempBase64Images.push(data.image_url);
             }
 
-            // عرض معاينة الصور الحالية
             const container = document.getElementById('image-preview-container');
             container.innerHTML = '';
             tempBase64Images.forEach(src => {
@@ -573,7 +610,7 @@
             const description = document.getElementById('description').value;
 
             if (tempBase64Images.length === 0) {
-                alert('الرجاء اختيار صورة واحدة على الأقل للعرض');
+                showToast('الرجاء اختيار صورة واحدة على الأقل للعرض');
                 return;
             }
 
@@ -601,9 +638,9 @@
             }
 
             if(error) {
-                alert("حدث خطأ: " + error.message);
+                showToast("حدث خطأ: " + error.message);
             } else {
-                alert(editingProductId ? "تم تحديث العرض بنجاح!" : "تم إضافة العرض بنجاح!");
+                showToast(editingProductId ? "تم تحديث العرض بنجاح!" : "تم إضافة العرض بنجاح!");
                 resetProductForm();
                 loadAdminProducts();
             }
@@ -613,9 +650,9 @@
             if(confirm('هل أنت متأكد من حذف هذا العرض نهائياً من المتجر؟')) {
                 const { error } = await supabaseClient.from('products').delete().eq('id', id);
                 if(error) {
-                    alert('خطأ أثناء الحذف: ' + error.message);
+                    showToast('خطأ أثناء الحذف: ' + error.message);
                 } else {
-                    alert('تم حذف العرض بنجاح!');
+                    showToast('تم حذف العرض بنجاح!');
                     loadAdminProducts();
                 }
             }
@@ -623,14 +660,14 @@
 
         async function updateOrderStatus(id, newStatus) {
             const { error } = await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
-            if(error) alert('حدث خطأ أثناء التحديث');
+            if(error) showToast('حدث خطأ أثناء التحديث');
             else loadOrders();
         }
 
         async function deleteOrder(id) {
             if(confirm('هل أنت متأكد من حذف هذا الطلب؟')) {
                 const { error } = await supabaseClient.from('orders').delete().eq('id', id);
-                if(error) alert('خطأ في الحذف');
+                if(error) showToast('خطأ في الحذف');
                 else loadOrders();
             }
         }
@@ -638,7 +675,7 @@
         async function deleteDeliveredOrders() {
             if(confirm('حذف جميع الطلبات المسلمة؟')) {
                 const { error } = await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
-                if(error) alert('خطأ');
+                if(error) showToast('خطأ');
                 else loadOrders();
             }
         }
@@ -646,7 +683,7 @@
         async function deleteAllOrders() {
             if(confirm('تحذير: سيتم حذف جميع الطلبات بالكامل! هل أنت متأكد؟')) {
                 const { error } = await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-                if(error) alert('خطأ');
+                if(error) showToast('خطأ');
                 else loadOrders();
             }
         }
