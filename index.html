@@ -16,7 +16,7 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade { animation: fadeIn 0.5s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
         .logo-frame {
             background: linear-gradient(145deg, #181818, #0d0d0d);
             box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
@@ -25,13 +25,11 @@
 </head>
 <body class="min-h-screen flex flex-col items-center pb-20 relative">
 
-    <!-- نافذة الإشعارات (Toast) -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- شاشة البداية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
         <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
         
@@ -55,7 +53,6 @@
             </a>
         </div>
     </div>
-    <!-- قسم المتجر والمنتجات -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
             <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
@@ -75,7 +72,6 @@
         </div>
     </div>
 
-    <!-- زر سلة المشتريات العائم -->
     <div id="floating-cart-btn" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden animate-fade">
         <button onclick="openCartModal()" class="gold-gradient text-black px-6 py-3.5 rounded-2xl font-extrabold text-xs shadow-2xl flex items-center gap-3 border border-amber-200 transform active:scale-95 transition">
             <span>🛒 سلة الطلبات</span>
@@ -83,7 +79,6 @@
         </button>
     </div>
 
-    <!-- نافذة اختيار المدينة -->
     <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
@@ -96,7 +91,6 @@
         </div>
     </div>
 
-    <!-- نافذة تفاصيل المنتج -->
     <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
@@ -138,7 +132,6 @@
         </div>
     </div>
 
-    <!-- نافذة سلة المشتريات -->
     <div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[85vh] overflow-y-auto flex flex-col">
             <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
@@ -161,7 +154,6 @@
             </div>
         </div>
     </div>
-    <!-- نافذة إتمام الطلب -->
     <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
             <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب الشامل</h3>
@@ -218,7 +210,7 @@
         let loadedProducts = [];
         let selectedProduct = null;
         let quantity = 1;
-        let cart = []; // مصفوفة سلة المشتريات
+        let cart = [];
 
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
@@ -405,10 +397,7 @@
                     </div>
                 `;
                 container.appendChild(div);
-            }
-        }
-
-        function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
+function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
 
         function updateQty(change) {
             quantity += change;
@@ -425,7 +414,6 @@
             }
         }
 
-        // إضافة المنتج للسلة
         function addToCart() {
             const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
