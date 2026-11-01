@@ -25,7 +25,7 @@
         <a href="index.html" class="text-xs text-gray-500 hover:gold-text underline">← العودة للمتجر الرئيسي</a>
     </div>
 
-    <!-- المحتوى الرئيسي للوحة التحكم -->
+    <!-- المحتوى الرئيسي لوحة التحكم -->
     <div id="admin-content" class="w-full max-w-md hidden">
         <div class="flex justify-between items-center mb-4 bg-[#141414] p-3 rounded-2xl border gold-border">
             <h1 class="text-base font-bold gold-text">لوحة التحكم</h1>
@@ -36,11 +36,12 @@
         </div>
 
         <!-- التبويبات -->
-        <div class="grid grid-cols-4 gap-1.5 mb-4 text-center">
-            <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[11px] shadow-lg">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1 py-0.5 rounded-full text-[9px]">0</span></button>
-            <button onclick="switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[11px]">المدن</button>
-            <button onclick="switchTab('delivery')" id="tab-delivery-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[11px]">التوصيل</button>
-            <button onclick="switchTab('offers')" id="tab-offers-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[11px]">العروض</button>
+        <div class="grid grid-cols-5 gap-1 mb-4 text-center">
+            <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[10px] shadow-lg">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1 py-0.5 rounded-full text-[9px]">0</span></button>
+            <button onclick="switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">المدن</button>
+            <button onclick="switchTab('delivery')" id="tab-delivery-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">التوصيل</button>
+            <button onclick="switchTab('offers')" id="tab-offers-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">العروض</button>
+            <button onclick="switchTab('settings')" id="tab-settings-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">الوصول</button>
         </div>
 
         <!-- قسم الطلبات -->
@@ -64,11 +65,11 @@
 
         <!-- قسم إدارة المدن -->
         <div id="tab-cities" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-1">إضافة وإدارة مدن التوصيل</h3>
+            <h3 class="font-bold gold-text text-sm mb-1">إضافة وإدارة مدن التوصيل والفرع</h3>
             
             <form onsubmit="addCity(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
-                    <label class="block text-gray-400 mb-1">اسم المدينة الجديدة</label>
+                    <label class="block text-gray-400 mb-1">اسم المدينة أو الفرع الجديد</label>
                     <input type="text" id="new-city-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: بورتسودان">
                 </div>
                 <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">إضافة المدينة للمتجر 🏙️</button>
@@ -79,14 +80,14 @@
             </div>
         </div>
 
-        <!-- قسم إدارة التوصيل -->
+        <!-- قسم التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
-            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل</h3>
+            <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل لكل مدينة</h3>
             
             <form onsubmit="addDeliveryZone(event)" class="space-y-2.5 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 mb-4">
                 <div>
-                    <label class="block text-gray-400 mb-1">اسم خيار التوصيل</label>
-                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل خاص">
+                    <label class="block text-gray-400 mb-1">اسم خيار التوصيل / المنطقة</label>
+                    <input type="text" id="zone-name" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="مثال: توصيل داخلي عطبرة">
                 </div>
                 <div>
                     <label class="block text-gray-400 mb-1">السعر (ج.س)</label>
@@ -100,7 +101,7 @@
             </div>
         </div>
 
-        <!-- قسم العروض -->
+        <!-- قسم العروض والمنتجات (مع رفع صور متعددة ومعاينة واضحة) -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-5 text-xs">
             <div>
                 <div class="flex justify-between items-center mb-2">
@@ -127,8 +128,14 @@
                         <input type="text" id="product-colors" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="أسود، كبدي، أزرق، أبيض">
                     </div>
                     <div>
-                        <label class="block text-gray-400 mb-1">صورة العرض (من المعرض)</label>
-                        <input type="file" id="product-image-file" accept="image/*" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90">
+                        <label class="block text-gray-400 mb-1">المقاسات المتاحة (افصل بينها بفاصلة)</label>
+                        <input type="text" id="product-sizes" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="S, M, L, XL, XXL">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 mb-1">صور العرض (يمكنك اختيار أكثر من صورة)</label>
+                        <input type="file" id="product-image-files" accept="image/*" multiple class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-2 text-xs gold-border focus:outline-none file:mr-4 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-[#d4af37] file:text-black hover:file:opacity-90" onchange="previewImages(event)">
+                        <!-- معاينة الصور المختارة -->
+                        <div id="image-preview-container" class="flex gap-2 mt-2 flex-wrap"></div>
                     </div>
                     <div>
                         <label class="block text-gray-400 mb-1">وصف العرض</label>
@@ -152,47 +159,86 @@
                 </div>
             </div>
         </div>
+
+        <!-- قسم إدارة الوصول (تغيير كلمة المرور) -->     <div id="tab-settings" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
+            <h3 class="font-bold gold-text text-sm mb-1">إدارة الوصول وتغيير كلمة المرور</h3>
+            <p class="text-gray-400 mb-3">قم بتغيير كلمة مرور لوحة التحكم الخاصة بالمالك:</p>
+            
+            <form onsubmit="changeAdminPassword(event)" class="space-y-3 bg-[#1a1a1a] p-3 rounded-xl border border-gray-800">
+                <div>
+                    <label class="block text-gray-400 mb-1">كلمة المرور الجديدة</label>
+                    <input type="password" id="new-admin-pass" required class="w-full bg-[#121212] border border-gray-700 rounded-xl p-2.5 text-xs gold-border focus:outline-none" placeholder="أدخل كلمة المرور الجديدة">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">حفظ كلمة المرور الجديدة 🔒</button>
+            </form>
+        </div>
     </div>
 
     <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const ADMIN_PASSWORD = 'OS 123';
-
+        
         let allOrders = [];
         let currentFilter = 'الكل';
         let editingProductId = null;
+        let tempBase64Images = []; // لتخزين الصور المؤقتة عند الإضافة أو التعديل
+
+        // التحقق من الجلسة المحفوظة لتجنب إدخال كلمة المرور في كل مرة
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                document.getElementById('auth-screen').classList.add('hidden');
+                document.getElementById('admin-content').classList.remove('hidden');
+                initAdminDashboard();
+            }
+        });
 
         function checkPassword() {
             const pass = document.getElementById('admin-pass').value;
-            if(pass === ADMIN_PASSWORD) {
+            const savedPass = localStorage.getItem('admin_password') || 'OS 123';
+            if(pass === savedPass) {
+                localStorage.setItem('admin_logged_in', 'true');
                 document.getElementById('auth-screen').classList.add('hidden');
                 document.getElementById('admin-content').classList.remove('hidden');
-                loadOrders();
-                loadDeliveryZonesAdmin();
-                loadCitiesAdmin();
-                loadProductCityOptions();
-                loadAdminProducts();
+                initAdminDashboard();
             } else {
                 alert('كلمة المرور غير صحيحة!');
             }
         }
 
         function logout() {
+            localStorage.removeItem('admin_logged_in');
             document.getElementById('admin-content').classList.add('hidden');
             document.getElementById('auth-screen').classList.remove('hidden');
             document.getElementById('admin-pass').value = '';
         }
 
+        function changeAdminPassword(e) {
+            e.preventDefault();
+            const newPass = document.getElementById('new-admin-pass').value.trim();
+            if(newPass) {
+                localStorage.setItem('admin_password', newPass);
+                alert('تم تغيير كلمة المرور بنجاح!');
+                document.getElementById('new-admin-pass').value = '';
+            }
+        }
+
+        function initAdminDashboard() {
+            loadOrders();
+            loadDeliveryZonesAdmin();
+            loadCitiesAdmin();
+            loadProductCityOptions();
+            loadAdminProducts();
+        }
+
         function switchTab(tabName) {
-            ['orders', 'cities', 'delivery', 'offers'].forEach(t => {
+            ['orders', 'cities', 'delivery', 'offers', 'settings'].forEach(t => {
                 document.getElementById(`tab-${t}`).classList.add('hidden');
-                document.getElementById(`tab-${t}-btn`).className = 'py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[11px]';
+                document.getElementById(`tab-${t}-btn`).className = 'py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]';
             });
             
             document.getElementById(`tab-${tabName}`).classList.remove('hidden');
-            document.getElementById(`tab-${tabName}-btn`).className = 'py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[11px] shadow-lg';
+            document.getElementById(`tab-${tabName}-btn`).className = 'py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[10px] shadow-lg';
 
             if(tabName === 'cities') loadCitiesAdmin();
             if(tabName === 'delivery') loadDeliveryZonesAdmin();
@@ -308,7 +354,7 @@
                 loadCitiesAdmin();
                 loadProductCityOptions();
             } catch(err) {
-                 alert('خطأ أثناء إضافة المدينة. (تأكد من إنشاء جدول cities في Supabase عبر SQL Editor)');
+                alert('خطأ أثناء إضافة المدينة.');
             }
         }
 
@@ -395,6 +441,30 @@
             }
         }
 
+        // معاينة الصور المختارة فوراً
+        function previewImages(event) {
+            const files = event.target.files;
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = '';
+            tempBase64Images = [];
+
+            if (files.length === 0) return;
+
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const base64 = e.target.result;
+                    tempBase64Images.push(base64);
+
+                    const img = document.createElement('img');
+                    img.src = base64;
+                    img.className = 'w-16 h-16 object-cover rounded-lg border border-[#d4af37] shadow-md';
+                    container.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
         async function loadAdminProducts() {
             const container = document.getElementById('admin-products-list');
             const cityFilterElem = document.getElementById('filter-admin-city');
@@ -413,11 +483,19 @@
 
                 container.innerHTML = '';
                 filteredProducts.forEach(product => {
+                    let imgToShow = product.image_url;
+                    if (product.images) {
+                        try {
+                            const p = JSON.parse(product.images);
+                            if(p.length > 0) imgToShow = p[0];
+                        } catch(e) {}
+                    }
+
                     const item = document.createElement('div');
                     item.className = 'flex items-center justify-between bg-[#1a1a1a] p-2.5 rounded-xl border border-gray-800';
                     item.innerHTML = `
                         <div class="flex items-center gap-3">
-                            <img src="${product.image_url}" class="w-10 h-10 object-cover rounded-lg border border-gray-700">
+                            <img src="${imgToShow}" class="w-10 h-10 object-cover rounded-lg border border-gray-700">
                             <div>
                                 <p class="font-bold text-xs">${product.title}</p>
                                 <p class="gold-text text-[10px]">${product.price.toLocaleString()} ج.س — (📍 ${product.city || 'الكل'})</p>
@@ -446,7 +524,26 @@
             document.getElementById('price').value = data.price;
             document.getElementById('product-city').value = data.city || 'الكل';
             document.getElementById('product-colors').value = data.colors || '';
+            document.getElementById('product-sizes').value = data.sizes || '';
             document.getElementById('description').value = data.description || '';
+            
+            tempBase64Images = [];
+            if(data.images) {
+                try { tempBase64Images = JSON.parse(data.images); } catch(e) {}
+            }
+            if(tempBase64Images.length === 0 && data.image_url) {
+                tempBase64Images.push(data.image_url);
+            }
+
+            // عرض معاينة الصور الحالية
+            const container = document.getElementById('image-preview-container');
+            container.innerHTML = '';
+            tempBase64Images.forEach(src => {
+                const img = document.createElement('img');
+                img.src = src;
+                img.className = 'w-16 h-16 object-cover rounded-lg border border-[#d4af37] shadow-md';
+                container.appendChild(img);
+            });
             
             editingProductId = id;
             document.getElementById('form-title').innerText = 'تعديل العرض أو المنتج';
@@ -458,7 +555,9 @@
 
         function resetProductForm() {
             document.getElementById('product-form').reset();
+            document.getElementById('image-preview-container').innerHTML = '';
             editingProductId = null;
+            tempBase64Images = [];
             document.getElementById('form-title').innerText = 'إضافة عرض أو منتج جديد';
             document.getElementById('product-submit-btn').innerText = 'إضافة العرض للمتجر';
             document.getElementById('cancel-edit-btn').classList.add('hidden');
@@ -470,43 +569,43 @@
             const price = parseFloat(document.getElementById('price').value);
             const city = document.getElementById('product-city').value;
             const colors = document.getElementById('product-colors').value.trim() || 'أسود، كبدي، أزرق';
+            const sizes = document.getElementById('product-sizes').value.trim() || 'S, M, L, XL, XXL';
             const description = document.getElementById('description').value;
-            const fileInput = document.getElementById('product-image-file');
 
-            const executeSave = async (image_url) => {
-                let error;
-                if(editingProductId) {
-                    const updateData = { title, price, city, colors, description };
-                    if(image_url) updateData.image_url = image_url;
-                    const res = await supabaseClient.from('products').update(updateData).eq('id', editingProductId);
-                    error = res.error;
-                } else {
-                    if (!image_url) {
-                        alert('الرجاء اختيار صورة العرض من المعرض');
-                        return;
-                    }
-                    const res = await supabaseClient.from('products').insert([{ title, price, city, colors, image_url, description }]);
-                    error = res.error;
-                }
+            if (tempBase64Images.length === 0) {
+                alert('الرجاء اختيار صورة واحدة على الأقل للعرض');
+                return;
+            }
 
-                if(error) {
-                    alert("حدث خطأ: " + error.message);
-                } else {
-                    alert(editingProductId ? "تم تحديث العرض بنجاح!" : "تم إضافة العرض بنجاح!");
-                    resetProductForm();
-                    loadAdminProducts();
-                }
+            const image_url = tempBase64Images[0];
+            const imagesJson = JSON.stringify(tempBase64Images);
+
+            const productData = { 
+                title, 
+                price, 
+                city, 
+                colors, 
+                sizes, 
+                image_url, 
+                images: imagesJson, 
+                description 
             };
 
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-                reader.onload = function(uploadEvent) {
-                    executeSave(uploadEvent.target.result);
-                };
-                reader.readAsDataURL(file);
+            let error;
+            if(editingProductId) {
+                const res = await supabaseClient.from('products').update(productData).eq('id', editingProductId);
+                error = res.error;
             } else {
-                executeSave(null);
+                const res = await supabaseClient.from('products').insert([productData]);
+                error = res.error;
+            }
+
+            if(error) {
+                alert("حدث خطأ: " + error.message);
+            } else {
+                alert(editingProductId ? "تم تحديث العرض بنجاح!" : "تم إضافة العرض بنجاح!");
+                resetProductForm();
+                loadAdminProducts();
             }
         }
 
