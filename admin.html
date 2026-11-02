@@ -36,15 +36,14 @@
         </div>
     </div>
 
-    <!-- شاشة تسجيل الدخول -->
+    <!-- شاشة تسجيل الدخول بدون نص كلمة المرور -->
     <div id="auth-screen" class="w-full max-w-sm bg-white border border-neutral-200 rounded-3xl p-6 shadow-xl text-center mt-20">
         <div class="w-24 h-24 mx-auto rounded-2xl border gold-border p-2 bg-neutral-950 flex flex-col items-center justify-center mb-4 shadow-md">
             <span class="text-2xl font-black text-amber-400 tracking-widest">AS</span>
             <div class="w-12 h-[2px] gold-gradient my-1"></div>
             <span class="text-[7px] font-bold tracking-widest text-amber-200">OSTORA</span>
         </div>
-        <h1 class="text-lg font-black text-neutral-900 mb-1">لوحة تحكم المالك</h1>
-        <p class="text-xs text-neutral-500 mb-6 font-semibold">كلمة المرور الافتراضية: <span class="gold-text font-bold">OS 123</span></p>
+        <h1 class="text-lg font-black text-neutral-900 mb-4">لوحة تحكم المالك</h1>
         <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full bg-neutral-50 border border-neutral-300 rounded-xl p-3 text-sm mb-4 text-center focus:outline-none focus:border-amber-500">
         <button onclick="window.checkPassword()" class="w-full py-3 rounded-xl gold-gradient text-neutral-950 font-black text-sm shadow-md mb-3 cursor-pointer">دخول</button>
         <a href="index.html" class="text-xs text-neutral-500 hover:gold-text underline font-bold">← العودة للمتجر الرئيسي</a>
@@ -222,9 +221,8 @@
             document.getElementById('confirm-title').innerText = message;
             confirmCallback = callback;
             document.getElementById('confirm-modal').classList.remove('hidden');
-        };
 
-        window.closeConfirmModal = function() {
+window.closeConfirmModal = function() {
             document.getElementById('confirm-modal').classList.add('hidden');
             confirmCallback = null;
         };
@@ -246,7 +244,7 @@
                 document.getElementById('admin-content').classList.remove('hidden');
                 window.initAdminDashboard();
             } else {
-                showToast('كلمة المرور غير صحيحة! (الافتراضية: OS 123)');
+                showToast('كلمة المرور غير صحيحة!');
             }
         };
 
@@ -263,13 +261,14 @@
             window.loadDeliveryZonesAdmin();
             window.loadCitiesAdmin();
             window.loadAdminProducts();
+        };
 
         window.loadCitiesDropdowns = async function() {
             let cities = [{name: 'عطبرة'}];
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('cities').select('*');
-                    if(data && data.length > 0) cities = data;
+                    const { data, error } = await supabaseClient.from('cities').select('*');
+                    if(!error && data && data.length > 0) cities = data;
                 } catch(e) {}
             }
             const headerSelect = document.getElementById('header-city-select');
@@ -307,20 +306,16 @@
         window.loadOrders = async function() {
             const container = document.getElementById('orders-list');
             if(!container) return;
-            if(!supabaseClient) {
-                container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات</p>';
-                return;
+            allOrders = [];
+            if(supabaseClient) {
+                try {
+                    const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                    if(!error && data) allOrders = data;
+                } catch(e) {}
             }
-            try {
-                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
-                if(error) throw error;
-                allOrders = data || [];
-                const badge = document.getElementById('orders-count-badge');
-                if(badge) badge.innerText = allOrders.filter(o => o.status === 'جديدة').length;
-                window.renderOrders();
-            } catch(e) {
-                container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات حالياً</p>';
-            }
+            const badge = document.getElementById('orders-count-badge');
+            if(badge) badge.innerText = allOrders.filter(o => o.status === 'جديدة').length;
+            window.renderOrders();
         };
 
         window.filterOrders = function(status) {
@@ -330,6 +325,7 @@
 
         window.renderOrders = function() {
             const container = document.getElementById('orders-list');
+            if(!container) return;
             let filtered = currentFilter === 'الكل' ? allOrders : allOrders.filter(o => o.status === currentFilter);
             if(filtered.length === 0) {
                 container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات حالياً</p>';
@@ -337,7 +333,7 @@
             }
             container.innerHTML = '';
             filtered.forEach((order, index) => {
-                const dateObj = new Date(order.created_at);
+                const dateObj = order.created_at ? new Date(order.created_at) : new Date();
                 const timeStr = dateObj.toLocaleDateString('ar-SA') + '، ' + dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
                 const card = document.createElement('div');
                 card.className = 'bg-white border border-neutral-200 rounded-2xl p-4 text-xs space-y-3 shadow-sm';
@@ -383,8 +379,8 @@
             let cities = [{id: 1, name: 'عطبرة'}];
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('cities').select('*');
-                    if(data && data.length > 0) cities = data;
+                    const { data, error } = await supabaseClient.from('cities').select('*');
+                    if(!error && data && data.length > 0) cities = data;
                 } catch(e) {}
             }
             container.innerHTML = '';
@@ -416,10 +412,12 @@
 
         window.deleteCity = async function(id, cityName) {
             if(!supabaseClient) return;
-            await supabaseClient.from('products').delete().eq('city', cityName);
-            await supabaseClient.from('delivery_zones').delete().eq('city', cityName);
-            await supabaseClient.from('cities').delete().eq('id', id);
-            showToast('تم حذف المدينة بنجاح');
+            try {
+                await supabaseClient.from('products').delete().eq('city', cityName);
+                await supabaseClient.from('delivery_zones').delete().eq('city', cityName);
+                await supabaseClient.from('cities').delete().eq('id', id);
+                showToast('تم حذف المدينة بنجاح');
+            } catch(e) {}
             window.loadCitiesAdmin();
             window.loadCitiesDropdowns();
         };
@@ -430,8 +428,8 @@
             let zones = [{ id: 1, zone_name: 'داخل عطبرة', price: 6000, city: 'عطبرة' }];
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('delivery_zones').select('*');
-                    if(data && data.length > 0) zones = data;
+                    const { data, error } = await supabaseClient.from('delivery_zones').select('*');
+                    if(!error && data && data.length > 0) zones = data;
                 } catch(e) {}
             }
             const cityZones = zones.filter(z => (z.city ? z.city.trim() : 'عطبرة') === window.activeAdminCity);
@@ -460,16 +458,20 @@
             const zone_name = document.getElementById('zone-name').value.trim();
             const price = parseFloat(document.getElementById('zone-price').value);
             if(!supabaseClient) return;
-            await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
-            showToast('تمت إضافة التوصيل بنجاح!');
-            document.getElementById('zone-name').value = '';
-            document.getElementById('zone-price').value = '';
-            window.loadDeliveryZonesAdmin();
+            try {
+                await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
+                showToast('تمت إضافة التوصيل بنجاح!');
+                document.getElementById('zone-name').value = '';
+                document.getElementById('zone-price').value = '';
+                window.loadDeliveryZonesAdmin();
+            } catch(e) {}
         };
 
         window.deleteDeliveryZone = async function(id) {
             if(!supabaseClient) return;
-            await supabaseClient.from('delivery_zones').delete().eq('id', id);
+            try {
+                await supabaseClient.from('delivery_zones').delete().eq('id', id);
+            } catch(e) {}
             window.loadDeliveryZonesAdmin();
         };
 
@@ -515,11 +517,13 @@
         window.loadAdminProducts = async function() {
             const container = document.getElementById('admin-products-list');
             if(!container) return;
-            let products = [];
+            let products = [
+                { id: 1, title: 'طقم رياضي فاخر', price: 60000, city: 'عطبرة', image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500' }
+            ];
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-                    if(data && data.length > 0) products = data;
+                    const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+                    if(!error && data && data.length > 0) products = data;
                 } catch(e) {}
             }
             const filteredProducts = products.filter(p => {
@@ -550,33 +554,37 @@
                     </div>
                 `;
                 container.appendChild(item);
+            });
+        };
 
-window.prepareEditProduct = async function(id) {
+        window.prepareEditProduct = async function(id) {
             if(!supabaseClient) return;
-            const { data } = await supabaseClient.from('products').select('*').eq('id', id).single();
-            if(!data) return;
-            document.getElementById('title').value = data.title;
-            document.getElementById('price').value = data.price;
-            document.getElementById('description').value = data.description || '';
-            document.getElementById('product-sizes').value = data.sizes || '';
-            document.getElementById('product-colors').value = data.colors || '';
-            tempBase64Images = [];
-            if(data.images) { try { tempBase64Images = JSON.parse(data.images); } catch(e) {} }
-            if(tempBase64Images.length === 0 && data.image_url) tempBase64Images.push(data.image_url);
-            const container = document.getElementById('image-preview-container');
-            if(container) {
-                container.innerHTML = '';
-                tempBase64Images.forEach(src => {
-                    const img = document.createElement('img');
-                    img.src = src;
-                    img.className = 'w-16 h-16 object-cover rounded-lg border border-amber-500 shadow-sm';
-                    container.appendChild(img);
-                });
-            }
-            editingProductId = id;
-            document.getElementById('form-title').innerText = 'تعديل العرض';
-            document.getElementById('product-submit-btn').innerText = 'حفظ';
-            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            try {
+                const { data } = await supabaseClient.from('products').select('*').eq('id', id).single();
+                if(!data) return;
+                document.getElementById('title').value = data.title;
+                document.getElementById('price').value = data.price;
+                document.getElementById('description').value = data.description || '';
+                document.getElementById('product-sizes').value = data.sizes || '';
+                document.getElementById('product-colors').value = data.colors || '';
+                tempBase64Images = [];
+                if(data.images) { try { tempBase64Images = JSON.parse(data.images); } catch(e) {} }
+                if(tempBase64Images.length === 0 && data.image_url) tempBase64Images.push(data.image_url);
+                const container = document.getElementById('image-preview-container');
+                if(container) {
+                    container.innerHTML = '';
+                    tempBase64Images.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'w-16 h-16 object-cover rounded-lg border border-amber-500 shadow-sm';
+                        container.appendChild(img);
+                    });
+                }
+                editingProductId = id;
+                document.getElementById('form-title').innerText = 'تعديل العرض';
+                document.getElementById('product-submit-btn').innerText = 'حفظ';
+                document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            } catch(e) {}
         };
 
         window.resetProductForm = function() {
@@ -605,45 +613,59 @@ window.prepareEditProduct = async function(id) {
             }
 
             const productData = { title, price, description, sizes, colors, city, image_url: tempBase64Images[0], images: JSON.stringify(tempBase64Images) };
-            if(editingProductId) {
-                await supabaseClient.from('products').update(productData).eq('id', editingProductId);
-            } else {
-                await supabaseClient.from('products').insert([productData]);
+            try {
+                if(editingProductId) {
+                    await supabaseClient.from('products').update(productData).eq('id', editingProductId);
+                } else {
+                    await supabaseClient.from('products').insert([productData]);
+                }
+                showToast("تم الحفظ بنجاح!");
+                window.resetProductForm();
+                window.loadAdminProducts();
+            } catch(err) {
+                showToast('خطأ: تأكد من وجود جدول products في قاعدة البيانات');
             }
-            showToast("تم الحفظ بنجاح!");
-            window.resetProductForm();
-            window.loadAdminProducts();
         };
 
         window.deleteProduct = async function(id) {
             if(!supabaseClient) return;
-            await supabaseClient.from('products').delete().eq('id', id);
-            showToast('تم الحذف بنجاح');
-            window.loadAdminProducts();
+            try {
+                await supabaseClient.from('products').delete().eq('id', id);
+                showToast('تم الحذف بنجاح');
+                window.loadAdminProducts();
+            } catch(e) {}
         };
 
         window.updateOrderStatus = async function(id, newStatus) {
             if(!supabaseClient) return;
-            await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
-            window.loadOrders();
+            try {
+                await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
+                window.loadOrders();
+            } catch(e) {}
         };
 
         window.deleteOrder = async function(id) {
             if(!supabaseClient) return;
-            await supabaseClient.from('orders').delete().eq('id', id);
-            window.loadOrders();
+            try {
+                await supabaseClient.from('orders').delete().eq('id', id);
+                window.loadOrders();
+            } catch(e) {}
         };
 
         window.deleteDeliveredOrders = async function() {
             if(!supabaseClient) return;
-            await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
-            window.loadOrders();
+            try {
+                await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
+                window.loadOrders();
+            } catch(e) {}
         };
 
         window.deleteAllOrders = async function() {
             if(!supabaseClient) return;
-            await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
-            window.loadOrders();
+            try {
+                await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+                window.loadOrders();
+            } catch(e) {}
         };
     </script>
 </body>
