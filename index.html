@@ -34,7 +34,7 @@
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- 1. شاشة البداية (مطابقة لصورة 1) -->
+    <!-- 1. شاشة البداية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
         <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
         
@@ -58,7 +58,7 @@
             </a>
         </div>
     </div>
-    <!-- 2. شاشة اختيار المدينة (مطابقة لصورة 2) -->
+    <!-- 2. شاشة اختيار المدينة -->
     <div id="city-selection-screen" class="w-full max-w-md min-h-screen p-6 hidden animate-fade flex flex-col justify-between">
         <div>
             <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
@@ -68,13 +68,13 @@
             <p class="text-xs text-gray-400 mb-6 leading-relaxed">هتشوف العروض وطرق التوصيل الخاصة بمدينة <span class="gold-text font-bold">..</span> بس.</p>
             
             <div id="cities-cards-container" class="space-y-3.5">
-                <!-- يتم تحميل المدن هنا ديناميكياً لتطابق المرجع تماماً -->
+                <!-- تحميل المدن ديناميكياً -->
             </div>
         </div>
         <div class="mt-8 text-center text-[10px] text-gray-600">متجر الأسطورة — جميع الحقوق محفوظة</div>
     </div>
 
-    <!-- 3. شاشة المتجر وعروض المدينة (مطابقة لصورة 3) -->
+    <!-- 3. شاشة المتجر وعروض المدينة -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-6 bg-[#141414] border gold-border p-3.5 rounded-2xl shadow-xl">
             <div class="flex items-center gap-2">
@@ -105,7 +105,7 @@
         </button>
     </div>
 
-    <!-- 4. نافذة تفاصيل العرض (مطابقة لصورة 4) -->
+    <!-- 4. نافذة تفاصيل العرض -->
     <div id="product-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
@@ -154,9 +154,7 @@
             <!-- طلبك -->
             <div>
                 <h3 class="font-bold gold-text text-sm mb-2.5">طلبك</h3>
-                <div id="checkout-cart-items" class="space-y-3">
-                    <!-- عناصر السلة -->
-                </div>
+                <div id="checkout-cart-items" class="space-y-3"></div>
             </div>
 
             <!-- بياناتك -->
@@ -188,15 +186,13 @@
                 </div>
             </div>
 
-            <!-- منطقة التوصيل (مطابقة تماماً لصورة 6 و 7) -->
+            <!-- منطقة التوصيل -->
             <div class="bg-[#141414] border border-gray-800 p-4 rounded-2xl space-y-3">
                 <h3 class="font-bold gold-text text-sm mb-2">منطقة التوصيل</h3>
-                <div id="delivery-zones-radio-container" class="space-y-2.5">
-                    <!-- خيارات التوصيل كبطاقات راديو -->
-                </div>
+                <div id="delivery-zones-radio-container" class="space-y-2.5"></div>
             </div>
 
-            <!-- ملخص الإجماليات (مطابق لصورة 7) -->
+            <!-- ملخص الإجماليات -->
             <div class="bg-[#141414] border gold-border p-4 rounded-2xl space-y-2.5 text-sm font-bold">
                 <div class="flex justify-between text-gray-300">
                     <span id="summary-items-count">العروض (0 قطعة)</span>
@@ -432,7 +428,10 @@
             if(selectedProduct) {
                 const total = selectedProduct.price * quantity;
                 document.getElementById('modal-total-price').innerText = total.toLocaleString() + ' ج.س';
- function addToCartAndStay() {
+            }
+        }
+
+        function addToCartAndStay() {
             const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
             
@@ -479,10 +478,7 @@
                 floatBtn.classList.remove('hidden');
             } else {
                 floatBtn.classList.add('hidden');
-            }
-        }
-
-        async function openCheckoutScreen() {
+async function openCheckoutScreen() {
             document.getElementById('store-section').classList.add('hidden');
             document.getElementById('floating-cart-btn').classList.add('hidden');
             document.getElementById('checkout-screen').classList.remove('hidden');
@@ -576,8 +572,6 @@
             selectedDeliveryPrice = parseFloat(radio.value);
             selectedDeliveryName = radio.getAttribute('data-name');
             
-            // تحديث حدود البطاقات المختارة
-            document.querySelectorAll('input[name="delivery_zone"]').r.forEach = ...
             const labels = document.querySelectorAll('#delivery-zones-radio-container label');
             labels.forEach(l => {
                 const inp = l.querySelector('input');
