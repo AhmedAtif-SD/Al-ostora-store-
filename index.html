@@ -142,9 +142,7 @@
             </div>
         </button>
     </div>
-
-    <!-- 4. نافذة تفاصيل العرض -->
-    <div id="product-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+   <div id="product-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl border border-neutral-200 p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-neutral-100 pb-3">
                 <h3 id="modal-title" class="text-base font-black text-neutral-900"></h3>
@@ -238,7 +236,8 @@
             </button>
         </div>
     </div>
-<script>
+
+    <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         
@@ -291,8 +290,8 @@
             let cities = [{name: 'عطبرة'}, {name: 'بورتسودان'}, {name: 'امدرمان'}];
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('cities').select('*');
-                    if(data && data.length > 0) cities = data;
+                    const { data, error } = await supabaseClient.from('cities').select('*');
+                    if(!error && data && data.length > 0) cities = data;
                 } catch(e) {}
             }
             container.innerHTML = '';
@@ -314,7 +313,7 @@
             if(supabaseClient) {
                 try {
                     const res = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-                    if(res.data && res.data.length > 0) data = res.data;
+                    if(!res.error && res.data && res.data.length > 0) data = res.data;
                 } catch(e) {}
             }
 
@@ -487,9 +486,8 @@
             document.getElementById('checkout-screen').classList.remove('hidden');
             renderCheckoutCart();
             loadDeliveryZonesForCheckout();
-        };
 
-        function renderCheckoutCart() {
+function renderCheckoutCart() {
             const container = document.getElementById('checkout-cart-items');
             if(!container) return;
             if(cart.length === 0) {
@@ -512,8 +510,10 @@
                     <button onclick="window.removeFromCart(${index})" class="text-red-500 font-bold text-xs px-2.5 py-1 bg-red-50 border border-red-200 rounded-xl cursor-pointer">حذف</button>
                 `;
                 container.appendChild(div);
+            });
+        }
 
-window.removeFromCart = function(index) {
+        window.removeFromCart = function(index) {
             cart.splice(index, 1);
             renderCheckoutCart();
             calcCheckoutTotals();
@@ -533,8 +533,8 @@ window.removeFromCart = function(index) {
 
             if(supabaseClient) {
                 try {
-                    const { data } = await supabaseClient.from('delivery_zones').select('*');
-                    if(data && data.length > 0) {
+                    const { data, error } = await supabaseClient.from('delivery_zones').select('*');
+                    if(!error && data && data.length > 0) {
                         const cityZones = data.filter(z => (z.city ? z.city.trim() : 'عطبرة') === window.currentCity);
                         if(cityZones.length > 0) deliveryZonesList = cityZones;
                     }
