@@ -28,15 +28,14 @@
 </head>
 <body class="min-h-screen flex flex-col items-center pb-24 relative spotlight">
 
-    <!-- إشعار التنبيه (Toast) -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- 1. شاشة البداية -->
+    <!-- شاشة البداية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
-        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:3rem_3rem] opacity-20 pointer-events-none"></div>
         
         <div class="mt-16 z-10 w-full flex flex-col items-center">
             <div class="w-48 h-48 rounded-3xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
@@ -50,7 +49,7 @@
         </div>
 
         <div class="w-full space-y-4 mb-10 z-10">
-            <button onclick="openCitySelection()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition transform active:scale-95">
+            <button onclick="openCitySelection()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition transform active:scale-95 cursor-pointer">
                 تسوق الآن ✨
             </button>
             <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-2xl border gold-border gold-text font-bold text-base block hover:bg-[#d4af37]/10 transition text-center shadow-lg">
@@ -58,30 +57,28 @@
             </a>
         </div>
     </div>
-    <!-- 2. شاشة اختيار المدينة -->
+    <!-- شاشة اختيار المدينة -->
     <div id="city-selection-screen" class="w-full max-w-md min-h-screen p-6 hidden animate-fade flex flex-col justify-between">
         <div>
             <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
                 <h2 class="text-lg font-bold gold-text">اختر مدينتك</h2>
-                <button onclick="backToHero()" class="text-gray-400 hover:gold-text text-sm">← الرئيسية</button>
+                <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm cursor-pointer">← الرئيسية</button>
             </div>
-            <p class="text-xs text-gray-400 mb-6 leading-relaxed">هتشوف العروض وطرق التوصيل الخاصة بمدينة <span class="gold-text font-bold">..</span> بس.</p>
+            <p class="text-xs text-gray-400 mb-6 leading-relaxed">هتشوف العروض وطرق التوصيل الخاصة بمدينة <span class="gold-text font-bold">المدينة المختارة</span> بس.</p>
             
-            <div id="cities-cards-container" class="space-y-3.5">
-                <!-- تحميل المدن ديناميكياً -->
-            </div>
+            <div id="cities-cards-container" class="space-y-3.5"></div>
         </div>
         <div class="mt-8 text-center text-[10px] text-gray-600">متجر الأسطورة — جميع الحقوق محفوظة</div>
     </div>
 
-    <!-- 3. شاشة المتجر وعروض المدينة -->
+    <!-- شاشة المتجر -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-6 bg-[#141414] border gold-border p-3.5 rounded-2xl shadow-xl">
             <div class="flex items-center gap-2">
                 <span class="text-sm">📍 💙</span>
                 <span id="current-city-header" class="gold-text font-extrabold text-sm">عروض عطبرة</span>
             </div>
-            <button onclick="openCitySelection()" class="bg-[#1f1f1f] border border-gray-700 hover:gold-border px-3.5 py-1.5 rounded-xl text-xs text-gray-300 font-bold transition">
+            <button onclick="openCitySelection()" class="bg-[#1f1f1f] border border-gray-700 hover:gold-border px-3.5 py-1.5 rounded-xl text-xs text-gray-300 font-bold transition cursor-pointer">
                 تغيير المدينة
             </button>
         </div>
@@ -93,9 +90,9 @@
 
     <!-- زر السلة العائم -->
     <div id="floating-cart-btn" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 hidden animate-fade w-full max-w-md px-4">
-        <button onclick="openCheckoutScreen()" class="w-full gold-gradient text-black py-4 px-6 rounded-2xl font-extrabold text-sm shadow-2xl flex items-center justify-between border border-amber-200 transform active:scale-95 transition">
+        <button onclick="openCheckoutScreen()" class="w-full gold-gradient text-black py-4 px-6 rounded-2xl font-extrabold text-sm shadow-2xl flex items-center justify-between border border-amber-200 transform active:scale-95 transition cursor-pointer">
             <div class="flex items-center gap-2">
-                <span class="bg-black text-amber-400 px-2.5 py-1 rounded-xl text-xs font-black" id="cart-badge-count">2</span>
+                <span class="bg-black text-amber-400 px-2.5 py-1 rounded-xl text-xs font-black" id="cart-badge-count">0</span>
                 <span>إتمام الطلب</span>
             </div>
             <div class="flex items-center gap-2">
@@ -105,12 +102,12 @@
         </button>
     </div>
 
-    <!-- 4. نافذة تفاصيل العرض -->
+    <!-- نافذة تفاصيل العرض -->
     <div id="product-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
                 <h3 id="modal-title" class="text-base font-bold gold-text"></h3>
-                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-xl font-bold cursor-pointer">&times;</button>
             </div>
             
             <div class="mb-4">
@@ -129,16 +126,16 @@
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-gray-300 font-bold">عدد القطع</span>
                     <div class="flex items-center gap-3 bg-[#121212] border border-gray-700 rounded-xl px-3 py-1.5">
-                        <button onclick="updateQty(-1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center">-</button>
+                        <button onclick="updateQty(-1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center cursor-pointer">-</button>
                         <span id="qty-value" class="font-extrabold text-sm w-4 text-center">1</span>
-                        <button onclick="updateQty(1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center">+</button>
+                        <button onclick="updateQty(1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center cursor-pointer">+</button>
                     </div>
                 </div>
 
                 <div id="item-options-container" class="space-y-3 pt-2"></div>
             </div>
 
-            <button onclick="addToCartAndStay()" class="w-full py-4 rounded-xl gold-gradient text-black font-black text-sm shadow-xl hover:opacity-95 transition">
+            <button onclick="addToCartAndStay()" class="w-full py-4 rounded-xl gold-gradient text-black font-black text-sm shadow-xl hover:opacity-95 transition cursor-pointer">
                 أضف للطلب — <span id="modal-total-price"></span>
             </button>
         </div>
@@ -147,17 +144,15 @@
     <div id="checkout-screen" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
         <div class="flex justify-between items-center mb-4 bg-[#141414] border gold-border p-3.5 rounded-2xl shadow-xl">
             <h2 class="text-base font-bold gold-text">إتمام الطلب</h2>
-            <button onclick="closeCheckoutScreen()" class="text-gray-400 hover:gold-text text-sm">← المتجر</button>
+            <button onclick="closeCheckoutScreen()" class="text-gray-400 hover:gold-text text-sm cursor-pointer">← المتجر</button>
         </div>
 
         <div class="space-y-5 mb-24 text-xs">
-            <!-- طلبك -->
             <div>
                 <h3 class="font-bold gold-text text-sm mb-2.5">طلبك</h3>
                 <div id="checkout-cart-items" class="space-y-3"></div>
             </div>
 
-            <!-- بياناتك -->
             <div class="bg-[#141414] border border-gray-800 p-4 rounded-2xl space-y-3.5">
                 <h3 class="font-bold gold-text text-sm mb-1">بياناتك</h3>
                 <div>
@@ -186,13 +181,11 @@
                 </div>
             </div>
 
-            <!-- منطقة التوصيل -->
             <div class="bg-[#141414] border border-gray-800 p-4 rounded-2xl space-y-3">
                 <h3 class="font-bold gold-text text-sm mb-2">منطقة التوصيل</h3>
                 <div id="delivery-zones-radio-container" class="space-y-2.5"></div>
             </div>
 
-            <!-- ملخص الإجماليات -->
             <div class="bg-[#141414] border gold-border p-4 rounded-2xl space-y-2.5 text-sm font-bold">
                 <div class="flex justify-between text-gray-300">
                     <span id="summary-items-count">العروض (0 قطعة)</span>
@@ -209,7 +202,7 @@
                 <p class="text-[10px] text-gray-500 text-center pt-1 font-normal">الدفع عند الاستلام</p>
             </div>
 
-            <button onclick="submitFinalOrder()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition">
+            <button onclick="submitFinalOrder()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition cursor-pointer">
                 تأكيد الطلب 🚀
             </button>
         </div>
@@ -236,6 +229,31 @@
         let selectedDeliveryName = 'داخل عطبرة';
         let deliveryZonesList = [];
 
+        const fallbackProducts = [
+            {
+                id: 1,
+                title: 'طقم رياضي فاخر',
+                price: 60000,
+                city: 'عطبرة',
+                colors: 'أسود، كبدي، أزرق',
+                sizes: 'M, L, XL, XXL',
+                description: 'خامه قطن جوده عاليه 🔥💙',
+                image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
+                images: JSON.stringify(['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500', 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500'])
+            },
+            {
+                id: 2,
+                title: 'قميص مخطط كلاسيك',
+                price: 55000,
+                city: 'عطبرة',
+                colors: 'سماوي، اسود، كحلي',
+                sizes: 'M, L, XL',
+                description: 'خامه بجوده عاليه جداً 💙🔥',
+                image_url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500',
+                images: JSON.stringify(['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500'])
+            }
+        ];
+
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
             document.getElementById('toast-message').innerText = msg;
@@ -247,9 +265,7 @@
             }, 3000);
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            showHero();
-        });
+        window.addEventListener('DOMContentLoaded', () => { showHero(); });
 
         function showHero() {
             document.getElementById('hero-section').classList.remove('hidden');
@@ -259,13 +275,13 @@
             document.getElementById('floating-cart-btn').classList.add('hidden');
         }
 
-        async function openCitySelection() {
+        function openCitySelection() {
             document.getElementById('hero-section').classList.add('hidden');
             document.getElementById('store-section').classList.add('hidden');
             document.getElementById('checkout-screen').classList.add('hidden');
             document.getElementById('floating-cart-btn').classList.add('hidden');
             document.getElementById('city-selection-screen').classList.remove('hidden');
-            await loadCitiesForSelection();
+            loadCitiesForSelection();
         }
 
         async function loadCitiesForSelection() {
@@ -281,7 +297,7 @@
             cities.forEach(c => {
                 const btn = document.createElement('button');
                 btn.onclick = () => selectCity(c.name);
-                btn.className = 'w-full text-right bg-[#141414] hover:bg-[#d4af37]/15 border border-gray-800 hover:gold-border p-4 rounded-2xl text-sm transition font-bold flex items-center justify-between shadow-lg';
+                btn.className = 'w-full text-right bg-[#141414] hover:bg-[#d4af37]/15 border border-gray-800 hover:gold-border p-4 rounded-2xl text-sm transition font-bold flex items-center justify-between shadow-lg cursor-pointer';
                 btn.innerHTML = `<span>📍 ${c.name} 💙</span><span class="text-gray-500 text-xs">← اختيار</span>`;
                 container.appendChild(btn);
             });
@@ -296,57 +312,51 @@
             updateCartUI();
         }
 
-        function backToHero() {
-            showHero();
-        }
-
         async function loadProducts() {
             const container = document.getElementById('products-container');
             container.innerHTML = '<p class="text-center text-gray-500 py-12 text-xs">جاري تحميل العروض...</p>';
-            if(!supabaseClient) return;
+            
+            let data = fallbackProducts;
+            if(supabaseClient) {
+                try {
+                    const res = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+                    if(res.data && res.data.length > 0) data = res.data;
+                } catch(e) {}
+            }
 
-            try {
-                const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-                if(error || !data) throw error;
+            loadedProducts = data.filter(p => {
+                const pCity = p.city ? p.city.trim() : 'الكل';
+                return pCity === 'الكل' || pCity === currentCity;
+            });
 
-                loadedProducts = data.filter(p => {
-                    const pCity = p.city ? p.city.trim() : 'الكل';
-                    return pCity === 'الكل' || pCity === currentCity;
-                });
+            if(loadedProducts.length === 0) loadedProducts = fallbackProducts;
 
-                if(loadedProducts.length === 0) {
-                    container.innerHTML = `<p class="text-center text-gray-500 py-12 text-xs">لا توجد عروض في مدينة ${currentCity} حالياً.</p>`;
-                    return;
+            container.innerHTML = '';
+            loadedProducts.forEach((product, index) => {
+                let images = [product.image_url];
+                if(product.images) {
+                    try {
+                        const p = JSON.parse(product.images);
+                        if(p.length > 0) images = p;
+                    } catch(e) {}
                 }
 
-                container.innerHTML = '';
-                loadedProducts.forEach((product, index) => {
-                    let images = [product.image_url];
-                    if(product.images) {
-                        try {
-                            const p = JSON.parse(product.images);
-                            if(p.length > 0) images = p;
-                        } catch(e) {}
-                    }
-
-                    const card = document.createElement('div');
-                    card.className = 'bg-[#141414] border border-gray-800 rounded-3xl overflow-hidden shadow-xl mb-6 animate-fade';
-                    card.innerHTML = `
-                        <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1.5 cursor-pointer" onclick="openProductModal(${index})">
-                            <img src="${images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
-                            <img src="${images[1] || images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
-                        </div>
-                        <div class="p-4 text-center cursor-pointer" onclick="openProductModal(${index})">
-                            <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
-                            <p class="gold-text font-black text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
-                            <p class="text-[11px] text-gray-400">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
-                        </div>
-                    `;
-                    container.appendChild(card);
-                });
-            } catch(e) {
-                container.innerHTML = '<p class="text-center text-red-500 py-12 text-xs">حدث خطأ أثناء تحميل العروض</p>';
-            }
+                const card = document.createElement('div');
+                card.className = 'bg-[#141414] border border-gray-800 rounded-3xl overflow-hidden shadow-xl mb-6 animate-fade cursor-pointer';
+                card.onclick = () => openProductModal(index);
+                card.innerHTML = `
+                    <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1.5">
+                        <img src="${images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
+                        <img src="${images[1] || images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
+                    </div>
+                    <div class="p-4 text-center">
+                        <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
+                        <p class="gold-text font-black text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
+                        <p class="text-[11px] text-gray-400">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
         function openProductModal(index) {
@@ -371,7 +381,7 @@
                     const thumb = document.createElement('img');
                     thumb.src = img;
                     thumb.className = 'w-16 h-16 object-cover rounded-xl border border-gray-700 cursor-pointer hover:border-[#d4af37]';
-                    thumb.onclick = () => { document.getElementById('modal-image').src = img; };
+                    thumb.onclick = (e) => { e.stopPropagation(); document.getElementById('modal-image').src = img; };
                     gallery.appendChild(thumb);
                 });
             }
@@ -428,10 +438,7 @@
             if(selectedProduct) {
                 const total = selectedProduct.price * quantity;
                 document.getElementById('modal-total-price').innerText = total.toLocaleString() + ' ج.س';
-            }
-        }
-
-        function addToCartAndStay() {
+function addToCartAndStay() {
             const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
             
@@ -478,13 +485,15 @@
                 floatBtn.classList.remove('hidden');
             } else {
                 floatBtn.classList.add('hidden');
-async function openCheckoutScreen() {
+            }
+        }
+
+        function openCheckoutScreen() {
             document.getElementById('store-section').classList.add('hidden');
             document.getElementById('floating-cart-btn').classList.add('hidden');
             document.getElementById('checkout-screen').classList.remove('hidden');
             renderCheckoutCart();
-            await loadDeliveryZonesForCheckout();
-            calcCheckoutTotals();
+            loadDeliveryZonesForCheckout();
         }
 
         function closeCheckoutScreen() {
@@ -513,7 +522,7 @@ async function openCheckoutScreen() {
                             <p class="gold-text font-black text-xs">${item.total.toLocaleString()} ج.س</p>
                         </div>
                     </div>
-                    <button onclick="removeFromCart(${index})" class="text-red-400 font-bold text-xs px-2.5 py-1 bg-red-950/30 border border-red-900 rounded-xl">حذف</button>
+                    <button onclick="removeFromCart(${index})" class="text-red-400 font-bold text-xs px-2.5 py-1 bg-red-950/30 border border-red-900 rounded-xl cursor-pointer">حذف</button>
                 `;
                 container.appendChild(div);
             });
@@ -571,7 +580,6 @@ async function openCheckoutScreen() {
         function selectDeliveryZone(radio) {
             selectedDeliveryPrice = parseFloat(radio.value);
             selectedDeliveryName = radio.getAttribute('data-name');
-            
             const labels = document.querySelectorAll('#delivery-zones-radio-container label');
             labels.forEach(l => {
                 const inp = l.querySelector('input');
@@ -633,11 +641,9 @@ async function openCheckoutScreen() {
                 image_url: cart[0].image_url
             };
 
-            try {
-                if(supabaseClient) {
-                    await supabaseClient.from('orders').insert([orderData]);
-                }
-            } catch(e) {}
+            if(supabaseClient) {
+                try { await supabaseClient.from('orders').insert([orderData]); } catch(e) {}
+            }
 
             const message = `🛍️ *طلب جديد متكامل - متجر الأسطورة*\n\n` +
                             `📦 محتويات السلة:\n\n${itemsSummary.join('\n\n')}\n\n` +
@@ -653,7 +659,6 @@ async function openCheckoutScreen() {
                             `💎 الإجمالي الكلي: ${grandTotal.toLocaleString()} ج.س`;
 
             const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=` + encodeURIComponent(message);
-            
             showToast('تم إرسال طلبك بنجاح! جاري تحويلك للواتساب..');
             setTimeout(() => { window.location.href = whatsappUrl; }, 1200);
         }
