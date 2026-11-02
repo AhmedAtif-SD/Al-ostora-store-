@@ -13,185 +13,209 @@
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #d4af37; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade { animation: fadeIn 0.4s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.35s ease-out forwards; }
         .logo-frame {
             background: linear-gradient(145deg, #181818, #0d0d0d);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.15);
+            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.2);
+        }
+        .spotlight {
+            background: radial-gradient(circle at 50% 15%, rgba(212, 175, 55, 0.15) 0%, transparent 70%);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center pb-20 relative">
+<body class="min-h-screen flex flex-col items-center pb-24 relative spotlight">
 
+    <!-- إشعار التنبيه (Toast) -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
+    <!-- 1. شاشة البداية (مطابقة لصورة 1) -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative overflow-hidden animate-fade">
-        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute inset-0 bg-[linear-gradient(to_right,#1f1f1f_1px,transparent_1px),linear-gradient(to_bottom,#1f1f1f_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-20 pointer-events-none"></div>
         
-        <div class="mt-10 z-10 w-full flex flex-col items-center">
-            <div class="w-44 h-44 rounded-2xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
-                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-xl m-1 pointer-events-none"></div>
-                <span class="text-5xl font-black gold-text tracking-widest drop-shadow-md">AS</span>
-                <div class="w-24 h-[2px] gold-gradient my-1.5 opacity-80"></div>
-                <span class="text-[10px] font-bold tracking-[0.25em] text-amber-200/90">AL OSTORA</span>
+        <div class="mt-16 z-10 w-full flex flex-col items-center">
+            <div class="w-48 h-48 rounded-3xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
+                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-2xl m-1.5 pointer-events-none"></div>
+                <span class="text-6xl font-black gold-text tracking-widest drop-shadow-lg">AS</span>
+                <div class="w-28 h-[2px] gold-gradient my-2 opacity-90"></div>
+                <span class="text-[11px] font-extrabold tracking-[0.3em] text-amber-200">AL OSTORA</span>
             </div>
-            <h1 class="text-2xl font-bold tracking-wider gold-text mb-1">متجر الأسطورة</h1>
+            <h1 class="text-xl font-bold tracking-wider gold-text mb-1">متجر الأسطورة</h1>
             <p class="text-xs text-gray-400">أرقى الموديلات والأزياء العصرية</p>
         </div>
 
-        <div class="w-full space-y-4 mb-8 z-10">
-            <button onclick="showStore()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-lg shadow-lg hover:opacity-95 transition transform active:scale-95">
+        <div class="w-full space-y-4 mb-10 z-10">
+            <button onclick="openCitySelection()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition transform active:scale-95">
                 تسوق الآن ✨
             </button>
-            <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-xl border gold-border gold-text font-bold text-lg block hover:bg-[#d4af37]/10 transition text-center">
+            <a href="https://wa.me/249918098924" target="_blank" class="w-full py-4 rounded-2xl border gold-border gold-text font-bold text-base block hover:bg-[#d4af37]/10 transition text-center shadow-lg">
                 الإرساليات والتواصل 📞
             </a>
         </div>
     </div>
-    <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
-        <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
-            <button onclick="showHero()" class="text-gray-400 hover:gold-text text-sm flex items-center gap-1">
-                ← الرئيسية
-            </button>
-            <div class="flex items-center gap-2 bg-[#1a1a1a] px-3 py-1.5 rounded-full border gold-border text-xs">
-                <span>📍 💙</span>
-                <span id="current-city" class="gold-text font-bold">عطبرة</span>
+    <!-- 2. شاشة اختيار المدينة (مطابقة لصورة 2) -->
+    <div id="city-selection-screen" class="w-full max-w-md min-h-screen p-6 hidden animate-fade flex flex-col justify-between">
+        <div>
+            <div class="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
+                <h2 class="text-lg font-bold gold-text">اختر مدينتك</h2>
+                <button onclick="backToHero()" class="text-gray-400 hover:gold-text text-sm">← الرئيسية</button>
             </div>
-            <button onclick="openCityModal()" class="text-xs text-gray-400 border border-gray-700 px-3 py-1.5 rounded-full hover:gold-border hover:gold-text transition">
+            <p class="text-xs text-gray-400 mb-6 leading-relaxed">هتشوف العروض وطرق التوصيل الخاصة بمدينة <span class="gold-text font-bold">..</span> بس.</p>
+            
+            <div id="cities-cards-container" class="space-y-3.5">
+                <!-- يتم تحميل المدن هنا ديناميكياً لتطابق المرجع تماماً -->
+            </div>
+        </div>
+        <div class="mt-8 text-center text-[10px] text-gray-600">متجر الأسطورة — جميع الحقوق محفوظة</div>
+    </div>
+
+    <!-- 3. شاشة المتجر وعروض المدينة (مطابقة لصورة 3) -->
+    <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
+        <div class="flex justify-between items-center mb-6 bg-[#141414] border gold-border p-3.5 rounded-2xl shadow-xl">
+            <div class="flex items-center gap-2">
+                <span class="text-sm">📍 💙</span>
+                <span id="current-city-header" class="gold-text font-extrabold text-sm">عروض عطبرة</span>
+            </div>
+            <button onclick="openCitySelection()" class="bg-[#1f1f1f] border border-gray-700 hover:gold-border px-3.5 py-1.5 rounded-xl text-xs text-gray-300 font-bold transition">
                 تغيير المدينة
             </button>
         </div>
 
         <div id="products-container" class="space-y-6">
-            <p class="text-center text-gray-500 py-10">جاري تحميل العروض...</p>
+            <p class="text-center text-gray-500 py-12 text-xs">جاري تحميل العروض...</p>
         </div>
     </div>
 
-    <div id="floating-cart-btn" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 hidden animate-fade">
-        <button onclick="openCartModal()" class="gold-gradient text-black px-6 py-3.5 rounded-2xl font-extrabold text-xs shadow-2xl flex items-center gap-3 border border-amber-200 transform active:scale-95 transition">
-            <span>🛒 سلة الطلبات</span>
-            <span id="cart-badge-count" class="bg-black text-amber-400 px-2.5 py-1 rounded-full text-[11px] font-black">0</span>
+    <!-- زر السلة العائم -->
+    <div id="floating-cart-btn" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 hidden animate-fade w-full max-w-md px-4">
+        <button onclick="openCheckoutScreen()" class="w-full gold-gradient text-black py-4 px-6 rounded-2xl font-extrabold text-sm shadow-2xl flex items-center justify-between border border-amber-200 transform active:scale-95 transition">
+            <div class="flex items-center gap-2">
+                <span class="bg-black text-amber-400 px-2.5 py-1 rounded-xl text-xs font-black" id="cart-badge-count">2</span>
+                <span>إتمام الطلب</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span id="floating-cart-total" class="font-black text-base">0 ج.س</span>
+                <span>🛒</span>
+            </div>
         </button>
     </div>
 
-    <div id="city-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl">
-            <h3 class="text-lg font-bold gold-text mb-4 text-center">اختر مدينة التوصيل</h3>
-            <div id="cities-list-container" class="space-y-2 mb-4 max-h-60 overflow-y-auto">
-                <button onclick="setCity('عطبرة')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 عطبرة</button>
-                <button onclick="setCity('أم درمان')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 أم درمان</button>
-                <button onclick="setCity('الخرطوم')" class="w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold">📍 الخرطوم</button>
-            </div>
-            <button onclick="closeCityModal()" class="w-full py-2 text-xs text-gray-400 hover:text-white">إلغاء</button>
-        </div>
-    </div>
-
-    <div id="product-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
-        <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-lg font-bold gold-text"></h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
+    <!-- 4. نافذة تفاصيل العرض (مطابقة لصورة 4) -->
+    <div id="product-modal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
+        <div class="bg-[#121212] w-full max-w-md rounded-t-3xl sm:rounded-2xl border gold-border p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
+            <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
+                <h3 id="modal-title" class="text-base font-bold gold-text"></h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
             </div>
             
             <div class="mb-4">
-                <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-xl border border-gray-800 mb-2 shadow-md">
+                <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-2xl border border-gray-800 mb-2.5 shadow-md">
                 <div id="modal-gallery" class="flex gap-2 overflow-x-auto pb-1"></div>
             </div>
             
             <div class="flex justify-between items-center mb-2">
-                <span id="modal-price" class="text-xl font-extrabold gold-text"></span>
-                <span class="text-xs bg-amber-900/30 gold-text px-3 py-1 rounded-full border gold-border">خامه قطن جوده عاليه 🔥💙</span>
+                <span id="modal-price" class="text-xl font-black gold-text"></span>
+                <span class="text-[11px] bg-amber-950/40 gold-text px-3 py-1 rounded-xl border gold-border font-bold">خامه بجوده عاليه 🔥💙</span>
             </div>
             
-            <p id="modal-desc" class="text-xs text-gray-400 mb-6"></p>
+            <p id="modal-desc" class="text-xs text-gray-400 mb-6 whitespace-pre-line leading-relaxed"></p>
 
-            <div class="space-y-4 mb-6">
-                <div>
-                    <label class="block text-xs text-gray-400 mb-1">عدد القطع</label>
-                    <div class="flex items-center justify-between bg-[#1a1a1a] border border-gray-800 rounded-xl p-2">
-                        <button onclick="updateQty(-1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">-</button>
-                        <span id="qty-value" class="font-bold text-lg">1</span>
-                        <button onclick="updateQty(1)" class="w-8 h-8 bg-[#2a2a2a] rounded-lg text-lg font-bold flex items-center justify-center">+</button>
+            <div class="space-y-4 mb-6 bg-[#181818] p-4 rounded-2xl border border-gray-800">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs text-gray-300 font-bold">عدد القطع</span>
+                    <div class="flex items-center gap-3 bg-[#121212] border border-gray-700 rounded-xl px-3 py-1.5">
+                        <button onclick="updateQty(-1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center">-</button>
+                        <span id="qty-value" class="font-extrabold text-sm w-4 text-center">1</span>
+                        <button onclick="updateQty(1)" class="w-7 h-7 bg-[#222] rounded-lg text-sm font-bold flex items-center justify-center">+</button>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs gold-text mb-2 font-bold">تحديد المقاس واللون لكل قطعة:</label>
-                    <div id="item-options-container" class="space-y-3 bg-[#171717] p-3 rounded-xl border border-gray-800"></div>
-                </div>
+                <div id="item-options-container" class="space-y-3 pt-2"></div>
             </div>
 
-            <button onclick="addToCart()" class="w-full py-4 rounded-xl gold-gradient text-black font-extrabold text-base shadow-lg hover:opacity-95 transition">
-                إضافة للسلة 🛒 — <span id="modal-total-price"></span>
+            <button onclick="addToCartAndStay()" class="w-full py-4 rounded-xl gold-gradient text-black font-black text-sm shadow-xl hover:opacity-95 transition">
+                أضف للطلب — <span id="modal-total-price"></span>
             </button>
         </div>
     </div>
 
-    <div id="cart-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[85vh] overflow-y-auto flex flex-col">
-            <div class="flex justify-between items-center mb-4 border-b border-gray-800 pb-3">
-                <h3 class="text-lg font-bold gold-text">سلة الطلبات الخاصة بك 🛒</h3>
-                <button onclick="closeCartModal()" class="text-gray-400 hover:text-white text-xl font-bold">&times;</button>
-            </div>
-            
-            <div id="cart-items-container" class="space-y-3 mb-4 flex-1 overflow-y-auto">
-                <p class="text-center text-gray-500 py-6">السلة فارغة حالياً</p>
-            </div>
-
-            <div class="border-t border-gray-800 pt-3 space-y-3">
-                <div class="flex justify-between items-center text-sm font-bold">
-                    <span>إجمالي العروض:</span>
-                    <span id="cart-grand-total" class="gold-text">0 ج.س</span>
-                </div>
-                <button onclick="openCheckoutModal()" id="checkout-btn-cart" class="w-full py-3.5 rounded-xl gold-gradient text-black font-extrabold text-sm shadow-lg hover:opacity-95 transition hidden">
-                    متابعة لإتمام الطلب الشامل 🚀
-                </button>
-            </div>
+    <div id="checkout-screen" class="w-full max-w-md min-h-screen p-4 hidden animate-fade">
+        <div class="flex justify-between items-center mb-4 bg-[#141414] border gold-border p-3.5 rounded-2xl shadow-xl">
+            <h2 class="text-base font-bold gold-text">إتمام الطلب</h2>
+            <button onclick="closeCheckoutScreen()" class="text-gray-400 hover:gold-text text-sm">← المتجر</button>
         </div>
-    </div>
-    <div id="checkout-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
-        <div class="bg-[#121212] w-full max-w-md rounded-2xl border gold-border p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <h3 class="text-lg font-bold gold-text mb-4 text-center">أكمل بيانات الطلب الشامل</h3>
-            <div class="space-y-3 mb-6 text-xs">
-                <div>
-                    <label class="block text-gray-400 mb-1">الاسم الكامل *</label>
-                    <input type="text" id="cust-name" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="محمد عبد الرحمن">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">رقم الواتساب *</label>
-                    <input type="text" id="cust-whatsapp" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="0119562656">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">رقم هاتف احتياطي</label>
-                    <input type="text" id="cust-alt-phone" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="0993365989">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">المستلم البديل (اختياري)</label>
-                    <input type="text" id="cust-alt-receiver" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="محمد">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">المنطقة / الحي *</label>
-                    <input type="text" id="cust-area" required class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none" placeholder="البنك العقاري">
-                </div>
-                <div>
-                    <label class="block text-gray-400 mb-1">طريقة التوصيل</label>
-                    <select id="delivery-option" class="w-full bg-[#1a1a1a] border border-gray-800 rounded-xl p-3 text-xs gold-border focus:outline-none">
-                        <option value="6000">توصيل داخلي - 6,000 ج.س</option>
-                    </select>
+
+        <div class="space-y-5 mb-24 text-xs">
+            <!-- طلبك -->
+            <div>
+                <h3 class="font-bold gold-text text-sm mb-2.5">طلبك</h3>
+                <div id="checkout-cart-items" class="space-y-3">
+                    <!-- عناصر السلة -->
                 </div>
             </div>
 
-            <div class="flex gap-2">
-                <button onclick="submitFinalOrder()" class="w-full py-3.5 rounded-xl gold-gradient text-black font-extrabold text-sm shadow-lg hover:opacity-95 transition">
-                    تأكيد وإرسال الطلب الشامل للواتساب 🚀
-                </button>
-                <button onclick="closeCheckoutModal()" class="px-4 py-3.5 rounded-xl border border-gray-700 text-xs text-gray-400 hover:text-white">إلغاء</button>
+            <!-- بياناتك -->
+            <div class="bg-[#141414] border border-gray-800 p-4 rounded-2xl space-y-3.5">
+                <h3 class="font-bold gold-text text-sm mb-1">بياناتك</h3>
+                <div>
+                    <label class="block text-gray-400 mb-1">الاسم *</label>
+                    <input type="text" id="cust-name" required class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none" placeholder="محمد عبد الرحمن">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">رقم واتساب *</label>
+                    <input type="text" id="cust-whatsapp" required class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none" placeholder="+249...">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">رقم احتياطي *</label>
+                    <input type="text" id="cust-alt-phone" class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none" placeholder="0993365989">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">اسم من ينوب عنك في الاستلام *</label>
+                    <input type="text" id="cust-alt-receiver" class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none" placeholder="محمد">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">المنطقة بالتحديد *</label>
+                    <input type="text" id="cust-area" required class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none" placeholder="الحي أو أقرب معلم">
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">ملاحظة (اختياري)</label>
+                    <textarea id="cust-notes" class="w-full bg-[#1a1a1a] border border-gray-700 rounded-xl p-3 gold-border focus:outline-none h-20" placeholder="أي تفاصيل إضافية للطلب..."></textarea>
+                </div>
             </div>
+
+            <!-- منطقة التوصيل (مطابقة تماماً لصورة 6 و 7) -->
+            <div class="bg-[#141414] border border-gray-800 p-4 rounded-2xl space-y-3">
+                <h3 class="font-bold gold-text text-sm mb-2">منطقة التوصيل</h3>
+                <div id="delivery-zones-radio-container" class="space-y-2.5">
+                    <!-- خيارات التوصيل كبطاقات راديو -->
+                </div>
+            </div>
+
+            <!-- ملخص الإجماليات (مطابق لصورة 7) -->
+            <div class="bg-[#141414] border gold-border p-4 rounded-2xl space-y-2.5 text-sm font-bold">
+                <div class="flex justify-between text-gray-300">
+                    <span id="summary-items-count">العروض (0 قطعة)</span>
+                    <span id="summary-items-subtotal">0 ج.س</span>
+                </div>
+                <div class="flex justify-between text-gray-300 border-b border-gray-800 pb-2">
+                    <span id="summary-delivery-label">التوصيل</span>
+                    <span id="summary-delivery-price">0 ج.س</span>
+                </div>
+                <div class="flex justify-between text-base gold-text pt-1 font-black">
+                    <span>الإجمالي</span>
+                    <span id="summary-grand-total">0 ج.س</span>
+                </div>
+                <p class="text-[10px] text-gray-500 text-center pt-1 font-normal">الدفع عند الاستلام</p>
+            </div>
+
+            <button onclick="submitFinalOrder()" class="w-full py-4 rounded-2xl gold-gradient text-black font-black text-base shadow-2xl hover:opacity-95 transition">
+                تأكيد الطلب 🚀
+            </button>
         </div>
     </div>
 
@@ -211,6 +235,10 @@
         let selectedProduct = null;
         let quantity = 1;
         let cart = [];
+        let currentCity = 'عطبرة';
+        let selectedDeliveryPrice = 6000;
+        let selectedDeliveryName = 'داخل عطبرة';
+        let deliveryZonesList = [];
 
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
@@ -223,110 +251,105 @@
             }, 3000);
         }
 
-        function showStore() {
-            document.getElementById('hero-section').classList.add('hidden');
-            document.getElementById('store-section').classList.remove('hidden');
-            loadProducts();
-        }
+        window.addEventListener('DOMContentLoaded', () => {
+            showHero();
+        });
 
         function showHero() {
-            document.getElementById('store-section').classList.add('hidden');
             document.getElementById('hero-section').classList.remove('hidden');
+            document.getElementById('city-selection-screen').classList.add('hidden');
+            document.getElementById('store-section').classList.add('hidden');
+            document.getElementById('checkout-screen').classList.add('hidden');
+            document.getElementById('floating-cart-btn').classList.add('hidden');
         }
 
-        async function openCityModal() {
-            document.getElementById('city-modal').classList.remove('hidden');
-            await loadCitiesListModal();
+        async function openCitySelection() {
+            document.getElementById('hero-section').classList.add('hidden');
+            document.getElementById('store-section').classList.add('hidden');
+            document.getElementById('checkout-screen').classList.add('hidden');
+            document.getElementById('floating-cart-btn').classList.add('hidden');
+            document.getElementById('city-selection-screen').classList.remove('hidden');
+            await loadCitiesForSelection();
         }
 
-        function closeCityModal() {
-            document.getElementById('city-modal').classList.add('hidden');
-        }
-
-        async function loadCitiesListModal() {
-            const container = document.getElementById('cities-list-container');
-            let cities = ['عطبرة', 'أم درمان', 'الخرطوم'];
+        async function loadCitiesForSelection() {
+            const container = document.getElementById('cities-cards-container');
+            let cities = [{name: 'عطبرة'}, {name: 'بورتسودان'}, {name: 'امدرمان'}];
             if(supabaseClient) {
                 try {
                     const { data } = await supabaseClient.from('cities').select('*');
-                    if(data && data.length > 0) cities = data.map(c => c.name);
+                    if(data && data.length > 0) cities = data;
                 } catch(e) {}
             }
             container.innerHTML = '';
-            cities.forEach(cityName => {
+            cities.forEach(c => {
                 const btn = document.createElement('button');
-                btn.onclick = () => setCity(cityName);
-                btn.className = 'w-full text-right bg-[#1a1a1a] hover:bg-[#d4af37]/20 border border-gray-800 hover:gold-border p-3 rounded-xl text-xs transition font-bold';
-                btn.innerText = `📍 ${cityName}`;
+                btn.onclick = () => selectCity(c.name);
+                btn.className = 'w-full text-right bg-[#141414] hover:bg-[#d4af37]/15 border border-gray-800 hover:gold-border p-4 rounded-2xl text-sm transition font-bold flex items-center justify-between shadow-lg';
+                btn.innerHTML = `<span>📍 ${c.name} 💙</span><span class="text-gray-500 text-xs">← اختيار</span>`;
                 container.appendChild(btn);
             });
         }
 
-        function setCity(cityName) {
-            document.getElementById('current-city').innerText = cityName;
-            closeCityModal();
+        function selectCity(cityName) {
+            currentCity = cityName;
+            document.getElementById('current-city-header').innerText = `عروض ${currentCity}`;
+            document.getElementById('city-selection-screen').classList.add('hidden');
+            document.getElementById('store-section').classList.remove('hidden');
             loadProducts();
+            updateCartUI();
+        }
+
+        function backToHero() {
+            showHero();
         }
 
         async function loadProducts() {
-            const currentCity = document.getElementById('current-city').innerText.trim();
             const container = document.getElementById('products-container');
-            container.innerHTML = '<p class="text-center text-gray-500 py-10">جاري تحميل العروض...</p>';
-
-            if (!supabaseClient) {
-                container.innerHTML = '<p class="text-center text-red-500 py-10">خطأ في الاتصال بقاعدة البيانات</p>';
-                return;
-            }
+            container.innerHTML = '<p class="text-center text-gray-500 py-12 text-xs">جاري تحميل العروض...</p>';
+            if(!supabaseClient) return;
 
             try {
                 const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
-                
-                if (error || !data) {
-                    container.innerHTML = '<p class="text-center text-gray-500 py-10">لا توجد عروض مضافة حالياً.</p>';
-                    return;
-                }
+                if(error || !data) throw error;
 
                 loadedProducts = data.filter(p => {
                     const pCity = p.city ? p.city.trim() : 'الكل';
                     return pCity === 'الكل' || pCity === currentCity;
                 });
 
-                if (loadedProducts.length === 0) {
-                    container.innerHTML = `<p class="text-center text-gray-500 py-10">لا توجد عروض في مدينة ${currentCity} حالياً.</p>`;
+                if(loadedProducts.length === 0) {
+                    container.innerHTML = `<p class="text-center text-gray-500 py-12 text-xs">لا توجد عروض في مدينة ${currentCity} حالياً.</p>`;
                     return;
                 }
 
                 container.innerHTML = '';
                 loadedProducts.forEach((product, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'bg-[#141414] border border-gray-800 rounded-2xl overflow-hidden shadow-xl mb-6 animate-fade';
-                    
                     let images = [product.image_url];
-                    if (product.images) {
+                    if(product.images) {
                         try {
-                            const parsed = JSON.parse(product.images);
-                            if (Array.isArray(parsed) && parsed.length > 0) images = parsed;
+                            const p = JSON.parse(product.images);
+                            if(p.length > 0) images = p;
                         } catch(e) {}
                     }
 
+                    const card = document.createElement('div');
+                    card.className = 'bg-[#141414] border border-gray-800 rounded-3xl overflow-hidden shadow-xl mb-6 animate-fade';
                     card.innerHTML = `
-                        <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1">
-                            <img src="${images[0] || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
-                            <img src="${images[1] || images[0] || 'https://via.placeholder.com/300'}" class="w-full h-44 object-cover rounded-lg" alt="${product.title}">
+                        <div class="grid grid-cols-2 gap-1 bg-[#1a1a1a] p-1.5 cursor-pointer" onclick="openProductModal(${index})">
+                            <img src="${images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
+                            <img src="${images[1] || images[0] || 'https://via.placeholder.com/300'}" class="w-full h-48 object-cover rounded-xl" alt="${product.title}">
                         </div>
-                        <div class="p-4 text-center">
+                        <div class="p-4 text-center cursor-pointer" onclick="openProductModal(${index})">
                             <h2 class="text-base font-bold mb-1">${product.title} 💙😍</h2>
-                            <p class="gold-text font-extrabold text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
-                            <p class="text-xs text-gray-400 mb-4">اضغط لعرض التفاصيل واختيار المقاسات والألوان</p>
-                            <button onclick="openProductModal(${index})" class="w-full py-2.5 rounded-xl border gold-border gold-text text-sm font-bold hover:bg-[#d4af37]/10 transition">
-                                عرض التفاصيل
-                            </button>
+                            <p class="gold-text font-black text-lg mb-2">${product.price.toLocaleString()} ج.س</p>
+                            <p class="text-[11px] text-gray-400">اضغط لعرض التفاصيل واختيار اللون والمقاس</p>
                         </div>
                     `;
                     container.appendChild(card);
                 });
-            } catch(err) {
-                container.innerHTML = '<p class="text-center text-red-500 py-10">حدث خطأ أثناء تحميل المنتجات</p>';
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-red-500 py-12 text-xs">حدث خطأ أثناء تحميل العروض</p>';
             }
         }
 
@@ -337,29 +360,28 @@
             document.getElementById('modal-title').innerText = selectedProduct.title;
             
             let images = [selectedProduct.image_url];
-            if (selectedProduct.images) {
+            if(selectedProduct.images) {
                 try {
-                    const parsed = JSON.parse(selectedProduct.images);
-                    if (Array.isArray(parsed) && parsed.length > 0) images = parsed;
+                    const p = JSON.parse(selectedProduct.images);
+                    if(p.length > 0) images = p;
                 } catch(e) {}
             }
 
             document.getElementById('modal-image').src = images[0];
-            
             const gallery = document.getElementById('modal-gallery');
             gallery.innerHTML = '';
-            if (images.length > 1) {
-                images.forEach((imgSrc) => {
+            if(images.length > 1) {
+                images.forEach(img => {
                     const thumb = document.createElement('img');
-                    thumb.src = imgSrc;
-                    thumb.className = 'w-16 h-16 object-cover rounded-lg border border-gray-700 cursor-pointer hover:border-[#d4af37]';
-                    thumb.onclick = () => { document.getElementById('modal-image').src = imgSrc; };
+                    thumb.src = img;
+                    thumb.className = 'w-16 h-16 object-cover rounded-xl border border-gray-700 cursor-pointer hover:border-[#d4af37]';
+                    thumb.onclick = () => { document.getElementById('modal-image').src = img; };
                     gallery.appendChild(thumb);
                 });
             }
 
             document.getElementById('modal-price').innerText = selectedProduct.price.toLocaleString() + ' ج.س';
-            document.getElementById('modal-desc').innerText = selectedProduct.description || 'خامه قطن جوده عاليه 🔥💙';
+            document.getElementById('modal-desc').innerText = selectedProduct.description || 'خامه بجوده عاليه 🔥💙';
 
             renderItemOptions();
             updateTotalPrice();
@@ -369,35 +391,34 @@
         function renderItemOptions() {
             const container = document.getElementById('item-options-container');
             container.innerHTML = '';
-            const colorsList = selectedProduct.colors ? selectedProduct.colors.split(/[,،]/) : ['أسود', 'كبدي', 'أزرق'];
-            
-            let sizesList = ['S', 'M', 'L', 'XL', 'XXL'];
-            if (selectedProduct.sizes) {
-                sizesList = selectedProduct.sizes.split(/[,،]/).map(s => s.trim());
-            }
+            const colorsList = selectedProduct.colors ? selectedProduct.colors.split(/[,،]/) : ['اسود', 'كَبدي', 'سماوي'];
+            const sizesList = selectedProduct.sizes ? selectedProduct.sizes.split(/[,،]/).map(s => s.trim()) : ['M', 'L', 'XL', '2XL'];
 
-            for (let i = 1; i <= quantity; i++) {
+            for(let i = 1; i <= quantity; i++) {
                 const div = document.createElement('div');
-                div.className = 'bg-[#121212] p-2.5 rounded-xl border border-gray-800 space-y-2';
+                div.className = 'bg-[#121212] p-3 rounded-xl border border-gray-800 space-y-2';
                 div.innerHTML = `
-                    <div class="text-[11px] gold-text font-bold">القطعة #${i}</div>
-                    <div class="grid grid-cols-2 gap-2">
+                    <div class="text-xs gold-text font-bold">قطعة ${i}</div>
+                    <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">المقاس</label>
-                            <select class="item-size-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-1.5 text-xs gold-border focus:outline-none">
+                            <label class="block text-[10px] text-gray-400 mb-1">المقاس</label>
+                            <select class="item-size-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-2 gold-border focus:outline-none">
                                 ${sizesList.map(s => `<option value="${s}">${s}</option>`).join('')}
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[10px] text-gray-400 mb-0.5">اللون</label>
-                            <select class="item-color-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-1.5 text-xs gold-border focus:outline-none">
+                            <label class="block text-[10px] text-gray-400 mb-1">اللون</label>
+                            <select class="item-color-select w-full bg-[#1a1a1a] border border-gray-700 rounded-lg p-2 gold-border focus:outline-none">
                                 ${colorsList.map((c, idx) => `<option value="${c.trim()}" ${idx === 0 ? 'selected' : ''}>${c.trim()}</option>`).join('')}
                             </select>
                         </div>
                     </div>
                 `;
                 container.appendChild(div);
-function closeModal() { document.getElementById('product-modal').classList.add('hidden'); }
+            }
+        }
+
+        function closeProductModal() { document.getElementById('product-modal').classList.add('hidden'); }
 
         function updateQty(change) {
             quantity += change;
@@ -411,23 +432,20 @@ function closeModal() { document.getElementById('product-modal').classList.add('
             if(selectedProduct) {
                 const total = selectedProduct.price * quantity;
                 document.getElementById('modal-total-price').innerText = total.toLocaleString() + ' ج.س';
-            }
-        }
-
-        function addToCart() {
+ function addToCartAndStay() {
             const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
             
             const itemDetails = [];
             for(let i = 0; i < quantity; i++) {
-                itemDetails.push(`مقاس (${sizeSelects[i].value}) - لون (${colorSelects[i].value})`);
+                itemDetails.push(`قطعة ${i+1} : ${colorSelects[i].value} - ${sizeSelects[i].value}`);
             }
 
             let images = [selectedProduct.image_url];
-            if (selectedProduct.images) {
+            if(selectedProduct.images) {
                 try {
-                    const parsed = JSON.parse(selectedProduct.images);
-                    if (Array.isArray(parsed) && parsed.length > 0) images = parsed;
+                    const p = JSON.parse(selectedProduct.images);
+                    if(p.length > 0) images = p;
                 } catch(e) {}
             }
 
@@ -443,112 +461,142 @@ function closeModal() { document.getElementById('product-modal').classList.add('
 
             cart.push(cartItem);
             updateCartUI();
-            closeModal();
-            showToast('تمت إضافة المنتج إلى السلة بنجاح 🛒');
+            closeProductModal();
+            showToast('تمت الإضافة للطلب بنجاح 🛒');
         }
 
         function updateCartUI() {
             const badge = document.getElementById('cart-badge-count');
             const floatBtn = document.getElementById('floating-cart-btn');
+            const floatTotal = document.getElementById('floating-cart-total');
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            
+            const grandSubtotal = cart.reduce((sum, item) => sum + item.total, 0);
+
             badge.innerText = totalItems;
-            if(totalItems > 0) {
+            floatTotal.innerText = grandSubtotal.toLocaleString() + ' ج.س';
+
+            if(totalItems > 0 && !document.getElementById('store-section').classList.contains('hidden')) {
                 floatBtn.classList.remove('hidden');
             } else {
                 floatBtn.classList.add('hidden');
             }
         }
 
-        function openCartModal() {
-            renderCartItems();
-            document.getElementById('cart-modal').classList.remove('hidden');
+        async function openCheckoutScreen() {
+            document.getElementById('store-section').classList.add('hidden');
+            document.getElementById('floating-cart-btn').classList.add('hidden');
+            document.getElementById('checkout-screen').classList.remove('hidden');
+            renderCheckoutCart();
+            await loadDeliveryZonesForCheckout();
+            calcCheckoutTotals();
         }
 
-        function closeCartModal() {
-            document.getElementById('cart-modal').classList.add('hidden');
+        function closeCheckoutScreen() {
+            document.getElementById('checkout-screen').classList.add('hidden');
+            document.getElementById('store-section').classList.remove('hidden');
+            updateCartUI();
         }
 
-        function renderCartItems() {
-            const container = document.getElementById('cart-items-container');
-            const checkoutBtn = document.getElementById('checkout-btn-cart');
-            const grandTotalElem = document.getElementById('cart-grand-total');
-
+        function renderCheckoutCart() {
+            const container = document.getElementById('checkout-cart-items');
             if(cart.length === 0) {
-                container.innerHTML = '<p class="text-center text-gray-500 py-6">السلة فارغة حالياً</p>';
-                checkoutBtn.classList.add('hidden');
-                grandTotalElem.innerText = '0 ج.س';
+                container.innerHTML = '<p class="text-center text-gray-500 py-6 text-xs">السلة فارغة</p>';
                 return;
             }
 
             container.innerHTML = '';
-            let grandTotal = 0;
-
             cart.forEach((item, index) => {
-                grandTotal += item.total;
                 const div = document.createElement('div');
-                div.className = 'bg-[#1a1a1a] p-3 rounded-xl border border-gray-800 flex items-center justify-between gap-3 text-xs';
+                div.className = 'bg-[#141414] border border-gray-800 p-3.5 rounded-2xl flex items-center justify-between gap-3 text-xs';
                 div.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        <img src="${item.image_url}" class="w-12 h-12 object-cover rounded-lg border border-gray-700">
-                        <div>
-                            <p class="font-bold text-sm">${item.title} (كمية: ${item.quantity})</p>
-                            <p class="text-[10px] text-gray-400 whitespace-pre-line">${item.details.join(', ')}</p>
-                            <p class="gold-text font-bold mt-1">${item.total.toLocaleString()} ج.س</p>
+                    <div class="flex items-center gap-3">
+                        <img src="${item.image_url}" class="w-14 h-14 object-cover rounded-xl border border-gray-700">
+                        <div class="space-y-0.5">
+                            <p class="font-bold text-sm">${item.title}</p>
+                            <p class="text-[10px] text-gray-400 whitespace-pre-line">${item.details.join(' | ')}</p>
+                            <p class="gold-text font-black text-xs">${item.total.toLocaleString()} ج.س</p>
                         </div>
                     </div>
-                    <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-300 font-bold px-2 py-1 bg-red-950/30 border border-red-900 rounded-lg">حذف</button>
+                    <button onclick="removeFromCart(${index})" class="text-red-400 font-bold text-xs px-2.5 py-1 bg-red-950/30 border border-red-900 rounded-xl">حذف</button>
                 `;
                 container.appendChild(div);
             });
-
-            grandTotalElem.innerText = grandTotal.toLocaleString() + ' ج.س';
-            checkoutBtn.classList.remove('hidden');
         }
 
         function removeFromCart(index) {
             cart.splice(index, 1);
+            renderCheckoutCart();
+            calcCheckoutTotals();
             updateCartUI();
-            renderCartItems();
-            if(cart.length === 0) closeCartModal();
+            if(cart.length === 0) closeCheckoutScreen();
         }
 
-        async function openCheckoutModal() {
-            closeCartModal();
-            await loadDeliveryOptionsInCheckout();
-            document.getElementById('checkout-modal').classList.remove('hidden');
-        }
+        async function loadDeliveryZonesForCheckout() {
+            const container = document.getElementById('delivery-zones-radio-container');
+            deliveryZonesList = [
+                { zone_name: 'داخل عطبرة', price: 6000 },
+                { zone_name: 'خليوه', price: 7000 },
+                { zone_name: 'كنور', price: 8000 },
+                { zone_name: 'الدامر', price: 7000 }
+            ];
 
-        async function loadDeliveryOptionsInCheckout() {
-            const select = document.getElementById('delivery-option');
-            const currentCity = document.getElementById('current-city').innerText.trim();
-            if(!supabaseClient) return;
-            try {
-                const { data } = await supabaseClient.from('delivery_zones').select('*');
-                if(data && data.length > 0) {
-                    const cityZones = data.filter(z => {
-                        const zCity = z.city ? z.city.trim() : 'عطبرة';
-                        return zCity === 'الكل' || zCity === currentCity;
-                    });
-                    if(cityZones.length > 0) {
-                        select.innerHTML = '';
-                        cityZones.forEach(zone => {
-                            const opt = document.createElement('option');
-                            opt.value = zone.price;
-                            opt.innerText = `${zone.zone_name} (${zone.price.toLocaleString()} ج.س)`;
-                            select.appendChild(opt);
-                        });
-                        return;
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('delivery_zones').select('*');
+                    if(data && data.length > 0) {
+                        const cityZones = data.filter(z => (z.city ? z.city.trim() : 'عطبرة') === currentCity);
+                        if(cityZones.length > 0) deliveryZonesList = cityZones;
                     }
-                }
-                select.innerHTML = '<option value="6000">توصيل داخلي - 6,000 ج.س</option>';
-            } catch(e) {
-                select.innerHTML = '<option value="6000">توصيل داخلي - 6,000 ج.س</option>';
+                } catch(e) {}
             }
+
+            container.innerHTML = '';
+            deliveryZonesList.forEach((zone, idx) => {
+                const isSelected = idx === 0;
+                if(isSelected) {
+                    selectedDeliveryPrice = zone.price;
+                    selectedDeliveryName = zone.zone_name;
+                }
+
+                const label = document.createElement('label');
+                label.className = `flex items-center justify-between bg-[#1a1a1a] border ${isSelected ? 'gold-border' : 'border-gray-800'} p-3.5 rounded-2xl cursor-pointer hover:gold-border transition`;
+                label.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <input type="radio" name="delivery_zone" value="${zone.price}" data-name="${zone.zone_name}" ${isSelected ? 'checked' : ''} onchange="selectDeliveryZone(this)" class="accent-[#d4af37]">
+                        <span class="font-bold text-xs">${zone.zone_name}</span>
+                    </div>
+                    <span class="gold-text font-black text-xs">${zone.price.toLocaleString()} ج.س</span>
+                `;
+                container.appendChild(label);
+            });
+            calcCheckoutTotals();
         }
 
-        function closeCheckoutModal() {
-            document.getElementById('checkout-modal').classList.add('hidden');
+        function selectDeliveryZone(radio) {
+            selectedDeliveryPrice = parseFloat(radio.value);
+            selectedDeliveryName = radio.getAttribute('data-name');
+            
+            // تحديث حدود البطاقات المختارة
+            document.querySelectorAll('input[name="delivery_zone"]').r.forEach = ...
+            const labels = document.querySelectorAll('#delivery-zones-radio-container label');
+            labels.forEach(l => {
+                const inp = l.querySelector('input');
+                if(inp.checked) l.classList.add('gold-border');
+                else l.classList.remove('gold-border');
+            });
+            calcCheckoutTotals();
+        }
+
+        function calcCheckoutTotals() {
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
+            const grandTotal = subtotal + selectedDeliveryPrice;
+
+            document.getElementById('summary-items-count').innerText = `العروض (${totalItems} قطعة)`;
+            document.getElementById('summary-items-subtotal').innerText = subtotal.toLocaleString() + ' ج.س';
+            document.getElementById('summary-delivery-label').innerText = `التوصيل — ${selectedDeliveryName}`;
+            document.getElementById('summary-delivery-price').innerText = selectedDeliveryPrice.toLocaleString() + ' ج.س';
+            document.getElementById('summary-grand-total').innerText = grandTotal.toLocaleString() + ' ج.س';
         }
 
         async function submitFinalOrder() {
@@ -557,13 +605,10 @@ function closeModal() { document.getElementById('product-modal').classList.add('
             const altPhone = document.getElementById('cust-alt-phone').value.trim();
             const altReceiver = document.getElementById('cust-alt-receiver').value.trim();
             const area = document.getElementById('cust-area').value.trim();
-            const deliverySelect = document.getElementById('delivery-option');
-            const deliveryPrice = parseFloat(deliverySelect.value || 0);
-            const deliveryName = deliverySelect.options[deliverySelect.selectedIndex].text;
-            const city = document.getElementById('current-city').innerText;
+            const notes = document.getElementById('cust-notes').value.trim();
 
-            if(!name || !whatsapp || !area) {
-                showToast('الرجاء إكمال الحقول الإلزامية');
+            if(!name || !whatsapp || !altPhone || !altReceiver || !area) {
+                showToast('الرجاء إكمال كافة الحقول الإلزامية');
                 return;
             }
 
@@ -575,7 +620,7 @@ function closeModal() { document.getElementById('product-modal').classList.add('
                 itemsSummary.push(`▫️ المنتج (${idx+1}): ${item.title} (الكمية: ${item.quantity})\n   التفاصيل: ${item.details.join(' | ')}\n   السعر: ${item.total.toLocaleString()} ج.س`);
             });
 
-            const grandTotal = cartSubtotal + deliveryPrice;
+            const grandTotal = cartSubtotal + selectedDeliveryPrice;
 
             const orderData = {
                 product_title: `طلب سلة (${cart.length} منتجات)`,
@@ -583,13 +628,13 @@ function closeModal() { document.getElementById('product-modal').classList.add('
                 size: 'متعدد',
                 color: itemsSummary.join('\n\n'),
                 total_price: grandTotal,
-                city: city,
+                city: currentCity,
                 customer_name: name,
                 customer_whatsapp: whatsapp,
-                alternative_phone: altPhone || 'لا يوجد',
-                alternative_receiver: altReceiver || 'لا يوجد',
+                alternative_phone: altPhone,
+                alternative_receiver: altReceiver,
                 area: area,
-                delivery_price: deliveryPrice,
+                delivery_price: selectedDeliveryPrice,
                 status: 'جديدة',
                 image_url: cart[0].image_url
             };
@@ -598,26 +643,24 @@ function closeModal() { document.getElementById('product-modal').classList.add('
                 if(supabaseClient) {
                     await supabaseClient.from('orders').insert([orderData]);
                 }
-            } catch(err) {}
+            } catch(e) {}
 
             const message = `🛍️ *طلب جديد متكامل - متجر الأسطورة*\n\n` +
                             `📦 محتويات السلة:\n\n${itemsSummary.join('\n\n')}\n\n` +
                             `--------------------\n` +
                             `👤 الاسم: ${name}\n` +
                             `📞 واتساب: ${whatsapp}\n` +
-                            `📱 احتياطي: ${altPhone || 'لا يوجد'}\n` +
-                            `👤 المستلم البديل: ${altReceiver || 'لا يوجد'}\n` +
-                            `📍 المدينة والمنطقة: ${city} - ${area}\n` +
-                            `🚚 التوصيل: ${deliveryName}\n` +
+                            `📱 رقم احتياطي: ${altPhone}\n` +
+                            `👤 المستلم البديل: ${altReceiver}\n` +
+                            `📍 المدينة والمنطقة: ${currentCity} - ${area}\n` +
+                            `📝 ملاحظات: ${notes || 'لا يوجد'}\n` +
+                            `🚚 التوصيل: ${selectedDeliveryName}\n` +
                             `💰 إجمالي العروض: ${cartSubtotal.toLocaleString()} ج.س\n` +
                             `💎 الإجمالي الكلي: ${grandTotal.toLocaleString()} ج.س`;
 
             const whatsappUrl = `https://wa.me/${OWNER_WHATSAPP}?text=` + encodeURIComponent(message);
             
-            showToast('تم إرسال طلبيتك بنجاح! جاري تحويلك للواتساب..');
-            closeCheckoutModal();
-            cart = [];
-            updateCartUI();
+            showToast('تم إرسال طلبك بنجاح! جاري تحويلك للواتساب..');
             setTimeout(() => { window.location.href = whatsappUrl; }, 1200);
         }
     </script>
