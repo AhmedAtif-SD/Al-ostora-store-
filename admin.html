@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - الأسطورة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #fcfbfa; color: #1a1a1a; }
+        .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); }
+        .gold-border { border-color: #d4af37; }
+        .gold-text { color: #b8860b; }
+        .grid-bg {
+            background-image: linear-gradient(to right, #eae5d9 1px, transparent 1px), linear-gradient(to bottom, #eae5d9 1px, transparent 1px);
+            background-size: 3rem 3rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 flex flex-col items-center pb-12 relative grid-bg">
+
+    <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+        <span class="text-xl">✨</span>
+        <span id="toast-message" class="text-xs font-bold text-amber-400">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- نافذة تأكيد الحذف -->
+    <div id="confirm-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl border border-neutral-200 p-6 shadow-2xl text-center space-y-4">
+            <h3 id="confirm-title" class="text-sm font-black text-neutral-900 leading-relaxed">رسالة التأكيد</h3>
+            <div class="flex gap-2 pt-2">
+                <button id="confirm-yes-btn" class="w-full py-2.5 rounded-xl gold-gradient text-neutral-950 font-extrabold text-xs shadow-md cursor-pointer">تأكيد</button>
+                <button onclick="window.closeConfirmModal()" class="w-full py-2.5 rounded-xl border border-neutral-300 text-xs text-neutral-600 hover:text-neutral-900 cursor-pointer font-bold">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- شاشة تسجيل الدخول -->
+    <div id="auth-screen" class="w-full max-w-sm bg-white border border-neutral-200 rounded-3xl p-6 shadow-xl text-center mt-20">
+        <div class="w-24 h-24 mx-auto rounded-2xl border gold-border p-2 bg-neutral-950 flex flex-col items-center justify-center mb-4 shadow-md">
+            <span class="text-2xl font-black text-amber-400 tracking-widest">AS</span>
+            <div class="w-12 h-[2px] gold-gradient my-1"></div>
+            <span class="text-[7px] font-bold tracking-widest text-amber-200">OSTORA</span>
+        </div>
+        <h1 class="text-lg font-black text-neutral-900 mb-1">لوحة تحكم المالك</h1>
+        <p class="text-xs text-neutral-500 mb-6 font-semibold">الرجاء إدخال كلمة المرور للمتابعة</p>
+        <input type="password" id="admin-pass" placeholder="كلمة المرور" class="w-full bg-neutral-50 border border-neutral-300 rounded-xl p-3 text-sm mb-4 text-center focus:outline-none focus:border-amber-500">
+        <button onclick="window.checkPassword()" class="w-full py-3 rounded-xl gold-gradient text-neutral-950 font-black text-sm shadow-md mb-3 cursor-pointer">دخول</button>
+        <a href="index.html" class="text-xs text-neutral-500 hover:gold-text underline font-bold">← العودة للمتجر الرئيسي</a>
+    </div>
+
+    <!-- المحتوى الرئيسي للوحة التحكم -->
+    <div id="admin-content" class="w-full max-w-md hidden">
+        <div class="flex justify-between items-center mb-4 bg-white p-3.5 rounded-2xl border border-neutral-200 shadow-sm">
+            <h1 class="text-base font-black text-neutral-900">لوحة التحكم</h1>
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="bg-neutral-100 px-3 py-1.5 rounded-xl text-xs border border-neutral-300 font-bold hover:gold-text text-neutral-700">المتجر</a>
+                <button onclick="window.logout()" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs border border-red-200 font-bold cursor-pointer">خروج</button>
+            </div>
+        </div>
+
+        <div class="bg-white border border-neutral-200 rounded-2xl p-3.5 mb-4 space-y-1 text-center shadow-sm">
+            <div class="flex items-center justify-center gap-2">
+                <select id="header-city-select" onchange="window.changeActiveAdminCity(this.value)" class="bg-neutral-50 border gold-border rounded-xl px-4 py-1.5 text-xs gold-text font-black focus:outline-none">
+                    <option value="عطبرة">📍 عطبرة 💙</option>
+                </select>
+            </div>
+            <p id="city-scope-note" class="text-[10px] text-neutral-500 font-semibold mt-1">كل ما تعدله هنا يخص مدينة "عطبرة 📍💙" فقط.</p>
+        </div>
+
+        <div class="grid grid-cols-4 gap-1.5 mb-4 text-center">
+            <button onclick="window.switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer shadow-sm">الطلبات <span id="orders-count-badge" class="bg-neutral-900 text-amber-400 px-1 py-0.5 rounded-full text-[9px]">0</span></button>
+            <button onclick="window.switchTab('delivery')" id="tab-delivery-btn" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer shadow-sm">التوصيل</button>
+            <button onclick="window.switchTab('offers')" id="tab-offers-btn" class="py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-[10px] shadow-md cursor-pointer">العروض</button>
+            <button onclick="window.switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer shadow-sm">المدن</button>
+        </div>
+
+        <!-- قسم الطلبات -->
+        <div id="tab-orders" class="space-y-4 hidden">
+            <div class="flex gap-1 overflow-x-auto pb-2">
+                <button onclick="window.filterOrders('الكل')" class="filter-btn bg-neutral-900 text-white px-3 py-1.5 rounded-xl text-xs border border-neutral-900 font-bold cursor-pointer">الكل</button>
+                <button onclick="window.filterOrders('جديدة')" class="filter-btn bg-white px-3 py-1.5 rounded-xl text-xs border border-neutral-200 text-neutral-600 cursor-pointer font-bold">جديدة</button>
+                <button onclick="window.filterOrders('مسلمة')" class="filter-btn bg-white px-3 py-1.5 rounded-xl text-xs border border-neutral-200 text-neutral-600 cursor-pointer font-bold">مسلمة</button>
+                <button onclick="window.loadOrders()" class="bg-white px-3 py-1.5 rounded-xl text-xs border border-neutral-200 text-neutral-600 mr-auto cursor-pointer font-bold">تحديث</button>
+            </div>
+            <div class="flex justify-between items-center text-xs px-1">
+                <button onclick="window.confirmAction('حذف جميع الطلبات المسلمة؟', window.deleteDeliveredOrders)" class="text-red-500 hover:underline cursor-pointer font-bold">حذف المسلمة</button>
+                <button onclick="window.confirmAction('تحذير: سيتم حذف جميع الطلبات بالكامل! هل أنت متأكد؟', window.deleteAllOrders)" class="text-red-600 hover:underline cursor-pointer font-bold">إفراغ كل الطلبات</button>
+            </div>
+            <div id="orders-list" class="space-y-4">
+                <p class="text-center text-neutral-400 py-10 text-xs font-bold">جاري تحميل الطلبات...</p>
+            </div>
+        </div>
+
+        <!-- قسم التوصيل -->
+        <div id="tab-delivery" class="bg-white border border-neutral-200 rounded-2xl p-4 hidden space-y-4 text-xs shadow-sm">
+            <h3 class="font-black gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل حسب المدينة</h3>
+            <form onsubmit="window.addDeliveryZone(event)" class="space-y-2.5 bg-neutral-50 p-3.5 rounded-xl border border-neutral-200 mb-4">
+                <div>
+                    <label class="block text-neutral-600 mb-1 font-bold">اختر المدينة التابع لها التوصيل</label>
+                    <select id="delivery-city" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs gold-text font-bold focus:outline-none focus:border-amber-500">
+                        <option value="عطبرة">عطبرة</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-neutral-600 mb-1 font-bold">اسم المنطقة</label>
+                    <input type="text" id="zone-name" required class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="مثال: خليوه">
+                </div>
+                <div>
+                    <label class="block text-neutral-600 mb-1 font-bold">السعر (ج.س)</label>
+                    <input type="number" id="zone-price" required class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="7000">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-xs shadow-md cursor-pointer">إضافة خيار التوصيل</button>
+            </form>
+            <div id="delivery-zones-list" class="space-y-2">
+                <p class="text-center text-neutral-400 py-4 font-bold">جاري التحميل...</p>
+            </div>
+        </div>
+
+        <!-- قسم العروض -->
+        <div id="tab-offers" class="bg-white border border-neutral-200 rounded-2xl p-4 space-y-5 text-xs shadow-sm">
+            <div id="product-form-card" class="bg-neutral-50 border border-neutral-200 p-4 rounded-2xl">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 id="form-title" class="font-black gold-text text-sm">عرض جديد</h3>
+                    <button type="button" id="cancel-edit-btn" onclick="window.resetProductForm()" class="hidden text-neutral-500 hover:text-neutral-900 underline text-[10px] font-bold cursor-pointer">إلغاء التعديل</button>
+                </div>
+                <form id="product-form" onsubmit="window.saveProduct(event)" class="space-y-3">
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">اسم العرض *</label>
+                        <input type="text" id="title" required class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="طقم رياضي 💙😍">
+                    </div>
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">السعر (ج.س) *</label>
+                        <input type="number" id="price" required class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="60000">
+                    </div>
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">الوصف</label>
+                        <textarea id="description" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="خامة قطن بجودة عالية 🔥💙"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">المقاسات (افصل بفاصلة)</label>
+                        <input type="text" id="product-sizes" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="L, xl, 2xl, 3xl">
+                    </div>
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">الألوان (افصل بفاصلة)</label>
+                        <input type="text" id="product-colors" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="كَبدي، اسود، زيتي، بيجي">
+                    </div>
+                    <div>
+                        <label class="block text-neutral-600 mb-1 font-bold">الصور (حتى 4)</label>
+                        <input type="file" id="product-image-files" accept="image/*" multiple class="w-full bg-white border border-neutral-300 rounded-xl p-2 text-xs focus:outline-none file:mr-4 file:py-1 file:px-2 file:rounded-lg file:border-0 file:text-[10px] file:font-bold file:bg-amber-500 file:text-white cursor-pointer" onchange="window.previewImages(event)">
+                        <div id="image-preview-container" class="flex gap-2 mt-2 flex-wrap"></div>
+                    </div>
+                    <button type="submit" id="product-submit-btn" class="w-full py-3 rounded-xl gold-gradient text-neutral-950 font-black text-xs shadow-md cursor-pointer">
+                        حفظ
+                    </button>
+                </form>
+            </div>
+
+            <div class="border-t border-neutral-200 pt-4 space-y-3">
+                <h3 class="font-black gold-text text-sm">العروض الحالية</h3>
+                <div id="admin-products-list" class="space-y-3">
+                    <p class="text-center text-neutral-400 py-4 font-bold">جاري تحميل العروض...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- قسم المدن -->
+        <div id="tab-cities" class="bg-white border border-neutral-200 rounded-2xl p-4 hidden space-y-4 text-xs shadow-sm">
+            <h3 class="font-black gold-text text-sm mb-1">المدن</h3>
+            <form onsubmit="window.addCity(event)" class="space-y-2.5 bg-neutral-50 p-3.5 rounded-xl border border-neutral-200 mb-4">
+                <div>
+                    <label class="block text-neutral-600 mb-1 font-bold">اسم مدينة جديدة</label>
+                    <input type="text" id="new-city-name" required class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 text-xs focus:outline-none focus:border-amber-500" placeholder="مثال: بورتسودان">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-xs shadow-md cursor-pointer">إضافة</button>
+            </form>
+            <div id="admin-cities-list" class="space-y-2">
+                <p class="text-center text-neutral-400 py-4 font-bold">جاري التحميل...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
+        
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(e) {}
+
+        let allOrders = [];
+        let currentFilter = 'الكل';
+        let editingProductId = null;
+        let tempBase64Images = [];
+        window.activeAdminCity = 'عطبرة';
+
+        window.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('admin_logged_in') === 'true') {
+                const authScreen = document.getElementById('auth-screen');
+                const adminContent = document.getElementById('admin-content');
+                if(authScreen) authScreen.classList.add('hidden');
+                if(adminContent) adminContent.classList.remove('hidden');
+                window.initAdminDashboard();
+            }
+        });
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            if(!toast) return;
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(-80px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
+        let confirmCallback = null;
+        window.confirmAction = function(message, callback) {
+            const titleElem = document.getElementById('confirm-title');
+            if(titleElem) titleElem.innerText = message;
+            confirmCallback = callback;
+            const modal = document.getElementById('confirm-modal');
+            if(modal) modal.classList.remove('hidden');
+        };
+
+        window.closeConfirmModal = function() {
+            const modal = document.getElementById('confirm-modal');
+            if(modal) modal.classList.add('hidden');
+            confirmCallback = null;
+        };
+
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        if(confirmYesBtn) {
+            confirmYesBtn.onclick = function() {
+                if(confirmCallback) confirmCallback();
+                window.closeConfirmModal();
+
+
+window.checkPassword = function() {
+            const passElem = document.getElementById('admin-pass');
+            const pass = passElem ? passElem.value : '';
+            const savedPass = localStorage.getItem('admin_password') || 'OS 123';
+            if(pass === savedPass) {
+                localStorage.setItem('admin_logged_in', 'true');
+                const authScreen = document.getElementById('auth-screen');
+                const adminContent = document.getElementById('admin-content');
+                if(authScreen) authScreen.classList.add('hidden');
+                if(adminContent) adminContent.classList.remove('hidden');
+                window.initAdminDashboard();
+            } else {
+                showToast('كلمة المرور غير صحيحة!');
+            }
+        };
+
+        window.logout = function() {
+            localStorage.removeItem('admin_logged_in');
+            const adminContent = document.getElementById('admin-content');
+            const authScreen = document.getElementById('auth-screen');
+            if(adminContent) adminContent.classList.add('hidden');
+            if(authScreen) authScreen.classList.remove('hidden');
+            const passElem = document.getElementById('admin-pass');
+            if(passElem) passElem.value = '';
+        };
+
+        window.initAdminDashboard = async function() {
+            await window.loadCitiesDropdowns();
+            window.loadOrders();
+            window.loadDeliveryZonesAdmin();
+            window.loadCitiesAdmin();
+            window.loadAdminProducts();
+        };
+
+        window.loadCitiesDropdowns = async function() {
+            let cities = [{name: 'عطبرة'}];
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('cities').select('*');
+                    if(data && data.length > 0) cities = data;
+                } catch(e) {}
+            }
+
+            const headerSelect = document.getElementById('header-city-select');
+            const deliveryCity = document.getElementById('delivery-city');
+            
+            let html = '';
+            cities.forEach(c => {
+                html += `<option value="${c.name}" ${c.name === window.activeAdminCity ? 'selected' : ''}>📍 ${c.name} 💙</option>`;
+            });
+            if(headerSelect) headerSelect.innerHTML = html;
+            if(deliveryCity) deliveryCity.innerHTML = html;
+        };
+
+        window.changeActiveAdminCity = function(cityName) {
+            window.activeAdminCity = cityName.trim();
+            const note = document.getElementById('city-scope-note');
+            if(note) note.innerText = `كل ما تعدله هنا يخص مدينة "${window.activeAdminCity} 📍💙" فقط.`;
+            window.loadAdminProducts();
+            window.loadDeliveryZonesAdmin();
+        };
+
+        window.switchTab = function(tabName) {
+            ['orders', 'delivery', 'offers', 'cities'].forEach(t => {
+                const elem = document.getElementById(`tab-${t}`);
+                const btn = document.getElementById(`tab-${t}-btn`);
+                if(elem) elem.classList.add('hidden');
+                if(btn) btn.className = 'py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer shadow-sm';
+            });
+            
+            const activeElem = document.getElementById(`tab-${tabName}`);
+            const activeBtn = document.getElementById(`tab-${tabName}-btn`);
+            if(activeElem) activeElem.classList.remove('hidden');
+            if(activeBtn) activeBtn.className = 'py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-[10px] shadow-md cursor-pointer';
+
+            if(tabName === 'cities') window.loadCitiesAdmin();
+            if(tabName === 'delivery') window.loadDeliveryZonesAdmin();
+            if(tabName === 'offers') window.loadAdminProducts();
+        };
+
+        window.loadOrders = async function() {
+            const container = document.getElementById('orders-list');
+            if(!container) return;
+            if(!supabaseClient) {
+                container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات</p>';
+                return;
+            }
+            try {
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if(error) throw error;
+                allOrders = data || [];
+                const badge = document.getElementById('orders-count-badge');
+                if(badge) badge.innerText = allOrders.filter(o => o.status === 'جديدة').length;
+                window.renderOrders();
+            } catch(e) {
+                container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات حالياً</p>';
+            }
+        };
+
+        window.filterOrders = function(status) {
+            currentFilter = status;
+            window.renderOrders();
+        };
+
+        window.renderOrders = function() {
+            const container = document.getElementById('orders-list');
+            if(!container) return;
+            let filtered = allOrders;
+            if(currentFilter !== 'الكل') {
+                filtered = allOrders.filter(o => o.status === currentFilter);
+            }
+
+            if(filtered.length === 0) {
+                container.innerHTML = '<p class="text-center text-neutral-400 py-10 text-xs font-bold">لا توجد طلبات حالياً</p>';
+                return;
+            }
+
+            container.innerHTML = '';
+            filtered.forEach((order, index) => {
+                const dateObj = new Date(order.created_at);
+                const timeStr = dateObj.toLocaleDateString('ar-SA') + '، ' + dateObj.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'});
+                
+                const card = document.createElement('div');
+                card.className = 'bg-white border border-neutral-200 rounded-2xl p-4 text-xs space-y-3 shadow-sm';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b border-neutral-100 pb-2">
+                        <span class="font-black gold-text">طلب #${allOrders.length - index}</span>
+                        <span class="text-neutral-400 text-[10px] font-bold">${timeStr}</span>
+                        <span class="px-2.5 py-1 rounded-full text-[10px] font-black ${order.status === 'جديدة' ? 'bg-amber-50 gold-text border gold-border' : 'bg-green-50 text-green-700 border border-green-200'}">${order.status}</span>
+                    </div>
+
+                    <div class="flex items-center gap-3 bg-neutral-50 p-2.5 rounded-xl border border-neutral-200">
+                        <img src="${order.image_url || 'https://via.placeholder.com/100'}" class="w-14 h-14 object-cover rounded-lg border border-neutral-200">
+                        <div class="space-y-1">
+                            <p class="font-black text-sm text-neutral-900">${order.product_title}</p>
+                            <p class="gold-text text-[11px] whitespace-pre-line font-bold">${order.color}</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-1.5 text-neutral-700 font-bold">
+                        <div class="flex justify-between"><span class="text-neutral-400">الاسم</span><span>${order.customer_name}</span></div>
+                        <div class="flex justify-between"><span class="text-neutral-400">واتساب</span><a href="https://wa.me/${order.customer_whatsapp}" target="_blank" class="gold-text underline">${order.customer_whatsapp}</a></div>
+                        <div class="flex justify-between"><span class="text-neutral-400">المنطقة</span><span>${order.city} - ${order.area}</span></div>
+                        <div class="flex justify-between"><span class="text-neutral-400">التوصيل</span><span>${order.delivery_price ? order.delivery_price.toLocaleString() + ' ج.س' : 'مجاني'}</span></div>
+                        <div class="flex justify-between border-t border-neutral-100 pt-1 font-black text-sm gold-text"><span>الإجمالي</span><span>${order.total_price.toLocaleString()} ج.س</span></div>
+                    </div>
+
+                    <div class="grid grid-cols-3 gap-2 pt-2 border-t border-neutral-100">
+                        <button onclick="window.updateOrderStatus('${order.id}', '${order.status === 'جديدة' ? 'مسلمة' : 'جديدة'}')" class="py-2 rounded-xl bg-green-50 text-green-700 border border-green-200 font-bold hover:bg-green-100 transition cursor-pointer">
+                            ${order.status === 'جديدة' ? 'تم التسليم' : 'إعادة كجديدة'}
+                        </button>
+                        <a href="https://wa.me/${order.customer_whatsapp}?text=${encodeURIComponent('مرحباً بك يا ' + order.customer_name + '، بخصوص طلبك من متجر الأسطورة:')}" target="_blank" class="py-2 rounded-xl bg-neutral-100 text-neutral-700 border border-neutral-300 font-bold text-center hover:gold-text transition">
+                            واتساب
+                        </a>
+                        <button onclick="window.confirmAction('حذف هذا الطلب؟', () => window.deleteOrder('${order.id}'))" class="py-2 rounded-xl bg-red-50 text-red-600 border border-red-200 font-bold hover:bg-red-100 transition cursor-pointer">
+                            حذف
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        window.loadCitiesAdmin = async function() {
+            const container = document.getElementById('admin-cities-list');
+            if(!container) return;
+            let cities = [{id: 1, name: 'عطبرة'}];
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('cities').select('*');
+                    if(data && data.length > 0) cities = data;
+                } catch(e) {}
+            }
+
+            container.innerHTML = '';
+            cities.forEach(city => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center bg-neutral-50 p-3 rounded-xl border border-neutral-200 font-bold';
+                item.innerHTML = `
+                    <span class="text-neutral-900">📍 ${city.name} 💙</span>
+                    <button onclick="window.confirmAction('حذف مدينة «${city.name}»؟', () => window.deleteCity('${city.id}', '${city.name}'))" class="text-red-600 font-bold text-xs px-2.5 py-1 bg-red-50 border border-red-200 rounded-lg cursor-pointer">حذف</button>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        window.addCity = async function(e) {
+            e.preventDefault();
+            const inputElem = document.getElementById('new-city-name');
+            const name = inputElem ? inputElem.value.trim() : '';
+            if(!supabaseClient || !name) return;
+            try {
+                const { error } = await supabaseClient.from('cities').insert([{ name }]);
+                if(error) throw error;
+                showToast('تمت إضافة المدينة بنجاح!');
+                inputElem.value = '';
+                window.loadCitiesAdmin();
+                window.loadCitiesDropdowns();
+            } catch(err) {
+                showToast('خطأ أثناء إضافة المدينة.');
+            }
+        };
+
+        window.deleteCity = async function(id, cityName) {
+            if(!supabaseClient) return;
+            await supabaseClient.from('products').delete().eq('city', cityName);
+            await supabaseClient.from('delivery_zones').delete().eq('city', cityName);
+            await supabaseClient.from('cities').delete().eq('id', id);
+            showToast('تم حذف المدينة بنجاح');
+            window.loadCitiesAdmin();
+            window.loadCitiesDropdowns();
+        };
+
+        window.loadDeliveryZonesAdmin = async function() {
+            const container = document.getElementById('delivery-zones-list');
+            if(!container) return;
+            let zones = [
+                { id: 1, zone_name: 'داخل عطبرة', price: 6000, city: 'عطبرة' },
+                { id: 2, zone_name: 'خليوه', price: 7000, city: 'عطبرة' }
+            ];
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('delivery_zones').select('*');
+                    if(data && data.length > 0) zones = data;
+                } catch(e) {}
+            }
+            const cityZones = zones.filter(z => (z.city ? z.city.trim() : 'عطبرة') === window.activeAdminCity);
+            
+            container.innerHTML = '';
+            if(cityZones.length === 0) {
+                container.innerHTML = '<p class="text-center text-neutral-400 py-2 font-bold">لا توجد مناطق توصيل</p>';
+                return;
+            }
+            cityZones.forEach(zone => {
+                const item = document.createElement('div');
+                item.className = 'flex justify-between items-center bg-neutral-50 p-3 rounded-xl border border-neutral-200';
+                item.innerHTML = `
+                    <div>
+                        <span class="font-black text-neutral-900 block">${zone.zone_name}</span>
+                        <span class="gold-text font-bold">${zone.price.toLocaleString()} ج.س</span>
+                    </div>
+                    <button onclick="window.confirmAction('حذف التوصيل؟', () => window.deleteDeliveryZone('${zone.id}'))" class="text-red-600 font-bold text-xs px-2.5 py-1 bg-red-50 border border-red-200 rounded-lg cursor-pointer">حذف</button>
+                `;
+                container.appendChild(item);
+
+window.addDeliveryZone = async function(e) {
+            e.preventDefault();
+            const city = window.activeAdminCity;
+            const zoneNameElem = document.getElementById('zone-name');
+            const zonePriceElem = document.getElementById('zone-price');
+            const zone_name = zoneNameElem ? zoneNameElem.value.trim() : '';
+            const price = zonePriceElem ? parseFloat(zonePriceElem.value) : 0;
+            if(!supabaseClient) return;
+
+            await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
+            showToast('تمت إضافة التوصيل بنجاح!');
+            if(zoneNameElem) zoneNameElem.value = '';
+            if(zonePriceElem) zonePriceElem.value = '';
+            window.loadDeliveryZonesAdmin();
+        };
+
+        window.deleteDeliveryZone = async function(id) {
+            if(!supabaseClient) return;
+            await supabaseClient.from('delivery_zones').delete().eq('id', id);
+            window.loadDeliveryZonesAdmin();
+        };
+
+        function compressImage(file, callback) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 500;
+                    const MAX_HEIGHT = 500;
+                    let width = img.width;
+                    let height = img.height;
+                    if (width > height) {
+                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
+                    } else {
+                        if (height > MAX_HEIGHT) { width *= MAX_HEIGHT / height; height = MAX_HEIGHT; }
+                    }
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    callback(canvas.toDataURL('image/jpeg', 0.65));
+                }
+            }
+        }
+
+        window.previewImages = function(event) {
+            const files = event.target.files;
+            const container = document.getElementById('image-preview-container');
+            if(!container) return;
+            container.innerHTML = '';
+            tempBase64Images = [];
+            if (!files || files.length === 0) return;
+            Array.from(files).forEach(file => {
+                compressImage(file, function(compressedBase64) {
+                    tempBase64Images.push(compressedBase64);
+                    const img = document.createElement('img');
+                    img.src = compressedBase64;
+                    img.className = 'w-16 h-16 object-cover rounded-lg border border-amber-500 shadow-sm';
+                    container.appendChild(img);
+                });
+            });
+        };
+
+        window.loadAdminProducts = async function() {
+            const container = document.getElementById('admin-products-list');
+            if(!container) return;
+            let products = [
+                { id: 1, title: 'طقم رياضي فاخر', price: 60000, city: 'عطبرة', sizes: 'M, L', image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500' }
+            ];
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
+                    if(data && data.length > 0) products = data;
+                } catch(e) {}
+            }
+
+            const filteredProducts = products.filter(p => {
+                const pCity = p.city ? p.city.trim() : 'الكل';
+                return pCity === 'الكل' || pCity === window.activeAdminCity;
+            });
+
+            container.innerHTML = '';
+            if(filteredProducts.length === 0) {
+                container.innerHTML = `<p class="text-center text-neutral-400 py-2 font-bold">لا توجد عروض في مدينة ${window.activeAdminCity}</p>`;
+                return;
+            }
+
+            filteredProducts.forEach(product => {
+                let imgToShow = product.image_url;
+                const item = document.createElement('div');
+                item.className = 'bg-neutral-50 p-3 rounded-xl border border-neutral-200 space-y-2';
+                item.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <img src="${imgToShow}" class="w-12 h-12 object-cover rounded-lg border border-neutral-200">
+                            <div>
+                                <p class="font-black text-xs text-neutral-900">${product.title}</p>
+                                <p class="gold-text font-bold text-xs">${product.price.toLocaleString()} ج.س</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1">
+                            <button onclick="window.prepareEditProduct('${product.id}')" class="text-amber-700 text-xs px-2.5 py-1 bg-amber-50 border border-amber-200 rounded-lg font-bold cursor-pointer">تعديل</button>
+                            <button onclick="window.confirmAction('حذف العرض؟', () => window.deleteProduct('${product.id}'))" class="text-red-600 text-xs px-2.5 py-1 bg-red-50 border border-red-200 rounded-lg font-bold cursor-pointer">حذف</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        };
+
+        window.prepareEditProduct = async function(id) {
+            if(!supabaseClient) return;
+            const { data } = await supabaseClient.from('products').select('*').eq('id', id).single();
+            if(!data) return;
+
+            document.getElementById('title').value = data.title;
+            document.getElementById('price').value = data.price;
+            document.getElementById('description').value = data.description || '';
+            document.getElementById('product-sizes').value = data.sizes || '';
+            document.getElementById('product-colors').value = data.colors || '';
+            
+            tempBase64Images = [];
+            if(data.images) {
+                try { tempBase64Images = JSON.parse(data.images); } catch(e) {}
+            }
+            if(tempBase64Images.length === 0 && data.image_url) tempBase64Images.push(data.image_url);
+
+            const container = document.getElementById('image-preview-container');
+            if(container) {
+                container.innerHTML = '';
+                tempBase64Images.forEach(src => {
+                    const img = document.createElement('img');
+                    img.src = src;
+                    img.className = 'w-16 h-16 object-cover rounded-lg border border-amber-500 shadow-sm';
+                    container.appendChild(img);
+                });
+            }
+            
+            editingProductId = id;
+            document.getElementById('form-title').innerText = 'تعديل العرض';
+            document.getElementById('product-submit-btn').innerText = 'حفظ';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+        };
+
+        window.resetProductForm = function() {
+            document.getElementById('product-form').reset();
+            const container = document.getElementById('image-preview-container');
+            if(container) container.innerHTML = '';
+            editingProductId = null;
+            tempBase64Images = [];
+            document.getElementById('form-title').innerText = 'عرض جديد';
+            document.getElementById('product-submit-btn').innerText = 'حفظ';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        };
+
+        window.saveProduct = async function(e) {
+            e.preventDefault();
+            if(!supabaseClient) return;
+            const title = document.getElementById('title').value;
+            const price = parseFloat(document.getElementById('price').value);
+            const description = document.getElementById('description').value;
+            const sizes = document.getElementById('product-sizes').value;
+            const colors = document.getElementById('product-colors').value;
+            const city = window.activeAdminCity;
+
+            if (tempBase64Images.length === 0) {
+                showToast('الرجاء اختيار صورة واحدة على الأقل');
+                return;
+            }
+
+            const productData = {
+                title, price, description, sizes, colors, city,
+                image_url: tempBase64Images[0],
+                images: JSON.stringify(tempBase64Images)
+            };
+
+            if(editingProductId) {
+                await supabaseClient.from('products').update(productData).eq('id', editingProductId);
+            } else {
+                await supabaseClient.from('products').insert([productData]);
+            }
+
+            showToast("تم الحفظ بنجاح!");
+            window.resetProductForm();
+            window.loadAdminProducts();
+        };
+
+        window.deleteProduct = async function(id) {
+            if(!supabaseClient) return;
+            await supabaseClient.from('products').delete().eq('id', id);
+            showToast('تم الحذف بنجاح');
+            window.loadAdminProducts();
+        };
+
+        window.updateOrderStatus = async function(id, newStatus) {
+            if(!supabaseClient) return;
+            await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
+            window.loadOrders();
+        };
+
+        window.deleteOrder = async function(id) {
+            if(!supabaseClient) return;
+            await supabaseClient.from('orders').delete().eq('id', id);
+            window.loadOrders();
+        };
+
+        window.deleteDeliveredOrders = async function() {
+            if(!supabaseClient) return;
+            await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
+            window.loadOrders();
+        };
+
+        window.deleteAllOrders = async function() {
+            if(!supabaseClient) return;
+            await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+            window.loadOrders();
+        };
+    </script>
+</body>
+</html>
