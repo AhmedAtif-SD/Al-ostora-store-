@@ -16,23 +16,24 @@
 </head>
 <body class="min-h-screen p-4 flex flex-col items-center pb-12 relative">
 
+    <!-- إشعار التنبيه -->
     <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
         <span class="text-xl">✨</span>
         <span id="toast-message" class="text-xs font-bold gold-text">تمت العملية بنجاح</span>
     </div>
 
-    <!-- نافذة تأكيد الحذف المخصصة (Modal مطابقة للمرجع) -->
+    <!-- نافذة تأكيد الحذف -->
     <div id="confirm-modal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex justify-center items-center p-4">
         <div class="bg-[#121212] w-full max-w-sm rounded-2xl border gold-border p-6 shadow-2xl text-center space-y-4">
             <h3 id="confirm-title" class="text-sm font-bold gold-text leading-relaxed">رسالة التأكيد</h3>
             <div class="flex gap-2 pt-2">
-                <button id="confirm-yes-btn" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">تأكيد الحذف</button>
+                <button id="confirm-yes-btn" class="w-full py-2.5 rounded-xl gold-gradient text-black font-extrabold text-xs shadow-lg">تأكيد</button>
                 <button onclick="closeConfirmModal()" class="w-full py-2.5 rounded-xl border border-gray-700 text-xs text-gray-300 hover:text-white">إلغاء</button>
             </div>
         </div>
     </div>
 
-    <!-- شاشة تسجيل الدخول المطابقة للصورة الأولى -->
+    <!-- شاشة تسجيل الدخول -->
     <div id="auth-screen" class="w-full max-w-sm bg-[#141414] border gold-border rounded-2xl p-6 shadow-2xl text-center mt-20">
         <div class="w-24 h-24 mx-auto rounded-2xl border gold-border p-2 bg-[#181818] flex flex-col items-center justify-center mb-4 shadow-md">
             <span class="text-2xl font-black gold-text tracking-widest">AS</span>
@@ -46,7 +47,7 @@
         <a href="index.html" class="text-xs text-gray-500 hover:gold-text underline">← العودة للمتجر الرئيسي</a>
     </div>
 
-    <!-- المحتوى الرئيسي للوحة التحكم (مطابق تماماً لصور المرجع 2 و 5 و 6) -->
+    <!-- المحتوى الرئيسي للوحة التحكم -->
     <div id="admin-content" class="w-full max-w-md hidden">
         <div class="flex justify-between items-center mb-4 bg-[#141414] p-3 rounded-2xl border gold-border">
             <h1 class="text-base font-bold gold-text">لوحة التحكم</h1>
@@ -56,7 +57,7 @@
             </div>
         </div>
 
-        <!-- شريط اختيار المدينة النشطة في اللوحة -->
+        <!-- شريط اختيار المدينة -->
         <div class="bg-[#141414] border border-gray-800 rounded-2xl p-3 mb-4 space-y-1 text-center">
             <div class="flex items-center justify-center gap-2">
                 <select id="header-city-select" onchange="changeActiveAdminCity(this.value)" class="bg-[#1a1a1a] border gold-border rounded-xl px-4 py-1.5 text-xs gold-text font-bold focus:outline-none">
@@ -66,7 +67,7 @@
             <p id="city-scope-note" class="text-[10px] text-gray-400">كل ما تعدله هنا يخص مدينة "عطبرة 📍💙" فقط.</p>
         </div>
 
-        <!-- التبويبات الثلاثة الرئيسية المطابقة للمرجع -->
+        <!-- التبويبات الرئيسية -->
         <div class="grid grid-cols-4 gap-1 mb-4 text-center">
             <button onclick="switchTab('orders')" id="tab-orders-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">الطلبات <span id="orders-count-badge" class="bg-black text-white px-1 py-0.5 rounded-full text-[9px]">0</span></button>
             <button onclick="switchTab('delivery')" id="tab-delivery-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px]">التوصيل</button>
@@ -90,7 +91,7 @@
             </div>
         </div>
 
-        <!-- قسم التوصيل المطابق للمرجع (صورة 5) -->
+        <!-- قسم التوصيل -->
         <div id="tab-delivery" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">إدارة أسعار وطرق التوصيل حسب المدينة</h3>
             
@@ -117,7 +118,7 @@
             </div>
         </div>
 
-        <!-- قسم العروض (مطابق لصور 2، 3، 4) -->
+        <!-- قسم العروض -->
         <div id="tab-offers" class="bg-[#141414] border gold-border rounded-2xl p-4 space-y-5 text-xs">
             <div id="product-form-card" class="bg-[#141414] border border-gray-800 p-4 rounded-2xl">
                 <div class="flex justify-between items-center mb-2">
@@ -164,7 +165,7 @@
             </div>
         </div>
 
-        <!-- قسم المدن المطابق تماماً لصور المرجع (صورة 6 و 7) -->
+        <!-- قسم المدن -->
         <div id="tab-cities" class="bg-[#141414] border gold-border rounded-2xl p-4 hidden space-y-4 text-xs">
             <h3 class="font-bold gold-text text-sm mb-1">المدن</h3>
             
@@ -184,8 +185,14 @@
 <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
+        let supabaseClient = null;
+        try {
+            if (window.supabase) {
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch(e) {}
+
         let allOrders = [];
         let currentFilter = 'الكل';
         let editingProductId = null;
@@ -211,7 +218,6 @@
             }, 3000);
         }
 
-        // نافذة تأكيد الحذف المطابقة لصور المرجع
         let confirmCallback = null;
         function confirmAction(message, callback) {
             document.getElementById('confirm-title').innerText = message;
@@ -222,10 +228,13 @@
             document.getElementById('confirm-modal').classList.add('hidden');
             confirmCallback = null;
         }
-        document.getElementById('confirm-yes-btn').onclick = function() {
-            if(confirmCallback) confirmCallback();
-            closeConfirmModal();
-        };
+        const confirmYesBtn = document.getElementById('confirm-yes-btn');
+        if(confirmYesBtn) {
+            confirmYesBtn.onclick = function() {
+                if(confirmCallback) confirmCallback();
+                closeConfirmModal();
+            };
+        }
 
         function checkPassword() {
             const pass = document.getElementById('admin-pass').value;
@@ -257,10 +266,12 @@
 
         async function loadCitiesDropdowns() {
             let cities = [{name: 'عطبرة'}];
-            try {
-                const { data } = await supabaseClient.from('cities').select('*');
-                if(data && data.length > 0) cities = data;
-            } catch(e) {}
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('cities').select('*');
+                    if(data && data.length > 0) cities = data;
+                } catch(e) {}
+            }
 
             const headerSelect = document.getElementById('header-city-select');
             const deliveryCity = document.getElementById('delivery-city');
@@ -275,7 +286,8 @@
 
         function changeActiveAdminCity(cityName) {
             activeAdminCity = cityName.trim();
-            document.getElementById('city-scope-note').innerText = `كل ما تعدله هنا يخص مدينة "${activeAdminCity} 📍💙" فقط.`;
+            const note = document.getElementById('city-scope-note');
+            if(note) note.innerText = `كل ما تعدله هنا يخص مدينة "${activeAdminCity} 📍💙" فقط.`;
             loadAdminProducts();
             loadDeliveryZonesAdmin();
         }
@@ -300,11 +312,13 @@
 
         async function loadOrders() {
             const container = document.getElementById('orders-list');
+            if(!supabaseClient) return;
             try {
                 const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
                 if(error) throw error;
                 allOrders = data || [];
-                document.getElementById('orders-count-badge').innerText = allOrders.filter(o => o.status === 'جديدة').length;
+                const badge = document.getElementById('orders-count-badge');
+                if(badge) badge.innerText = allOrders.filter(o => o.status === 'جديدة').length;
                 renderOrders();
             } catch(e) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-10 text-xs">لا توجد طلبات حالياً</p>';
@@ -377,10 +391,12 @@
         async function loadCitiesAdmin() {
             const container = document.getElementById('admin-cities-list');
             let cities = [{id: 1, name: 'عطبرة'}];
-            try {
-                const { data } = await supabaseClient.from('cities').select('*');
-                if(data && data.length > 0) cities = data;
-            } catch(e) {}
+            if(supabaseClient) {
+                try {
+                    const { data } = await supabaseClient.from('cities').select('*');
+                    if(data && data.length > 0) cities = data;
+                } catch(e) {}
+            }
 
             container.innerHTML = '';
             cities.forEach(city => {
@@ -399,6 +415,7 @@
         async function addCity(e) {
             e.preventDefault();
             const name = document.getElementById('new-city-name').value.trim();
+            if(!supabaseClient) return;
             try {
                 const { error } = await supabaseClient.from('cities').insert([{ name }]);
                 if(error) throw error;
@@ -412,6 +429,7 @@
         }
 
         async function deleteCity(id, cityName) {
+            if(!supabaseClient) return;
             await supabaseClient.from('products').delete().eq('city', cityName);
             await supabaseClient.from('delivery_zones').delete().eq('city', cityName);
             const { error } = await supabaseClient.from('cities').delete().eq('id', id);
@@ -425,6 +443,7 @@
 
         async function loadDeliveryZonesAdmin() {
             const container = document.getElementById('delivery-zones-list');
+            if(!supabaseClient) return;
             try {
                 const { data } = await supabaseClient.from('delivery_zones').select('*');
                 if(!data || data.length === 0) {
@@ -459,6 +478,7 @@
             const city = activeAdminCity;
             const zone_name = document.getElementById('zone-name').value.trim();
             const price = parseFloat(document.getElementById('zone-price').value);
+            if(!supabaseClient) return;
 
             let { error } = await supabaseClient.from('delivery_zones').insert([{ city, zone_name, price }]);
             if(error) {
@@ -471,9 +491,12 @@
         }
 
         async function deleteDeliveryZone(id) {
+            if(!supabaseClient) return;
             await supabaseClient.from('delivery_zones').delete().eq('id', id);
             loadDeliveryZonesAdmin();
-function compressImage(file, callback) {
+        }
+
+        function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
@@ -512,12 +535,9 @@ function compressImage(file, callback) {
                     img.src = compressedBase64;
                     img.className = 'w-16 h-16 object-cover rounded-lg border border-[#d4af37] shadow-md';
                     container.appendChild(img);
-                });
-            });
-        }
-
-        async function loadAdminProducts() {
+async function loadAdminProducts() {
             const container = document.getElementById('admin-products-list');
+            if(!supabaseClient) return;
             try {
                 const { data, error } = await supabaseClient.from('products').select('*').order('created_at', { ascending: false });
                 if(error || !data) throw error;
@@ -541,7 +561,7 @@ function compressImage(file, callback) {
                             const p = JSON.parse(product.images);
                             if(p.length > 0) {
                                 imgToShow = p[0];
-                                p.slice(0, 4.0).forEach(src => {
+                                p.slice(0, 4).forEach(src => {
                                     thumbsHTML += `<img src="${src}" class="w-10 h-10 object-cover rounded border border-gray-700">`;
                                 });
                             }
@@ -575,6 +595,7 @@ function compressImage(file, callback) {
         }
 
         async function prepareEditProduct(id) {
+            if(!supabaseClient) return;
             const { data, error } = await supabaseClient.from('products').select('*').eq('id', id).single();
             if(error || !data) return;
 
@@ -618,6 +639,7 @@ function compressImage(file, callback) {
 
         async function saveProduct(e) {
             e.preventDefault();
+            if(!supabaseClient) return;
             const title = document.getElementById('title').value;
             const price = parseFloat(document.getElementById('price').value);
             const description = document.getElementById('description').value;
@@ -655,27 +677,32 @@ function compressImage(file, callback) {
         }
 
         async function deleteProduct(id) {
+            if(!supabaseClient) return;
             await supabaseClient.from('products').delete().eq('id', id);
             showToast('تم حذف العرض بنجاح');
             loadAdminProducts();
         }
 
         async function updateOrderStatus(id, newStatus) {
+            if(!supabaseClient) return;
             await supabaseClient.from('orders').update({ status: newStatus }).eq('id', id);
             loadOrders();
         }
 
         async function deleteOrder(id) {
+            if(!supabaseClient) return;
             await supabaseClient.from('orders').delete().eq('id', id);
             loadOrders();
         }
 
         async function deleteDeliveredOrders() {
+            if(!supabaseClient) return;
             await supabaseClient.from('orders').delete().eq('status', 'مسلمة');
             loadOrders();
         }
 
         async function deleteAllOrders() {
+            if(!supabaseClient) return;
             await supabaseClient.from('orders').delete().neq('id', '00000000-0000-0000-0000-000000000000');
             loadOrders();
         }
