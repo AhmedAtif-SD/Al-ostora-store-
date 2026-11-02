@@ -71,6 +71,7 @@
             <button onclick="switchTab('offers')" id="tab-offers-btn" class="py-2.5 rounded-xl gold-gradient text-black font-extrabold text-[10px] shadow-lg cursor-pointer">العروض</button>
             <button onclick="switchTab('cities')" id="tab-cities-btn" class="py-2.5 rounded-xl bg-[#141414] border border-gray-800 text-gray-300 font-bold text-[10px] cursor-pointer">المدن</button>
         </div>
+
         <!-- قسم الطلبات -->
         <div id="tab-orders" class="space-y-4 hidden">
             <div class="flex gap-1 overflow-x-auto pb-2">
@@ -175,6 +176,7 @@
             </div>
         </div>
     </div>
+
     <script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
@@ -318,10 +320,7 @@
                 renderOrders();
             } catch(e) {
                 container.innerHTML = '<p class="text-center text-gray-500 py-10 text-xs">لا توجد طلبات حالياً</p>';
-            }
-        }
-
-        function filterOrders(status) {
+function filterOrders(status) {
             currentFilter = status;
             renderOrders();
         }
@@ -483,7 +482,9 @@
             if(!supabaseClient) return;
             await supabaseClient.from('delivery_zones').delete().eq('id', id);
             loadDeliveryZonesAdmin();
-function compressImage(file, callback) {
+        }
+
+        function compressImage(file, callback) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function(event) {
