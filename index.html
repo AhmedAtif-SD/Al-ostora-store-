@@ -13,13 +13,13 @@
         .gold-border { border-color: #d4af37; }
         .gold-text { color: #b8860b; }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(4px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .animate-fade { animation: fadeIn 0.3s ease-out forwards; }
+        .animate-fade { animation: fadeIn 0.25s ease-out forwards; }
         .logo-frame {
             background: linear-gradient(145deg, #111111, #1c1c1c);
-            box-shadow: 0 15px 35px rgba(212, 175, 55, 0.25);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2);
         }
         .grid-bg {
             background-image: linear-gradient(to right, #eae5d9 1px, transparent 1px), linear-gradient(to bottom, #eae5d9 1px, transparent 1px);
@@ -28,29 +28,19 @@
     </style>
     <script>
         window.showHero = function() {
-            const h = document.getElementById('hero-section');
-            const c = document.getElementById('city-selection-screen');
-            const s = document.getElementById('store-section');
-            const ck = document.getElementById('checkout-screen');
-            const fc = document.getElementById('floating-cart-btn');
-            if(h) h.classList.remove('hidden');
-            if(c) c.classList.add('hidden');
-            if(s) s.classList.add('hidden');
-            if(ck) ck.classList.add('hidden');
-            if(fc) fc.classList.add('hidden');
+            ['hero-section', 'city-selection-screen', 'store-section', 'checkout-screen', 'floating-cart-btn'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById('hero-section').classList.remove('hidden');
         };
 
         window.openCitySelection = function() {
-            const h = document.getElementById('hero-section');
-            const c = document.getElementById('city-selection-screen');
-            const s = document.getElementById('store-section');
-            const ck = document.getElementById('checkout-screen');
-            const fc = document.getElementById('floating-cart-btn');
-            if(h) h.classList.add('hidden');
-            if(s) h.classList.add('hidden');
-            if(ck) ck.classList.add('hidden');
-            if(fc) fc.classList.add('hidden');
-            if(c) c.classList.remove('hidden');
+            ['hero-section', 'store-section', 'checkout-screen', 'floating-cart-btn'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.classList.add('hidden');
+            });
+            document.getElementById('city-selection-screen').classList.remove('hidden');
             if(typeof window.loadCitiesForSelection === 'function') window.loadCitiesForSelection();
         };
 
@@ -58,24 +48,19 @@
             window.currentCity = cityName;
             const header = document.getElementById('current-city-header');
             if(header) header.innerText = `عروض ${cityName}`;
-            const c = document.getElementById('city-selection-screen');
-            const s = document.getElementById('store-section');
-            if(c) c.classList.add('hidden');
-            if(s) s.classList.remove('hidden');
+            document.getElementById('city-selection-screen').classList.add('hidden');
+            document.getElementById('store-section').classList.remove('hidden');
             if(typeof window.loadProducts === 'function') window.loadProducts();
             if(typeof window.updateCartUI === 'function') window.updateCartUI();
         };
 
         window.closeProductModal = function() {
-            const m = document.getElementById('product-modal');
-            if(m) m.classList.add('hidden');
+            document.getElementById('product-modal').classList.add('hidden');
         };
 
         window.closeCheckoutScreen = function() {
-            const ck = document.getElementById('checkout-screen');
-            const s = document.getElementById('store-section');
-            if(ck) ck.classList.add('hidden');
-            if(s) s.classList.remove('hidden');
+            document.getElementById('checkout-screen').classList.add('hidden');
+            document.getElementById('store-section').classList.remove('hidden');
             if(typeof window.updateCartUI === 'function') window.updateCartUI();
         };
     </script>
@@ -87,7 +72,7 @@
         <span id="toast-message" class="text-xs font-bold text-amber-400">تمت العملية بنجاح</span>
     </div>
 
-    <!-- شاشة البداية (مطابقة للصورة تماماً) -->
+    <!-- 1. شاشة البداية -->
     <div id="hero-section" class="w-full max-w-md min-h-screen flex flex-col justify-between items-center p-6 text-center relative animate-fade">
         <div class="mt-16 z-10 w-full flex flex-col items-center">
             <div class="w-48 h-48 rounded-3xl border-2 gold-border p-3 logo-frame flex flex-col items-center justify-center mb-6 relative">
@@ -110,7 +95,7 @@
         </div>
     </div>
 
-    <!-- شاشة اختيار المدينة -->
+    <!-- 2. شاشة اختيار المدينة -->
     <div id="city-selection-screen" class="w-full max-w-md min-h-screen p-6 hidden animate-fade flex flex-col justify-between bg-[#fcfbfa]">
         <div>
             <div class="flex justify-between items-center mb-6 border-b border-neutral-200 pb-4">
@@ -118,7 +103,6 @@
                 <button onclick="window.showHero()" class="text-neutral-500 hover:gold-text text-sm font-bold cursor-pointer">← الرئيسية</button>
             </div>
             <p class="text-xs text-neutral-500 mb-6 leading-relaxed">اختر مدينتك لتتمكن من استعراض العروض وطرق التوصيل المتاحة.</p>
-            
             <div id="cities-cards-container" class="space-y-3.5">
                 <button onclick="window.selectCity('عطبرة')" class="w-full text-right bg-white hover:bg-amber-50 border border-neutral-200 hover:gold-border p-4 rounded-2xl text-sm transition font-bold flex items-center justify-between shadow-sm cursor-pointer">
                     <span class="text-neutral-900">📍 عطبرة 💙</span>
@@ -129,7 +113,7 @@
         <div class="mt-8 text-center text-[10px] text-neutral-400">متجر الأسطورة — جميع الحقوق محفوظة</div>
     </div>
 
-    <!-- شاشة المتجر -->
+    <!-- 3. شاشة المتجر -->
     <div id="store-section" class="w-full max-w-md min-h-screen p-4 hidden animate-fade bg-[#fcfbfa]">
         <div class="flex justify-between items-center mb-6 bg-white border border-neutral-200 p-3.5 rounded-2xl shadow-sm">
             <div class="flex items-center gap-2">
@@ -140,7 +124,6 @@
                 تغيير المدينة
             </button>
         </div>
-
         <div id="products-container" class="space-y-6">
             <p class="text-center text-neutral-400 py-12 text-xs font-bold">جاري تحميل العروض...</p>
         </div>
@@ -148,7 +131,7 @@
 
     <!-- زر السلة العائم -->
     <div id="floating-cart-btn" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-40 hidden animate-fade w-full max-w-md px-4">
-        <button onclick="window.openCheckoutScreen()" class="w-full gold-gradient text-neutral-950 py-4 px-6 rounded-2xl font-black text-sm shadow-2xl flex items-center justify-between border border-amber-200 transform active:scale-95 transition cursor-pointer">
+        <button onclick="window.openCheckoutScreen()" class="w-full gold-gradient text-neutral-950 py-4 px-6 rounded-2xl font-black text-sm shadow-xl flex items-center justify-between border border-amber-200 transform active:scale-95 transition cursor-pointer">
             <div class="flex items-center gap-2">
                 <span class="bg-neutral-950 text-amber-400 px-2.5 py-1 rounded-xl text-xs font-black" id="cart-badge-count">0</span>
                 <span>إتمام الطلب</span>
@@ -160,26 +143,22 @@
         </button>
     </div>
 
-    <!-- نافذة تفاصيل العرض -->
+    <!-- 4. نافذة تفاصيل العرض -->
     <div id="product-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex justify-center items-end sm:items-center p-0 sm:p-4">
         <div class="bg-white w-full max-w-md rounded-t-3xl sm:rounded-2xl border border-neutral-200 p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
             <div class="flex justify-between items-center mb-4 border-b border-neutral-100 pb-3">
                 <h3 id="modal-title" class="text-base font-black text-neutral-900"></h3>
                 <button onclick="window.closeProductModal()" class="text-neutral-400 hover:text-neutral-900 text-xl font-bold cursor-pointer">&times;</button>
             </div>
-            
             <div class="mb-4">
                 <img id="modal-image" src="" alt="" class="w-full h-64 object-cover rounded-2xl border border-neutral-200 mb-2.5 shadow-sm">
                 <div id="modal-gallery" class="flex gap-2 overflow-x-auto pb-1"></div>
             </div>
-            
             <div class="flex justify-between items-center mb-2">
                 <span id="modal-price" class="text-xl font-black gold-text"></span>
                 <span class="text-[11px] bg-amber-50 gold-text px-3 py-1 rounded-xl border gold-border font-bold">خامة بجودة عالية 🔥💙</span>
             </div>
-            
             <p id="modal-desc" class="text-xs text-neutral-600 mb-6 whitespace-pre-line leading-relaxed"></p>
-
             <div class="space-y-4 mb-6 bg-neutral-50 p-4 rounded-2xl border border-neutral-200">
                 <div class="flex items-center justify-between">
                     <span class="text-xs text-neutral-700 font-bold">عدد القطع</span>
@@ -189,27 +168,25 @@
                         <button onclick="window.updateQty(1)" class="w-7 h-7 bg-neutral-100 rounded-lg text-sm font-bold flex items-center justify-center cursor-pointer">+</button>
                     </div>
                 </div>
-
                 <div id="item-options-container" class="space-y-3 pt-2"></div>
             </div>
-
             <button onclick="window.addToCartAndStay()" class="w-full py-4 rounded-xl gold-gradient text-neutral-950 font-black text-sm shadow-lg hover:opacity-95 transition cursor-pointer">
                 أضف للطلب — <span id="modal-total-price"></span>
             </button>
         </div>
     </div>
-<div id="checkout-screen" class="w-full max-w-md min-h-screen p-4 hidden animate-fade bg-[#fcfbfa]">
+
+    <!-- 5. شاشة إتمام الطلب -->
+    <div id="checkout-screen" class="w-full max-w-md min-h-screen p-4 hidden animate-fade bg-[#fcfbfa]">
         <div class="flex justify-between items-center mb-4 bg-white border border-neutral-200 p-3.5 rounded-2xl shadow-sm">
             <h2 class="text-base font-black text-neutral-900">إتمام الطلب</h2>
             <button onclick="window.closeCheckoutScreen()" class="text-neutral-500 hover:gold-text text-sm font-bold cursor-pointer">← المتجر</button>
         </div>
-
         <div class="space-y-5 mb-24 text-xs">
             <div>
                 <h3 class="font-bold gold-text text-sm mb-2.5">طلبك</h3>
                 <div id="checkout-cart-items" class="space-y-3"></div>
             </div>
-
             <div class="bg-white border border-neutral-200 p-4 rounded-2xl space-y-3.5 shadow-sm">
                 <h3 class="font-bold gold-text text-sm mb-1">بياناتك</h3>
                 <div>
@@ -237,12 +214,10 @@
                     <textarea id="cust-notes" class="w-full bg-neutral-50 border border-neutral-300 rounded-xl p-3 focus:outline-none focus:border-amber-500 h-20" placeholder="أي تفاصيل إضافية للطلب..."></textarea>
                 </div>
             </div>
-
             <div class="bg-white border border-neutral-200 p-4 rounded-2xl space-y-3 shadow-sm">
                 <h3 class="font-bold gold-text text-sm mb-2">منطقة التوصيل</h3>
                 <div id="delivery-zones-radio-container" class="space-y-2.5"></div>
             </div>
-
             <div class="bg-white border border-neutral-200 p-4 rounded-2xl space-y-2.5 text-sm font-bold shadow-sm">
                 <div class="flex justify-between text-neutral-700">
                     <span id="summary-items-count">العروض (0 قطعة)</span>
@@ -258,14 +233,12 @@
                 </div>
                 <p class="text-[10px] text-neutral-400 text-center pt-1 font-normal">الدفع عند الاستلام</p>
             </div>
-
             <button onclick="window.submitFinalOrder()" class="w-full py-4 rounded-2xl gold-gradient text-neutral-950 font-black text-base shadow-xl hover:opacity-95 transition cursor-pointer">
                 تأكيد الطلب 🚀
             </button>
         </div>
     </div>
-
-    <script>
+<script>
         const SUPABASE_URL = 'https://oahyrrymmaazzskpfqvl.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9haHlycnltbWFhenpza3BmcXZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMzNzg2NTIsImV4cCI6MjEwODk1NDY1Mn0.qUXnhCROVGpx2P-XDFM2nC5xxtKtx86GxW2eV9Ipd3E';
         
@@ -296,18 +269,7 @@
                 sizes: 'M, L, XL, XXL',
                 description: 'خامة قطن بجودة عالية 🔥💙',
                 image_url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500',
-                images: JSON.stringify(['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500', 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=500'])
-            },
-            {
-                id: 2,
-                title: 'قميص مخطط كلاسيك',
-                price: 55000,
-                city: 'عطبرة',
-                colors: 'سماوي، اسود، كحلي',
-                sizes: 'M, L, XL',
-                description: 'خامة بجودة عالية جداً 💙🔥',
-                image_url: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500',
-                images: JSON.stringify(['https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500'])
+                images: JSON.stringify(['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500'])
             }
         ];
 
@@ -374,7 +336,7 @@
                 }
 
                 const card = document.createElement('div');
-                card.className = 'bg-white border border-neutral-200 rounded-3xl overflow-hidden shadow-md mb-6 animate-fade cursor-pointer hover:border-amber-500 transition';
+                card.className = 'bg-white border border-neutral-200 rounded-3xl overflow-hidden shadow-sm mb-6 animate-fade cursor-pointer hover:border-amber-500 transition';
                 card.onclick = () => window.openProductModal(index);
                 card.innerHTML = `
                     <div class="grid grid-cols-2 gap-1 bg-neutral-100 p-1.5">
@@ -474,7 +436,6 @@
         window.addToCartAndStay = function() {
             const sizeSelects = document.querySelectorAll('.item-size-select');
             const colorSelects = document.querySelectorAll('.item-color-select');
-            
             const itemDetails = [];
             for(let i = 0; i < quantity; i++) {
                 itemDetails.push(`قطعة ${i+1} : ${colorSelects[i].value} - ${sizeSelects[i].value}`);
@@ -488,7 +449,7 @@
                 } catch(e) {}
             }
 
-            const cartItem = {
+            cart.push({
                 id: Date.now(),
                 title: selectedProduct.title,
                 price: selectedProduct.price,
@@ -496,13 +457,14 @@
                 details: itemDetails,
                 image_url: images[0],
                 total: selectedProduct.price * quantity
-            };
+            });
 
-            cart.push(cartItem);
             window.updateCartUI();
             window.closeProductModal();
             showToast('تمت الإضافة للطلب بنجاح 🛒');
-window.updateCartUI = function() {
+        };
+
+        window.updateCartUI = function() {
             const badge = document.getElementById('cart-badge-count');
             const floatBtn = document.getElementById('floating-cart-btn');
             const floatTotal = document.getElementById('floating-cart-total');
@@ -534,7 +496,6 @@ window.updateCartUI = function() {
                 container.innerHTML = '<p class="text-center text-neutral-400 py-6 text-xs font-bold">السلة فارغة</p>';
                 return;
             }
-
             container.innerHTML = '';
             cart.forEach((item, index) => {
                 const div = document.createElement('div');
@@ -551,10 +512,8 @@ window.updateCartUI = function() {
                     <button onclick="window.removeFromCart(${index})" class="text-red-500 font-bold text-xs px-2.5 py-1 bg-red-50 border border-red-200 rounded-xl cursor-pointer">حذف</button>
                 `;
                 container.appendChild(div);
-            });
-        }
 
-        window.removeFromCart = function(index) {
+window.removeFromCart = function(index) {
             cart.splice(index, 1);
             renderCheckoutCart();
             calcCheckoutTotals();
@@ -589,7 +548,6 @@ window.updateCartUI = function() {
                     selectedDeliveryPrice = zone.price;
                     selectedDeliveryName = zone.zone_name;
                 }
-
                 const label = document.createElement('label');
                 label.className = `flex items-center justify-between bg-neutral-50 border ${isSelected ? 'gold-border border-2' : 'border-neutral-200'} p-3.5 rounded-2xl cursor-pointer hover:border-amber-500 transition`;
                 label.innerHTML = `
@@ -607,8 +565,7 @@ window.updateCartUI = function() {
         window.selectDeliveryZone = function(radio) {
             selectedDeliveryPrice = parseFloat(radio.value);
             selectedDeliveryName = radio.getAttribute('data-name');
-            const labels = document.querySelectorAll('#delivery-zones-radio-container label');
-            labels.forEach(l => {
+            document.querySelectorAll('#delivery-zones-radio-container label').forEach(l => {
                 const inp = l.querySelector('input');
                 if(inp && inp.checked) l.classList.add('gold-border', 'border-2');
                 else l.classList.remove('gold-border', 'border-2');
@@ -621,17 +578,11 @@ window.updateCartUI = function() {
             const subtotal = cart.reduce((sum, item) => sum + item.total, 0);
             const grandTotal = subtotal + selectedDeliveryPrice;
 
-            const el1 = document.getElementById('summary-items-count');
-            const el2 = document.getElementById('summary-items-subtotal');
-            const el3 = document.getElementById('summary-delivery-label');
-            const el4 = document.getElementById('summary-delivery-price');
-            const el5 = document.getElementById('summary-grand-total');
-
-            if(el1) el1.innerText = `العروض (${totalItems} قطعة)`;
-            if(el2) el2.innerText = subtotal.toLocaleString() + ' ج.س';
-            if(el3) el3.innerText = `التوصيل — ${selectedDeliveryName}`;
-            if(el4) el4.innerText = selectedDeliveryPrice.toLocaleString() + ' ج.س';
-            if(el5) el5.innerText = grandTotal.toLocaleString() + ' ج.س';
+            if(document.getElementById('summary-items-count')) document.getElementById('summary-items-count').innerText = `العروض (${totalItems} قطعة)`;
+            if(document.getElementById('summary-items-subtotal')) document.getElementById('summary-items-subtotal').innerText = subtotal.toLocaleString() + ' ج.س';
+            if(document.getElementById('summary-delivery-label')) document.getElementById('summary-delivery-label').innerText = `التوصيل — ${selectedDeliveryName}`;
+            if(document.getElementById('summary-delivery-price')) document.getElementById('summary-delivery-price').innerText = selectedDeliveryPrice.toLocaleString() + ' ج.س';
+            if(document.getElementById('summary-grand-total')) document.getElementById('summary-grand-total').innerText = grandTotal.toLocaleString() + ' ج.س';
         }
 
         window.submitFinalOrder = async function() {
@@ -649,14 +600,12 @@ window.updateCartUI = function() {
 
             let cartSubtotal = 0;
             const itemsSummary = [];
-
             cart.forEach((item, idx) => {
                 cartSubtotal += item.total;
                 itemsSummary.push(`▫️ المنتج (${idx+1}): ${item.title} (الكمية: ${item.quantity})\n   التفاصيل: ${item.details.join(' | ')}\n   السعر: ${item.total.toLocaleString()} ج.س`);
             });
 
             const grandTotal = cartSubtotal + selectedDeliveryPrice;
-
             const orderData = {
                 product_title: `طلب سلة (${cart.length} منتجات)`,
                 quantity: cart.reduce((s, i) => s + i.quantity, 0),
