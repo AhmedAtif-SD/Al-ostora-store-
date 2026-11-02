@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" translate="no">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - الأسطورة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #fcfbfa; color: #1a1a1a; }
+        .gold-gradient { background: linear-gradient(135deg, #d4af37 0%, #aa7c11 100%); }
+        .gold-border { border-color: #d4af37; }
+        .gold-text { color: #b8860b; }
+        .grid-bg {
+            background-image: linear-gradient(to right, #eae5d9 1px, transparent 1px), linear-gradient(to bottom, #eae5d9 1px, transparent 1px);
+            background-size: 3rem 3rem;
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4 flex flex-col items-center pb-12 relative grid-bg">
+
+    <!-- إشعار التنبيه -->
+    <div id="toast-notification" class="fixed top-5 z-50 transform -translate-y-20 opacity-0 transition-all duration-300 bg-[#141414] border gold-border px-6 py-3 rounded-2xl shadow-2xl flex items-center gap-3">
+        <span class="text-xl">✨</span>
+        <span id="toast-message" class="text-xs font-bold text-amber-400">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- شاشة تسجيل الدخول المستقلة تماماً -->
+    <div id="auth-screen" class="w-full max-w-sm bg-white border border-neutral-200 rounded-3xl p-6 shadow-xl text-center mt-20">
+        <div class="w-24 h-24 mx-auto rounded-2xl border gold-border p-2 bg-neutral-950 flex flex-col items-center justify-center mb-4 shadow-md">
+            <span class="text-2xl font-black text-amber-400 tracking-widest">AS</span>
+            <div class="w-12 h-[2px] gold-gradient my-1"></div>
+            <span class="text-[7px] font-bold tracking-widest text-amber-200">OSTORA</span>
+        </div>
+        <h1 class="text-lg font-black text-neutral-900 mb-4">لوحة تحكم المالك</h1>
+        <input type="password" id="admin-pass" autocomplete="off" placeholder="كلمة المرور" class="w-full bg-neutral-50 border border-neutral-300 rounded-xl p-3 text-sm mb-4 text-center focus:outline-none focus:border-amber-500">
+        <button type="button" onclick="tryLogin()" class="w-full py-3 rounded-xl gold-gradient text-neutral-950 font-black text-sm shadow-md mb-3 cursor-pointer">دخول</button>
+        <a href="index.html" class="text-xs text-neutral-500 hover:gold-text underline font-bold">← العودة للمتجر الرئيسي</a>
+    </div>
+
+    <!-- المحتوى الرئيسي للوحة التحكم -->
+    <div id="admin-content" class="w-full max-w-md hidden">
+        <div class="flex justify-between items-center mb-4 bg-white p-3.5 rounded-2xl border border-neutral-200 shadow-sm">
+            <h1 class="text-base font-black text-neutral-900">لوحة التحكم</h1>
+            <div class="flex items-center gap-2">
+                <a href="index.html" class="bg-neutral-100 px-3 py-1.5 rounded-xl text-xs border border-neutral-300 font-bold text-neutral-700">المتجر</a>
+                <button type="button" onclick="logout()" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-xl text-xs border border-red-200 font-bold cursor-pointer">خروج</button>
+            </div>
+        </div>
+
+        <!-- اختيار المدينة للتحكم -->
+        <div id="city-selector-card" class="bg-white border border-neutral-200 rounded-2xl p-3.5 mb-4 text-center shadow-sm">
+            <label class="block text-[10px] text-neutral-400 font-bold mb-1">المدينة النشطة للعروض والتوصيل</label>
+            <select id="active-city" onchange="changeCity(this.value)" class="bg-neutral-50 border gold-border rounded-xl px-4 py-2 text-xs gold-text font-black focus:outline-none w-full">
+            </select>
+        </div>
+
+        <!-- أزرار التبويبات -->
+        <div class="grid grid-cols-4 gap-1.5 mb-4 text-center">
+            <button type="button" onclick="switchTab('orders')" id="btn-tab-orders" class="py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-[10px] shadow-md cursor-pointer">الطلبات</button>
+            <button type="button" onclick="switchTab('delivery')" id="btn-tab-delivery" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer">التوصيل</button>
+            <button type="button" onclick="switchTab('offers')" id="btn-tab-offers" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer">العروض</button>
+            <button type="button" onclick="switchTab('cities')" id="btn-tab-cities" class="py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer">المدن</button>
+        </div>
+
+        <!-- 1. قسم الطلبات -->
+        <div id="tab-orders" class="space-y-3">
+            <div class="bg-white border border-neutral-200 p-4 rounded-2xl shadow-sm space-y-2">
+                <h3 class="font-black text-sm gold-text">الطلبات الواردة</h3>
+                <div id="orders-container" class="space-y-2 text-xs">
+                    <p class="text-neutral-400 text-center py-4">لا توجد طلبات جديدة</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. قسم التوصيل -->
+        <div id="tab-delivery" class="bg-white border border-neutral-200 rounded-2xl p-4 hidden space-y-3 text-xs shadow-sm">
+            <h3 class="font-black gold-text text-sm">إدارة أسعار التوصيل</h3>
+            <div class="space-y-2 bg-neutral-50 p-3 rounded-xl border border-neutral-200">
+                <input type="text" id="del-zone" placeholder="اسم المنطقة (مثال: خليوه)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <input type="number" id="del-price" placeholder="السعر (ج.س)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <button type="button" onclick="addDeliveryZone()" class="w-full py-2.5 rounded-xl gold-gradient text-neutral-950 font-black cursor-pointer">إضافة منطقة التوصيل</button>
+            </div>
+            <div id="delivery-container" class="space-y-2"></div>
+        </div>
+
+        <!-- 3. قسم العروض -->
+        <div id="tab-offers" class="bg-white border border-neutral-200 rounded-2xl p-4 hidden space-y-4 text-xs shadow-sm">
+            <div class="flex justify-between items-center">
+                <h3 id="form-title" class="font-black gold-text text-sm">إدارة العروض والمنتجات</h3>
+                <button type="button" id="cancel-edit-btn" onclick="resetProductForm()" class="hidden text-neutral-500 underline text-[10px] font-bold cursor-pointer">إلغاء التعديل</button>
+            </div>
+            <div class="space-y-2.5 bg-neutral-50 p-3.5 rounded-xl border border-neutral-200">
+                <input type="text" id="prod-title" placeholder="اسم العرض (طقم رياضي...)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <input type="number" id="prod-price" placeholder="السعر (ج.س)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <textarea id="prod-desc" placeholder="الوصف والمواصفات..." class="w-full bg-white border border-neutral-300 rounded-xl p-2.5 h-16"></textarea>
+                <input type="text" id="prod-sizes" placeholder="المقاسات مفصولة بفواصل (M, L, XL)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <input type="text" id="prod-colors" placeholder="الألوان مفصولة بفواصل (أسود، أزرق)" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                
+                <div>
+                    <label class="block text-[10px] text-neutral-500 font-bold mb-1">صورة العرض</label>
+                    <input type="file" id="prod-img" accept="image/*" onchange="previewImageFile(event)" class="w-full bg-white border border-neutral-300 rounded-xl p-2 text-xs">
+                    <div id="image-preview-box" class="mt-2 flex gap-2"></div>
+                </div>
+
+                <button type="button" onclick="saveProduct()" id="save-product-btn" class="w-full py-3 rounded-xl gold-gradient text-neutral-950 font-black cursor-pointer">حفظ ونشر العرض</button>
+            </div>
+            <div id="products-container" class="space-y-2"></div>
+        </div>
+
+        <!-- 4. قسم المدن -->
+        <div id="tab-cities" class="bg-white border border-neutral-200 rounded-2xl p-4 hidden space-y-3 text-xs shadow-sm">
+            <h3 class="font-black gold-text text-sm">إدارة المدن</h3>
+            <div class="space-y-2 bg-neutral-50 p-3 rounded-xl border border-neutral-200">
+                <input type="text" id="city-name" placeholder="اسم المدينة الجديدة" class="w-full bg-white border border-neutral-300 rounded-xl p-2.5">
+                <button type="button" onclick="addCity()" class="w-full py-2.5 rounded-xl gold-gradient text-neutral-950 font-black cursor-pointer">إضافة مدينة</button>
+            </div>
+            <div id="cities-container" class="space-y-2"></div>
+        </div>
+    </div>
+
+    <script>
+        let editingIndex = null;
+        let tempBase64Image = '';
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            if(!toast) return;
+            document.getElementById('toast-message').innerText = msg;
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.transform = 'translateY(-80px)';
+                toast.style.opacity = '0';
+            }, 3000);
+        }
+
+        // التحقق الفوري عند تحميل الصفحة
+        if (localStorage.getItem('admin_logged') === 'true') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const auth = document.getElementById('auth-screen');
+                const content = document.getElementById('admin-content');
+                if(auth) auth.classList.add('hidden');
+                if(content) content.classList.remove('hidden');
+                loadAllData();
+            });
+        }
+
+        function tryLogin() {
+            localStorage.setItem('admin_logged', 'true');
+            const auth = document.getElementById('auth-screen');
+            const content = document.getElementById('admin-content');
+            if(auth) auth.classList.add('hidden');
+            if(content) content.classList.remove('hidden');
+            loadAllData();
+            showToast('تم تسجيل الدخول بنجاح! 🌟');
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_logged');
+            location.reload();
+        }
+
+        function switchTab(tabName) {
+            ['orders', 'delivery', 'offers', 'cities'].forEach(t => {
+                const tab = document.getElementById('tab-' + t);
+                const btn = document.getElementById('btn-tab-' + t);
+                if(tab) tab.classList.add('hidden');
+                if(btn) btn.className = 'py-2.5 rounded-xl bg-white border border-neutral-200 text-neutral-700 font-bold text-[10px] cursor-pointer';
+            });
+            const targetTab = document.getElementById('tab-' + tabName);
+            const targetBtn = document.getElementById('btn-tab-' + tabName);
+            if(targetTab) targetTab.classList.remove('hidden');
+            if(targetBtn) targetBtn.className = 'py-2.5 rounded-xl gold-gradient text-neutral-950 font-black text-[10px] shadow-md cursor-pointer';
+
+            const cityCard = document.getElementById('city-selector-card');
+            if(cityCard) {
+                if (tabName === 'orders' || tabName === 'cities') {
+                    cityCard.classList.add('hidden');
+                } else {
+                    cityCard.classList.remove('hidden');
+                }
+            }
+        }
+
+        function changeCity(city) {
+            localStorage.setItem('admin_active_city', city);
+            loadAllData();
+        }
+
+        function loadAllData() {
+            try { loadCitiesDropdown(); } catch(e) {}
+            try { loadLocalProducts(); } catch(e) {}
+            try { loadLocalDelivery(); } catch(e) {}
+            try { loadLocalCities(); } catch(e) {}
+            try { loadLocalOrders(); } catch(e) {}
+        }
+
+        function loadCitiesDropdown() {
+            const select = document.getElementById('active-city');
+            if(!select) return;
+            let cities = JSON.parse(localStorage.getItem('store_cities') || '["عطبرة", "بورتسودان", "امدرمان"]');
+            let activeCity = localStorage.getItem('admin_active_city') || cities[0];
+            
+            select.innerHTML = '';
+            cities.forEach(c => {
+                select.innerHTML += `<option value="${c}" ${c === activeCity ? 'selected' : ''}>📍 ${c} 💙</option>`;
+            });
+        }
+
+        function previewImageFile(event) {
+            const file = event.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                tempBase64Image = e.target.result;
+                const box = document.getElementById('image-preview-box');
+                box.innerHTML = `<img src="${tempBase64Image}" class="w-16 h-16 object-cover rounded-xl border gold-border">`;
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function loadLocalProducts() {
+            const container = document.getElementById('products-container');
+            if(!container) return;
+            let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+            const activeCity = localStorage.getItem('admin_active_city') || 'عطبرة';
+            
+            const cityProducts = products.filter(p => (p.city || 'عطبرة') === activeCity);
+
+            container.innerHTML = '';
+            if(cityProducts.length === 0) {
+                container.innerHTML = `<p class="text-neutral-400 text-center py-4">لا توجد عروض في مدينة ${activeCity}</p>`;
+                return;
+            }
+
+            cityProducts.forEach((p) => {
+                const realIdx = products.findIndex(item => item === p);
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-neutral-50 p-2.5 rounded-xl border border-neutral-200">
+                        <div class="flex items-center gap-2">
+                            <img src="${p.image_url || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-cover rounded-lg border">
+                            <div>
+                                <p class="font-black text-neutral-900">${p.title}</p>
+                                <span class="gold-text font-bold text-[11px]">${p.price.toLocaleString()} ج.س</span>
+                            </div>
+                        </div>
+                        <div class="flex gap-1">
+                            <button type="button" onclick="editProduct(${realIdx})" class="bg-amber-50 gold-text px-2.5 py-1 rounded-lg border gold-border font-bold text-[10px] cursor-pointer">تعديل</button>
+                            <button type="button" onclick="deleteProduct(${realIdx})" class="bg-red-50 text-red-600 px-2.5 py-1 rounded-lg border border-red-200 font-bold text-[10px] cursor-pointer">حذف</button>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        function saveProduct() {
+            const title = document.getElementById('prod-title').value.trim();
+            const price = parseFloat(document.getElementById('prod-price').value);
+            const description = document.getElementById('prod-desc').value.trim();
+            const sizes = document.getElementById('prod-sizes').value.trim();
+            const colors = document.getElementById('prod-colors').value.trim();
+            const activeCity = localStorage.getItem('admin_active_city') || 'عطبرة';
+
+            if(!title || isNaN(price)) {
+                showToast('الرجاء إدخال اسم العرض والسعر بشكل صحيح');
+                return;
+            }
+
+            let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+            let imageUrl = tempBase64Image || 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=500';
+
+            if (editingIndex !== null) {
+                if(!tempBase64Image && products[editingIndex]) {
+                    imageUrl = products[editingIndex].image_url;
+                }
+                products[editingIndex] = {
+                    title,
+                    price,
+                    description,
+                    sizes,
+                    colors,
+                    city: activeCity,
+                    image_url: imageUrl
+                };
+                showToast('تم تحديث العرض بنجاح!');
+                resetProductForm();
+            } else {
+                products.unshift({
+                    title,
+                    price,
+                    description,
+                    sizes,
+                    colors,
+                    city: activeCity,
+                    image_url: imageUrl
+                });
+                showToast('تم حفظ ونشر العرض بنجاح!');
+                resetProductForm();
+            }
+
+            localStorage.setItem('store_products', JSON.stringify(products));
+            loadLocalProducts();
+        }
+
+        window.editProduct = function(idx) {
+            let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+            const p = products[idx];
+            if(!p) return;
+
+            document.getElementById('prod-title').value = p.title;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-desc').value = p.description || '';
+            document.getElementById('prod-sizes').value = p.sizes || '';
+            document.getElementById('prod-colors').value = p.colors || '';
+            tempBase64Image = p.image_url;
+
+            const box = document.getElementById('image-preview-box');
+            box.innerHTML = `<img src="${p.image_url}" class="w-16 h-16 object-cover rounded-xl border gold-border">`;
+
+            editingIndex = idx;
+            document.getElementById('form-title').innerText = 'تعديل العرض الحالي';
+            document.getElementById('save-product-btn').innerText = 'تحديث العرض';
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            switchTab('offers');
+        }
+
+        function resetProductForm() {
+            document.getElementById('prod-title').value = '';
+            document.getElementById('prod-price').value = '';
+            document.getElementById('prod-desc').value = '';
+            document.getElementById('prod-sizes').value = '';
+            document.getElementById('prod-colors').value = '';
+            document.getElementById('prod-img').value = '';
+            document.getElementById('image-preview-box').innerHTML = '';
+            tempBase64Image = '';
+            editingIndex = null;
+            document.getElementById('form-title').innerText = 'إدارة العروض والمنتجات';
+            document.getElementById('save-product-btn').innerText = 'حفظ ونشر العرض';
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        window.deleteProduct = function(idx) {
+            let products = JSON.parse(localStorage.getItem('store_products') || '[]');
+            products.splice(idx, 1);
+            localStorage.setItem('store_products', JSON.stringify(products));
+            loadLocalProducts();
+            showToast('تم حذف العرض بنجاح');
+        }
+
+        function loadLocalDelivery() {
+            const container = document.getElementById('delivery-container');
+            if(!container) return;
+            let zones = JSON.parse(localStorage.getItem('delivery_zones') || '[{"name":"داخل عطبرة","price":6000}]');
+            container.innerHTML = '';
+            zones.forEach((z, idx) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-neutral-50 p-2.5 rounded-xl border border-neutral-200">
+                        <span>${z.name} - <strong class="gold-text">${z.price.toLocaleString()} ج.س</strong></span>
+                        <button type="button" onclick="deleteZone(${idx})" class="text-red-600 font-bold cursor-pointer">حذف</button>
+                    </div>`;
+            });
+        }
+
+        function addDeliveryZone() {
+            const name = document.getElementById('del-zone').value.trim();
+            const price = parseFloat(document.getElementById('del-price').value);
+            if(!name || isNaN(price)) return;
+            let zones = JSON.parse(localStorage.getItem('delivery_zones') || '[]');
+            zones.push({name, price});
+            localStorage.setItem('delivery_zones', JSON.stringify(zones));
+            document.getElementById('del-zone').value = '';
+            document.getElementById('del-price').value = '';
+            loadLocalDelivery();
+            showToast('تمت إضافة منطقة التوصيل بنجاح');
+        }
+
+        window.deleteZone = function(idx) {
+            let zones = JSON.parse(localStorage.getItem('delivery_zones') || '[]');
+            zones.splice(idx, 1);
+            localStorage.setItem('delivery_zones', JSON.stringify(zones));
+            loadLocalDelivery();
+            showToast('تم حذف منطقة التوصيل');
+        }
+
+        function loadLocalCities() {
+            const container = document.getElementById('cities-container');
+            if(!container) return;
+            let cities = JSON.parse(localStorage.getItem('store_cities') || '["عطبرة", "بورتسودان", "امدرمان"]');
+            container.innerHTML = '';
+            cities.forEach((c, idx) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-neutral-50 p-2.5 rounded-xl border border-neutral-200">
+                        <span>📍 ${c}</span>
+                        ${idx > 0 ? `<button type="button" onclick="deleteCity(${idx})" class="text-red-600 font-bold cursor-pointer">حذف</button>` : ''}
+                    </div>`;
+            });
+        }
+
+        function addCity() {
+            const name = document.getElementById('city-name').value.trim();
+            if(!name) return;
+            let cities = JSON.parse(localStorage.getItem('store_cities') || '["عطبرة", "بورتسودان", "امدرمان"]');
+            if(!cities.includes(name)) {
+                cities.push(name);
+                localStorage.setItem('store_cities', JSON.stringify(cities));
+                document.getElementById('city-name').value = '';
+                loadLocalCities();
+                loadCitiesDropdown();
+                showToast('تمت إضافة المدينة بنجاح');
+            }
+        }
+
+        window.deleteCity = function(idx) {
+            let cities = JSON.parse(localStorage.getItem('store_cities') || '["عطبرة", "بورتسودان", "امدرمان"]');
+            cities.splice(idx, 1);
+            localStorage.setItem('store_cities', JSON.stringify(cities));
+            loadLocalCities();
+            loadCitiesDropdown();
+            showToast('تم حذف المدينة');
+        }
+
+        function loadLocalOrders() {
+            const container = document.getElementById('orders-container');
+            if(!container) return;
+            let orders = JSON.parse(localStorage.getItem('store_orders') || '[]');
+            if(orders.length === 0) {
+                container.innerHTML = '<p class="text-neutral-400 text-center py-4">لا توجد طلبات جديدة</p>';
+                return;
+            }
+            container.innerHTML = '';
+            orders.forEach((o, idx) => {
+                container.innerHTML += `
+                    <div class="bg-neutral-50 p-3 rounded-xl border border-neutral-200 space-y-1">
+                        <div class="flex justify-between items-center">
+                            <p class="font-black text-neutral-900">${o.customer_name} - ${o.total_price.toLocaleString()} ج.س</p>
+                            <button type="button" onclick="deleteOrder(${idx})" class="text-red-500 font-bold text-[10px] cursor-pointer">حذف</button>
+                        </div>
+                        <p class="text-neutral-500">${o.city} - ${o.area} | ${o.customer_whatsapp}</p>
+                    </div>`;
+            });
+        }
+
+        window.deleteOrder = function(idx) {
+            let orders = JSON.parse(localStorage.getItem('store_orders') || '[]');
+            orders.splice(idx, 1);
+            localStorage.setItem('store_orders', JSON.stringify(orders));
+            loadLocalOrders();
+            showToast('تم حذف الطلب بنجاح');
+        }
+    </script>
+</body>
+</html>
